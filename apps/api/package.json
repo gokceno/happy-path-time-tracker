@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "@slack/bolt": "^3.13.0",
+    "@urql/core": "^4.0.4",
     "dotenv": "^16.0.3"
   }
 }

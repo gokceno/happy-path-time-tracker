@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 const { App } = require('@slack/bolt');
 const { Projects, Tasks } = require('./src/Entities.js');
 const { staticSelect, input } = require('./src/UI/Blocks.js');
+const { Client, cacheExchange, fetchExchange } = require('@urql/core');
 
 dotenv.config();
 
@@ -10,6 +11,17 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   appToken: process.env.SLACK_APP_TOKEN,
   socketMode: false
+});
+
+const graphqlClient = new Client({
+  url: process.env.DIRECTUS_API_URL,
+  exchanges: [fetchExchange],
+  fetchOptions: () => {
+    const token = process.env.DIRECTUS_API_TOKEN;
+    return {
+      headers: { authorization: token ? `Bearer ${token}` : '' },
+    };
+  },
 });
 
 /*
@@ -54,7 +66,7 @@ app.command('/echo', async ({ command, ack, respond }) => {
 app.command('/start', async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
-    const projects = Projects();
+    const projects = Projects({ graphqlClient });
     const result = await client.views.open({
       trigger_id: body.trigger_id,
       view: {
@@ -73,7 +85,7 @@ app.command('/start', async ({ command, respond, ack, body, client, logger }) =>
               "type": "plain_text",
               "text": "Select a project",
             },
-            "options": projects.list(),
+            "options": await projects.list(),
             "action_id": "select-reminder-time"
           }]
         },

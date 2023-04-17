@@ -1,23 +1,33 @@
 const { staticSelectFormatter } = require('./Formatters.js');
 
-const Projects = () => {
-  fetch = () => {
-    return [1,2,3];
+const Projects = ({ graphqlClient }) => {
+  _fetch =  async () => {
+    const ProjectsQuery = `
+      {
+        projects {
+          id
+          project_name
+        }
+      }
+    `;
+    const response = await graphqlClient.query(ProjectsQuery);
+    return response.data.projects;
   }
   return {
-    list: () => {
-      return fetch().map(item => staticSelectFormatter(item));
+    list: async () => {
+      const projects = await _fetch();
+      return projects.map(item => staticSelectFormatter({id: item.id, label: item.project_name}));
     }
   }
 }
 
 const Tasks = () => {
-  fetch = () => {
+  _fetch = () => {
     return [1,2,3];
   }
   return {
     list: () => {
-      return fetch().map(item => staticSelectFormatter(item));
+      return _fetch().map(item => staticSelectFormatter(item));
     }
   }
 }

@@ -1,10 +1,10 @@
-const staticSelectFormatter = (item) => {
+const staticSelectFormatter = ({ id, label }) => {
   return {
     "text": {
       "type": "plain_text",
-      "text": `Frontend Engineering ${item}`,
+      "text": `${label}`,
     },
-    "value": "item"
+    "value": `${id}`
   }
 }
 module.exports = { staticSelectFormatter };
