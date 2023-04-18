@@ -35,4 +35,27 @@ const input = (params) => {
 }
 
 
-module.exports = { staticSelect, input };
+const toggle = (params)  => {
+	const { id = '', label = '', placeholder = '', actionId = '' } = params;
+	return {
+		"type": "input",
+		"block_id": id,
+		"element": {
+			"type": "checkboxes",
+			"options": [
+				{
+					"text": {
+						"type": "plain_text",
+						"text": placeholder,
+						"emoji": true
+					},
+					"value": "true"
+				}
+			],
+			"action_id": actionId
+		},
+		"label": labelElement({ label })
+	}
+}
+
+module.exports = { staticSelect, input, toggle };

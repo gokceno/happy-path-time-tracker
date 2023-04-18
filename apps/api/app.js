@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 const { App } = require('@slack/bolt');
 const { Projects, Tasks } = require('./src/Entities.js');
-const { staticSelect, input } = require('./src/UI/Blocks.js');
+const { staticSelect, input, toggle } = require('./src/UI/Blocks.js');
 const { title: titleElement } = require('./src/UI/Elements.js');
 const { Client, cacheExchange, fetchExchange } = require('@urql/core');
 
@@ -120,7 +120,8 @@ app.action('select-project-id', async ({ ack, body, client, logger }) => {
         "blocks": [
           staticSelect({id: 'block_1', options: await tasks.list(), label: 'Task type', placeholder: 'Select a task type', actionId: 'denemeAction'}),
           input({id: 'block_2', label: 'What are you working on?', actionId: 'ddd2', isMultiline: true}),
-          input({id: 'block_3', label: 'Duration', actionId: 'ddd1', type: 'number_input' })
+          input({id: 'block_3', label: 'Duration', actionId: 'ddd1', type: 'number_input' }),
+          toggle({id: 'block_4', label: 'Start Timer', actionId: 'ddd2', placeholder: "Don't start timer, just log time" })
         ],
         submit: {
           type: 'plain_text',
