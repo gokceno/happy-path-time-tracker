@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 const { App } = require('@slack/bolt');
 const { Projects, Tasks } = require('./src/Entities.js');
 const { staticSelect, input } = require('./src/UI/Blocks.js');
+const { title: titleElement } = require('./src/UI/Elements.js');
 const { Client, cacheExchange, fetchExchange } = require('@urql/core');
 
 dotenv.config();
@@ -72,10 +73,7 @@ app.command('/start', async ({ command, respond, ack, body, client, logger }) =>
       view: {
         type: 'modal',
         callback_id: 'view_1',
-        title: {
-          type: 'plain_text',
-          text: 'Modal title'
-        },
+        title: titleElement({ title: 'Select a project' }),
         blocks: [
         {
           "type": "actions",
@@ -112,10 +110,7 @@ app.action('select-reminder-time', async ({ ack, body, client, logger }) => {
       view: {
         type: 'modal',
         callback_id: 'view_1',
-        title: {
-          type: 'plain_text',
-          text: 'Modal title'
-        },
+        title: titleElement({ title: 'Set timer details' }),
         "blocks": [
           staticSelect({id: 'block_1', options: tasks.list(), label: 'Task type', placeholder: 'p deneme', actionId: 'denemeAction'}),
           input({id: 'block_2', label: 'What are you working on?', actionId: 'ddd2', isMultiline: true}),

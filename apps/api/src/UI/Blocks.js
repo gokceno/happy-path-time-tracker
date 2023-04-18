@@ -1,3 +1,5 @@
+const { label: labelElement } = require('./Elements.js');
+
 const staticSelect = (params) => {
 	const { id = '', label = '', placeholder = '', options = [], actionId = '' } = params;
 	return {
@@ -13,11 +15,7 @@ const staticSelect = (params) => {
 			"options": options,
 			"action_id": actionId
 		},
-		"label": {
-			"type": "plain_text",
-			"text": label,
-			"emoji": true
-		}
+		"label": labelElement({ label })
 	}
 }
 
@@ -32,11 +30,7 @@ const input = (params) => {
 			...(type == 'plain_text_input' && { "multiline": isMultiline }),
 			...(type == 'number_input' && { "is_decimal_allowed": isDecimalAllowed })
 		},
-		"label": {
-			"type": "plain_text",
-			"text": label,
-			"emoji": true
-		}
+		"label": labelElement({ label })
 	}
 }
 
