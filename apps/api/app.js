@@ -77,6 +77,7 @@ app.command('/start', async ({ command, respond, ack, body, client, logger }) =>
         blocks: [
         {
           "type": "actions",
+          "block_id": "deneme",
           "elements": [{
             "type": "static_select",
             "placeholder": {
@@ -102,7 +103,12 @@ app.command('/start', async ({ command, respond, ack, body, client, logger }) =>
 app.action('select-reminder-time', async ({ ack, body, client, logger }) => {
   await ack();
   try {
-    const tasks = Tasks();
+    const tasks = Tasks({ 
+      graphqlClient, 
+      queryParams: {
+        projectId: body.view.state.values.deneme['select-reminder-time'].selected_option.value
+      } 
+    });
     const result = await client.views.update({
       trigger_id: body.trigger_id,
       view_id: body.view.id,
@@ -112,7 +118,7 @@ app.action('select-reminder-time', async ({ ack, body, client, logger }) => {
         callback_id: 'view_1',
         title: titleElement({ title: 'Set timer details' }),
         "blocks": [
-          staticSelect({id: 'block_1', options: tasks.list(), label: 'Task type', placeholder: 'p deneme', actionId: 'denemeAction'}),
+          staticSelect({id: 'block_1', options: await tasks.list(), label: 'Task type', placeholder: 'Select a task type', actionId: 'denemeAction'}),
           input({id: 'block_2', label: 'What are you working on?', actionId: 'ddd2', isMultiline: true}),
           input({id: 'block_3', label: 'Duration', actionId: 'ddd1', type: 'number_input' })
         ],
