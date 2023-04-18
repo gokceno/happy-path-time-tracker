@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 const { App } = require('@slack/bolt');
-const { Projects, Tasks } = require('./src/Entities.js');
+const { Projects, Tasks, Timers } = require('./src/Entities.js');
 const { staticSelect, input, toggle } = require('./src/UI/Blocks.js');
 const { title: titleElement } = require('./src/UI/Elements.js');
 const { Client, cacheExchange, fetchExchange } = require('@urql/core');
@@ -96,7 +96,6 @@ app.command('/start', async ({ command, respond, ack, body, client, logger }) =>
   catch (error) {
     logger.error(error);
   }
-
   await respond(`${command.text}`);
 });
 
@@ -118,10 +117,10 @@ app.action('select-project-id', async ({ ack, body, client, logger }) => {
         callback_id: 'view_1',
         title: titleElement({ title: 'Set timer details' }),
         "blocks": [
-          staticSelect({id: 'block_1', options: await tasks.list(), label: 'Task type', placeholder: 'Select a task type', actionId: 'denemeAction'}),
-          input({id: 'block_2', label: 'What are you working on?', actionId: 'ddd2', isMultiline: true}),
-          input({id: 'block_3', label: 'Duration', actionId: 'ddd1', type: 'number_input' }),
-          toggle({id: 'block_4', label: 'Start Timer', actionId: 'ddd2', placeholder: "Don't start timer, just log time" })
+          staticSelect({id: 'block__task_type', options: await tasks.list(), label: 'Task type', placeholder: 'Select a task type', actionId: 'action__task_type'}),
+          input({id: 'block__task_comment', label: 'What are you working on?', actionId: 'action__task_comment', isMultiline: true}),
+          input({id: 'block__duration', label: 'Duration', actionId: 'action__duration', type: 'number_input' }),
+          toggle({id: 'block__log_duration_only', label: 'Start Timer', actionId: 'action__log_duration_only', placeholder: "Don't start timer, just log time" })
         ],
         submit: {
           type: 'plain_text',
@@ -139,10 +138,16 @@ app.action('select-project-id', async ({ ack, body, client, logger }) => {
 app.view('view_1', async ({ ack, body, view, client, logger }) => {
   await ack();
   const user = body['user']['id'];
+  const timers = Timers();
+  timers.start({
+    projectTaskId: view['state']['values']['block__task_type']['action__task_type'].selected_option.value, 
+    taskComment: view['state']['values']['block__task_comment']['action__task_comment'].value,
+    endsAt: null
+  });
   try {
     await client.chat.postMessage({
       channel: user,
-      text: `deneme: ${view['state']['values']['block_3']['ddd1'].value}`
+      text: `Congratulations, you started a new timer at ${Date()}. You can stop it with /stop once you're done with it.`
     });
   }
   catch (error) {

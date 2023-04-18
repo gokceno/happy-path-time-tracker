@@ -43,14 +43,19 @@ const Tasks = ({ graphqlClient, queryParams }) => {
   return { list }
 }
 
-const Timers = ({}) => {
-  const _isRunning = () => {}
+const Timers = () => {
   const _fetch = async () => {}
   const list = async () => {}
-  const start = async () => {}
+  const start = async (params) => {
+    const { projectTaskId, taskComment = '' } = params;
+    if(projectTaskId == undefined) throw new Error('projectTaskId must be set');
+  }
   const stop = async () => {}
-  const toggle = async () => {}
-  return { start, stop, toggle }
+  const log = async (params) => {
+    const { projectTaskId, startsAt = Date(), endsAt = Date(), duration = 0, taskComment = '' } = params;
+    if(projectTaskId == undefined) throw new Error('projectTaskId must be set');
+  }
+  return { start, stop, log }
 }
 
 module.exports = { Projects, Tasks, Timers };

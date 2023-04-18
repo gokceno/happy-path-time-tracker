@@ -7,11 +7,15 @@ features:
   slash_commands:
     - command: /start
       url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
-      description: launch
+      description: Start timer
       should_escape: false
-    - command: /echo
+    - command: /stop
       url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
-      description: eko
+      description: Stop timer
+      should_escape: false
+    - command: /log
+      url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
+      description: Log time
       should_escape: false
 oauth_config:
   scopes:
