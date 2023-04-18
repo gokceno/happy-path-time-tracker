@@ -85,7 +85,7 @@ app.command('/start', async ({ command, respond, ack, body, client, logger }) =>
               "text": "Select a project",
             },
             "options": await projects.list(),
-            "action_id": "select-reminder-time"
+            "action_id": "select-project-id"
           }]
         },
         ]
@@ -100,13 +100,13 @@ app.command('/start', async ({ command, respond, ack, body, client, logger }) =>
   await respond(`${command.text}`);
 });
 
-app.action('select-reminder-time', async ({ ack, body, client, logger }) => {
+app.action('select-project-id', async ({ ack, body, client, logger }) => {
   await ack();
   try {
     const tasks = Tasks({ 
       graphqlClient, 
       queryParams: {
-        projectId: body.view.state.values.deneme['select-reminder-time'].selected_option.value
+        projectId: body.view.state.values.deneme['select-project-id'].selected_option.value
       } 
     });
     const result = await client.views.update({
