@@ -96,7 +96,7 @@ app.command('/start', async ({ command, respond, ack, body, client, logger }) =>
         ]
       }
     });
-    logger.info(result);
+    logger.debug(result);
   }
   catch (error) {
     logger.error(error);
@@ -132,7 +132,7 @@ app.action('select-project-id', async ({ ack, body, client, logger }) => {
         }
       }
     });
-    logger.info(result);
+    logger.debug(result);
   }
   catch (error) {
     logger.error(error);
