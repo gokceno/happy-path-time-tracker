@@ -1,3 +1,4 @@
+const { DateTime } = require("luxon");
 const { staticSelectFormatter } = require('./Formatters.js');
 
 const Projects = ({ graphqlClient }) => {
@@ -43,12 +44,32 @@ const Tasks = ({ graphqlClient, queryParams }) => {
   return { list }
 }
 
-const Timers = () => {
+const Timers = ({ graphqlClient }) => {
   const _fetch = async () => {}
   const list = async () => {}
   const start = async (params) => {
-    const { projectTaskId, taskComment = '' } = params;
+    const { projectTaskId, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = null } = params;
     if(projectTaskId == undefined) throw new Error('projectTaskId must be set');
+    const CreateTimerMutation = `
+      mutation Create_timers_item($duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String) {
+        create_timers_item(
+          data: {duration: $duration, ends_at: $endsAt, starts_at: $startsAt, notes: $taskComment, task: {id: $projectTaskId}}
+        ) {
+          id
+          starts_at
+          ends_at
+          duration
+        }
+      }
+    `;
+    const response = await graphqlClient.mutation(CreateTimerMutation, {
+      duration:+duration,
+      taskComment,
+      startsAt,
+      endsAt,
+      projectTaskId
+    });
+    return response;
   }
   const stop = async () => {}
   const log = async (params) => {
