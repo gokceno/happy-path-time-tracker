@@ -1,20 +1,10 @@
-const { Client, fetchExchange } = require('@urql/core');
 const { title: titleElement } = require('./UI/Elements.js');
 const { Projects } = require('./Entities.js');
+const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
 
 const start = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
-    const graphqlClient = new Client({
-      url: process.env.DIRECTUS_API_URL,
-      exchanges: [fetchExchange],
-      fetchOptions: () => {
-        const token = process.env.DIRECTUS_API_TOKEN;
-        return {
-          headers: { authorization: token ? `Bearer ${token}` : '' },
-        };
-      },
-    });
     const projects = Projects({ graphqlClient });
     const result = await client.views.open({
       trigger_id: body.trigger_id,

@@ -1,20 +1,11 @@
 const { Client, fetchExchange } = require('@urql/core');
 const { DateTime } = require('luxon');
 const { Timers } = require('./Entities.js');
+const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
 
 const setTimerDetails = async ({ ack, body, view, client, logger }) => {
   await ack();
   const user = body['user']['id'];
-  const graphqlClient = new Client({
-    url: process.env.DIRECTUS_API_URL,
-    exchanges: [fetchExchange],
-    fetchOptions: () => {
-      const token = process.env.DIRECTUS_API_TOKEN;
-      return {
-        headers: { authorization: token ? `Bearer ${token}` : '' },
-      };
-    },
-  });
   const timers = Timers({ graphqlClient });
   try {
     await timers.start({

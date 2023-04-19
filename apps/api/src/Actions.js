@@ -1,21 +1,11 @@
-const { Client, fetchExchange } = require('@urql/core');
 const { staticSelect, input } = require('./UI/Blocks.js');
 const { title: titleElement } = require('./UI/Elements.js');
-const { Tasks} = require('./Entities.js');
+const { Tasks } = require('./Entities.js');
+const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
 
 const selectProjectId = async ({ ack, body, client, logger }) => {
   await ack();
   try {
-    const graphqlClient = new Client({
-      url: process.env.DIRECTUS_API_URL,
-      exchanges: [fetchExchange],
-      fetchOptions: () => {
-        const token = process.env.DIRECTUS_API_TOKEN;
-        return {
-          headers: { authorization: token ? `Bearer ${token}` : '' },
-        };
-      },
-    });
     const tasks = Tasks({ 
       graphqlClient, 
       queryParams: {
