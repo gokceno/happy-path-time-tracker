@@ -45,7 +45,31 @@ const Tasks = ({ graphqlClient, queryParams }) => {
 }
 
 const Timers = ({ graphqlClient }) => {
-  const _fetch = async () => {}
+  const _findRunningTimer = async () => {
+    const ProjectsQuery = `
+      query Timers {
+        timers(filter: {ends_at: {_null: true}}) {
+          id
+          duration
+          starts_at
+          ends_at
+          task {
+            tasks_id {
+              task_name
+            }
+          }
+        }
+      }
+    `;
+    const response = await graphqlClient.query(ProjectsQuery);
+    if(response.data.timers.length > 1) {
+      throw new Error('Multiple running timers found, manual intervention required.');
+    }
+    return { 
+      timer: response.data.timers[0], 
+      hasRunningTimer: (response.data.timers.length == 1 ? true : false)
+    };
+  }
   const list = async () => {}
   const start = async (params) => {
     const { projectTaskId, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = null } = params;
@@ -71,7 +95,31 @@ const Timers = ({ graphqlClient }) => {
     });
     return response;
   }
-  const stop = async () => {}
+  const stop = async () => {
+    const { timer, hasRunningTimer } = await _findRunningTimer();
+    if(hasRunningTimer) {
+      const StopTimerMutation = `
+        mutation Update_timers_item($timerId: ID!, $endsAt: Date!) {
+          update_timers_item(id: $timerId, data: {ends_at: $endsAt}) {
+            duration
+          }
+        }
+      `;
+      const response = await graphqlClient.mutation(StopTimerMutation, {
+        timerId: timer.id,
+        endsAt: DateTime.now().toString()
+      });
+      if(response.error == undefined) {
+        return true;
+      }
+      else {
+        throw new Error(response.error);
+        logger.error(response.error);
+        return false;
+      }
+    }
+    return false;
+  }
   const log = async (params) => {
     const { projectTaskId, startsAt = Date(), endsAt = Date(), duration = 0, taskComment = '' } = params;
     if(projectTaskId == undefined) throw new Error('projectTaskId must be set');

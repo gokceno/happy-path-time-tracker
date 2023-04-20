@@ -1,5 +1,6 @@
+const { DateTime } = require('luxon');
 const { title: titleElement } = require('./UI/Elements.js');
-const { Projects } = require('./Entities.js');
+const { Projects, Timers } = require('./Entities.js');
 const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
 
 const start = async ({ command, respond, ack, body, client, logger }) => {
@@ -36,4 +37,20 @@ const start = async ({ command, respond, ack, body, client, logger }) => {
   await respond(`${command.text}`);
 }
 
-module.exports = { start };
+const stop = async ({ command, respond, ack, body, client, logger }) => {
+  await ack();
+  try {
+    const timers = Timers({ graphqlClient });
+    if(await timers.stop() === true) {
+      await respond(`Running timer ⏳ stopped at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You logged a total time of 03:00. Good job 👍`);    
+    }
+    else {
+      await respond(`No running timer was found. You can start a new timer by typing /start. Good luck 🍀`);     
+    }
+  }
+  catch (error) {
+    logger.error(error);
+  }
+}
+
+module.exports = { start, stop };
