@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-const { staticSelectFormatter } = require('./Formatters.js');
+const { staticSelectFormatter, timeEntriesListFormatter } = require('./Formatters.js');
 
 const Projects = ({ graphqlClient }) => {
   const _fetch =  async () => {
@@ -73,7 +73,28 @@ const Timers = ({ graphqlClient }) => {
       hasRunningTimer: (response.data.timers.length == 1)
     };
   }
-  const list = async () => {}
+  const list = async () => { 
+    const TimersQuery = `
+      query Timers {
+        timers {
+          id
+          duration
+          starts_at
+          ends_at
+          task {
+            tasks_id {
+              task_name
+            }
+            projects_id {
+              project_name
+            }
+          }
+        }
+      }
+    `;
+    const response = await graphqlClient.query(TimersQuery);
+    return response.data.timers.map(item => timeEntriesListFormatter());
+  }
   const log = async (params) => {
     const { projectTaskId, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = DateTime.now().toString() } = params;
     if(projectTaskId == undefined) throw new Error('projectTaskId must be set');
@@ -136,7 +157,7 @@ const Timers = ({ graphqlClient }) => {
   const status = async () => {
     return await _findRunningTimer();
   }
-  return { start, stop, log, status }
+  return { start, stop, log, status, list }
 }
 
 module.exports = { Projects, Tasks, Timers };

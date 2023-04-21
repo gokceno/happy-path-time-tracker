@@ -1,5 +1,6 @@
 const { DateTime, Duration } = require('luxon');
 const { title: titleElement } = require('./UI/Elements.js');
+const { timeEntriesList } = require('./UI/Blocks.js');
 const { Projects, Timers } = require('./Entities.js');
 const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
 
@@ -83,4 +84,30 @@ const status = async ({ command, respond, ack, body, client, logger }) => {
   }
 }
 
-module.exports = { start, stop, status };
+// TODO: Must list users own timer only.
+const list = async ({ command, respond, ack, body, client, logger }) => {
+  await ack();
+  try {
+    const timers = Timers({ graphqlClient });
+    const result = await client.views.open({
+      trigger_id: body.trigger_id,
+      view: {
+        "type": "modal",
+        "close": {
+          "type": "plain_text",
+          "text": "Close",
+          "emoji": true
+        },
+        "title": titleElement({ title: 'Time Entries' }),
+        "blocks": timeEntriesList({ blocks: await timers.list() })
+      }
+    });
+    logger.debug(result);
+  }
+  catch (error) {
+    await respond(`🚨🚨🚨 ${error}`);
+    logger.error(error);
+  }
+}
+
+module.exports = { start, stop, status, list };

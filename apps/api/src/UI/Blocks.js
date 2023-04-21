@@ -1,4 +1,4 @@
-const { label: labelElement } = require('./Elements.js');
+const { label: labelElement, timerDisplay: timerDisplayElement, timeEntry: timeEntryElement } = require('./Elements.js');
 
 const staticSelect = (params = {}) => {
 	const { id = '', label = '', placeholder = '', options = [], actionId = '' } = params;
@@ -34,7 +34,6 @@ const input = (params = {}) => {
 	}
 }
 
-
 const toggle = (params = {})  => {
 	const { id = '', label = '', placeholder = '', actionId = '' } = params;
 	return {
@@ -58,4 +57,21 @@ const toggle = (params = {})  => {
 	}
 }
 
-module.exports = { staticSelect, input, toggle };
+const timeEntriesList = (params) => {
+	const { blocks } = params;
+  return [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: "Below is a list of your time entries for *today*.",
+      },
+    },
+    {
+      type: "divider",
+    },
+    ...blocks.flat(),
+  ];
+} 
+
+module.exports = { staticSelect, input, toggle, timeEntriesList };

@@ -23,4 +23,34 @@ const submit = (params = {}) => {
 	}
 } 
 
-module.exports = { label, title, submit };
+const timeEntry = () => {
+	return {
+		"type": "section",
+		"text": {
+			"type": "mrkdwn",
+			"text": "*Airstream Suite -- Share with another person*.\nPrivate walk-in bathroom. TV. Heating. Kitchen with microwave, basic cooking utensils, wine glasses and silverware."
+		},
+	}
+}
+
+const timerDisplay = () => {
+	return {
+		"type": "context",
+		"elements": [
+			{
+				"type": "mrkdwn",
+				"text": "*Logged time:* 00:23"
+			},
+			{
+				"type": "mrkdwn",
+				"text": "|"
+			},
+			{
+				"type": "mrkdwn",
+				"text": "*From:* 18:30 *to* 18:53"
+			}
+		]
+	};
+}
+
+module.exports = { label, title, submit, timerDisplay, timeEntry };

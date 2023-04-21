@@ -21,6 +21,10 @@ features:
       url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
       description: Check status
       should_escape: false
+    - command: /list
+      url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
+      description: List entries
+      should_escape: false
 oauth_config:
   scopes:
     user:

@@ -1,3 +1,5 @@
+const { timerDisplay: timerDisplayElement, timeEntry: timeEntryElement } = require('./UI/Elements.js');
+
 const staticSelectFormatter = ({ id, label }) => {
   return {
     "text": {
@@ -7,4 +9,12 @@ const staticSelectFormatter = ({ id, label }) => {
     "value": `${id}`
   }
 }
-module.exports = { staticSelectFormatter };
+
+const timeEntriesListFormatter = () => {
+  return [    
+    timeEntryElement(),
+    timerDisplayElement()
+  ];
+}
+
+module.exports = { staticSelectFormatter, timeEntriesListFormatter };
