@@ -2,7 +2,7 @@ const dotenv = require('dotenv');
 const { App, LogLevel } = require('@slack/bolt');
 const { setTimerDetails } = require('./src/Views.js');
 const { selectProjectId } = require('./src/Actions.js');
-const { start, stop } = require('./src/Commands.js');
+const { start, stop, status } = require('./src/Commands.js');
 
 dotenv.config();
 
@@ -15,10 +15,12 @@ const app = new App({
 });
 
 app.command('/start', start);
-app.action('action__select_project_id', selectProjectId);
-app.view('view__set_timer_details', setTimerDetails);
+app.action('start__action__select_project_id', selectProjectId);
+app.view('start__view__set_timer_details', setTimerDetails);
 
 app.command('/stop', stop);
+
+app.command('/show', status);
 
 (async () => {
   await app.start(process.env.PORT || 3000);
