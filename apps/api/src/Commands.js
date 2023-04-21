@@ -4,6 +4,7 @@ const { Projects, Timers } = require('./Entities.js');
 const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
 
 // TODO: Must start users own timer only.
+// TODO: Catch errors should notify users
 const start = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   const timers = Timers({ graphqlClient });
@@ -44,9 +45,8 @@ const start = async ({ command, respond, ack, body, client, logger }) => {
   }
 }
 
-
-// TODO: Duration must be formatted in hours
 // TODO: Must stop users own timer only.
+// TODO: Catch errors should notify users
 const stop = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
@@ -73,10 +73,11 @@ const status = async ({ command, respond, ack, body, client, logger }) => {
       await respond(`You have a running timer for ${Duration.fromObject({minutes: timer.duration}).toHuman({ unitDisplay: 'short' })}, from project ${timer.task.projects_id.project_name}. Keep going 🏁`);
     }
     else {
-      await respond(`You don't have any running timers. You can start a new timer by typing /start. Good luck 🍀`);     
+      await respond(`You don't have any running timers. You can start a new timer by typing /start. Good luck 🍀`);
     }
   }
   catch (error) {
+    await respond(`🚨🚨🚨 ${error}`);
     logger.error(error);
   }
 }

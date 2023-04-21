@@ -3,6 +3,7 @@ const { DateTime } = require('luxon');
 const { Timers } = require('./Entities.js');
 const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
 
+// TODO: Catch errors should notify users
 const setTimerDetails = async ({ ack, body, view, client, logger }) => {
   await ack();
   const user = body['user']['id'];
