@@ -57,6 +57,9 @@ const Timers = ({ graphqlClient }) => {
             tasks_id {
               task_name
             }
+            projects_id {
+              project_name
+            }
           }
         }
       }
@@ -67,12 +70,12 @@ const Timers = ({ graphqlClient }) => {
     }
     return { 
       timer: response.data.timers[0], 
-      hasRunningTimer: (response.data.timers.length == 1 ? true : false)
+      hasRunningTimer: (response.data.timers.length == 1)
     };
   }
   const list = async () => {}
-  const start = async (params) => {
-    const { projectTaskId, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = null } = params;
+  const log = async (params) => {
+    const { projectTaskId, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = DateTime.now().toString() } = params;
     if(projectTaskId == undefined) throw new Error('projectTaskId must be set');
     const CreateTimerMutation = `
       mutation Create_timers_item($duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String) {
@@ -93,7 +96,7 @@ const Timers = ({ graphqlClient }) => {
       endsAt,
       projectTaskId
     });
-    return response;
+    return response.data;
   }
   const stop = async () => {
     const { timer, hasRunningTimer } = await _findRunningTimer();
@@ -110,21 +113,30 @@ const Timers = ({ graphqlClient }) => {
         endsAt: DateTime.now().toString()
       });
       if(response.error == undefined) {
-        return true;
+        return { status: true, data: response.data.update_timers_item };
       }
       else {
         throw new Error(response.error);
         logger.error(response.error);
-        return false;
+        return { status: false };
       }
     }
-    return false;
+    return { status: false };
   }
-  const log = async (params) => {
-    const { projectTaskId, startsAt = Date(), endsAt = Date(), duration = 0, taskComment = '' } = params;
-    if(projectTaskId == undefined) throw new Error('projectTaskId must be set');
+  const start = async (params) => {
+    const { hasRunningTimer } = await _findRunningTimer();
+    if(!hasRunningTimer) {
+      params.endsAt = null
+      return await log(params);
+    }
+    else {
+      throw new Error('You have a running timer, please stop it first.');
+    }
   }
-  return { start, stop, log }
+  const status = async () => {
+    return await _findRunningTimer();
+  }
+  return { start, stop, log, status }
 }
 
 module.exports = { Projects, Tasks, Timers };
