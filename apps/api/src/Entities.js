@@ -73,14 +73,15 @@ const Timers = ({ graphqlClient }) => {
       hasRunningTimer: (response.data.timers.length == 1)
     };
   }
+  // TODO: list() Doğru zaman aralığını göstermeli 
   const list = async () => { 
     const TimersQuery = `
       query Timers {
         timers {
-          id
           duration
           starts_at
           ends_at
+          notes
           task {
             tasks_id {
               task_name
@@ -93,7 +94,7 @@ const Timers = ({ graphqlClient }) => {
       }
     `;
     const response = await graphqlClient.query(TimersQuery);
-    return response.data.timers.map(item => timeEntriesListFormatter());
+    return response.data.timers.map(item => timeEntriesListFormatter({item}));
   }
   const log = async (params) => {
     const { projectTaskId, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = DateTime.now().toString() } = params;

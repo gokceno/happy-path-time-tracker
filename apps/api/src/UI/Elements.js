@@ -1,3 +1,5 @@
+const { DateTime, Duration } = require('luxon');
+
 const label = (params = {}) => {
 	const { label = '' } = params;
 	return  {
@@ -23,23 +25,25 @@ const submit = (params = {}) => {
 	}
 } 
 
-const timeEntry = () => {
+const timeEntry = (params = {}) => {
 	return {
 		"type": "section",
 		"text": {
 			"type": "mrkdwn",
-			"text": "*Airstream Suite -- Share with another person*.\nPrivate walk-in bathroom. TV. Heating. Kitchen with microwave, basic cooking utensils, wine glasses and silverware."
+			"text": `*${params.item.task.projects_id.project_name} — ${params.item.task.tasks_id.task_name}*.\n${params.item.notes}`
 		},
 	}
 }
 
-const timerDisplay = () => {
+// TODO: Timezone'lar hatalı o nedenle saatler yanlış gözüküyor.
+const timerDisplay = (params = {}) => {
+	const timerEndTime = params.item.ends_at != undefined ? DateTime.fromISO(params.item.ends_at).toLocaleString(DateTime.TIME_SIMPLE) : '(still running)';
 	return {
 		"type": "context",
 		"elements": [
 			{
 				"type": "mrkdwn",
-				"text": "*Logged time:* 00:23"
+				"text": `*Logged time:* ${Duration.fromObject({ minutes: params.item.duration }).toHuman({ unitDisplay: 'short' })}`
 			},
 			{
 				"type": "mrkdwn",
@@ -47,7 +51,7 @@ const timerDisplay = () => {
 			},
 			{
 				"type": "mrkdwn",
-				"text": "*From:* 18:30 *to* 18:53"
+				"text": `*From:* ${DateTime.fromISO(params.item.starts_at).toLocaleString(DateTime.TIME_SIMPLE)} *to* ${timerEndTime}`
 			}
 		]
 	};

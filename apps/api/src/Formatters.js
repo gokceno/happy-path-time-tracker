@@ -10,10 +10,10 @@ const staticSelectFormatter = ({ id, label }) => {
   }
 }
 
-const timeEntriesListFormatter = () => {
+const timeEntriesListFormatter = (params) => {
   return [    
-    timeEntryElement(),
-    timerDisplayElement()
+    timeEntryElement(params),
+    timerDisplayElement(params)
   ];
 }
 
