@@ -9,7 +9,7 @@ const selectProjectId = async ({ ack, body, client, logger }) => {
     const tasks = Tasks({ 
       graphqlClient, 
       queryParams: {
-        projectId: body.view.state.values['block__project_list']['action__select_project_id'].selected_option.value
+        projectId: body.view.state.values['block__project_list']['start__action__select_project_id'].selected_option.value
       } 
     });
     const result = await client.views.update({
@@ -18,7 +18,7 @@ const selectProjectId = async ({ ack, body, client, logger }) => {
       hash: body.view.hash,
       view: {
         type: 'modal',
-        callback_id: 'view__set_timer_details',
+        callback_id: 'start__view__set_timer_details',
         title: titleElement({ title: 'Set timer details' }),
         blocks: [
           staticSelect({id: 'block__task_type', options: await tasks.list(), label: 'Task type', placeholder: 'Select a task type', actionId: 'action__task_type'}),
