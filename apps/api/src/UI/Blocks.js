@@ -1,6 +1,6 @@
 const { label: labelElement } = require('./Elements.js');
 
-const staticSelect = (params) => {
+const staticSelect = (params = {}) => {
 	const { id = '', label = '', placeholder = '', options = [], actionId = '' } = params;
 	return {
 		"type": "input",
@@ -19,7 +19,7 @@ const staticSelect = (params) => {
 	}
 }
 
-const input = (params) => {
+const input = (params = {}) => {
 	const { id = '', label = '', actionId = '', isMultiline = false, type = 'plain_text_input', isDecimalAllowed = true } = params;
 	return {
 		"type": "input",
@@ -35,7 +35,7 @@ const input = (params) => {
 }
 
 
-const toggle = (params)  => {
+const toggle = (params = {})  => {
 	const { id = '', label = '', placeholder = '', actionId = '' } = params;
 	return {
 		"type": "input",

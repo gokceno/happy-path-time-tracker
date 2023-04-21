@@ -1,5 +1,5 @@
 const { staticSelect, input } = require('./UI/Blocks.js');
-const { title: titleElement } = require('./UI/Elements.js');
+const { title: titleElement, submit: submitElement } = require('./UI/Elements.js');
 const { Tasks } = require('./Entities.js');
 const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
 
@@ -25,10 +25,7 @@ const selectProjectId = async ({ ack, body, client, logger }) => {
           input({id: 'block__task_comment', label: 'What are you working on?', actionId: 'action__task_comment', isMultiline: true}),
           input({id: 'block__duration', label: 'Duration', actionId: 'action__duration', type: 'number_input' })
         ],
-        submit: {
-          type: 'plain_text',
-          text: 'Submit'
-        }
+        submit: submitElement()
       }
     });
     logger.debug(result);

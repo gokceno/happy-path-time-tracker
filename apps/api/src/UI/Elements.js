@@ -1,4 +1,4 @@
-const label = (params) => {
+const label = (params = {}) => {
 	const { label = '' } = params;
 	return  {
 		"type": "plain_text",
@@ -7,7 +7,7 @@ const label = (params) => {
 	}
 }
 
-const title = (params) => {
+const title = (params = {}) => {
 	const { title = '' } = params;
 	return  {
 		"type": 'plain_text',
@@ -15,4 +15,12 @@ const title = (params) => {
 	}
 }
 
-module.exports = { label, title };
+const submit = (params = {}) => {
+	const { label = 'Submit' } = params;
+	return {
+		"type": 'plain_text',
+		"text": label
+	}
+} 
+
+module.exports = { label, title, submit };
