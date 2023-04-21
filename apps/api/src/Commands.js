@@ -1,4 +1,4 @@
-const { DateTime } = require('luxon');
+const { DateTime, Duration } = require('luxon');
 const { title: titleElement } = require('./UI/Elements.js');
 const { Projects, Timers } = require('./Entities.js');
 const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
@@ -53,7 +53,7 @@ const stop = async ({ command, respond, ack, body, client, logger }) => {
     const timers = Timers({ graphqlClient });
     const { status, data } = await timers.stop();
     if(status === true) {
-      await respond(`Running timer ⏳ stopped at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You logged a total time of ${data.duration}. Good job 👍`);
+      await respond(`Running timer ⏳ stopped at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You logged a total time of ${Duration.fromObject({minutes: data.duration}).toHuman({ unitDisplay: 'short' })}. Good job 👍`);
     }
     else {
       await respond('No running timer was found. You can start a new timer by typing /start. Good luck 🍀'); 
@@ -70,7 +70,7 @@ const status = async ({ command, respond, ack, body, client, logger }) => {
     const timers = Timers({ graphqlClient });
     const {timer, hasRunningTimer } = await timers.status();
     if(hasRunningTimer === true) {
-      await respond(`You have a running timer for ${timer.duration} minutes, from project ${timer.task.projects_id.project_name}. Keep going 🏁`);
+      await respond(`You have a running timer for ${Duration.fromObject({minutes: timer.duration}).toHuman({ unitDisplay: 'short' })}, from project ${timer.task.projects_id.project_name}. Keep going 🏁`);
     }
     else {
       await respond(`You don't have any running timers. You can start a new timer by typing /start. Good luck 🍀`);     
