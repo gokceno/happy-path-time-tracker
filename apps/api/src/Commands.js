@@ -4,13 +4,12 @@ const { Projects, Timers } = require('./Entities.js');
 const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
 
 // TODO: Must start users own timer only.
-// TODO: Catch errors should notify users
 const start = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
-  const timers = Timers({ graphqlClient });
-  const { hasRunningTimer } = await timers.status();
-  if(!hasRunningTimer) {
-    try {
+  try {
+    const timers = Timers({ graphqlClient });
+    const { hasRunningTimer } = await timers.status();
+    if(!hasRunningTimer) {
       const projects = Projects({ graphqlClient });
       const result = await client.views.open({
         trigger_id: body.trigger_id,
@@ -18,35 +17,35 @@ const start = async ({ command, respond, ack, body, client, logger }) => {
           type: 'modal',
           title: titleElement({ title: 'Select a project' }),
           blocks: [
-            {
-              "type": "actions",
-              "block_id": "block__project_list",
-              "elements": [{
-                "type": "static_select",
-                "placeholder": {
-                  "type": "plain_text",
-                  "text": "Select a project",
-                },
-                "options": await projects.list(),
-                "action_id": "start__action__select_project_id"
-              }]
-            },
+          {
+            "type": "actions",
+            "block_id": "block__project_list",
+            "elements": [{
+              "type": "static_select",
+              "placeholder": {
+                "type": "plain_text",
+                "text": "Select a project",
+              },
+              "options": await projects.list(),
+              "action_id": "start__action__select_project_id"
+            }]
+          },
           ]
         }
       });
       logger.debug(result);
     }
-    catch (error) {
-      logger.error(error);
+    else {
+      await respond('You have a running timer, please stop it first with /stop command. Good luck 🍀');
     }
   }
-  else {
-    await respond('You have a running timer, please stop it first with /stop command. Good luck 🍀');
+  catch (error) {
+    await respond(`🚨🚨🚨 ${error}`);
+    logger.error(error);
   }
 }
 
 // TODO: Must stop users own timer only.
-// TODO: Catch errors should notify users
 const stop = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
@@ -60,10 +59,12 @@ const stop = async ({ command, respond, ack, body, client, logger }) => {
     }
   }
   catch (error) {
+    await respond(`🚨🚨🚨 ${error}`);
     logger.error(error);
   }
 }
 
+// TODO: Must show users own timer only.
 const status = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
