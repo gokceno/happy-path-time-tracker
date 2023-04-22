@@ -56,7 +56,7 @@ const stop = async ({ command, respond, ack, body, client, logger }) => {
       await respond(`Running timer ⏳ stopped at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You logged a total time of ${Duration.fromObject({minutes: data.duration}).toHuman({ unitDisplay: 'short' })}. Good job 👍`);
     }
     else {
-      await respond('No running timer was found. You can start a new timer by typing /start. Good luck 🍀'); 
+      await respond(`You don't have any running timers. You can start a new timer by typing /start. Good luck 🍀`); 
     }
   }
   catch (error) {
