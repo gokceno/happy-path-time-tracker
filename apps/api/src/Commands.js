@@ -99,7 +99,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
           "emoji": true
         },
         "title": titleElement({ title: 'Time Entries' }),
-        "blocks": timeEntriesList({ blocks: await timers.list() })
+        "blocks": timeEntriesList({ blocks: await timers.list({ startsAt: DateTime.now().toString(), endsAt: DateTime.now().toString() }) })
       }
     });
     logger.debug(result);

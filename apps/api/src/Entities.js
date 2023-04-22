@@ -46,7 +46,7 @@ const Tasks = ({ graphqlClient, queryParams }) => {
 
 const Timers = ({ graphqlClient }) => {
   const _findRunningTimer = async () => {
-    const ProjectsQuery = `
+    const TimersQuery = `
       query Timers {
         timers(filter: {ends_at: {_null: true}}) {
           id
@@ -64,7 +64,7 @@ const Timers = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.query(ProjectsQuery);
+    const response = await graphqlClient.query(TimersQuery);
     if(response.data.timers.length > 1) {
       throw new Error('Multiple running timers found, manual intervention required.');
     }
@@ -74,14 +74,18 @@ const Timers = ({ graphqlClient }) => {
     };
   }
   // TODO: list() Doğru zaman aralığını göstermeli 
-  const list = async () => { 
+  const list = async (params) => { 
+    const { startsAt, endsAt } = params;
+    if(startsAt == undefined || endsAt == undefined) {
+      throw new Error('Required parameters not set.');
+    }
     const TimersQuery = `
-      query Timers {
-        timers {
+      query Timers($startsAt: Date!, $endsAt: Date!) {
+        timers(filter: {starts_at: {_gte: $startsAt, _lte: $endsAt}}) {
+          id
           duration
           starts_at
           ends_at
-          notes
           task {
             tasks_id {
               task_name
@@ -90,11 +94,18 @@ const Timers = ({ graphqlClient }) => {
               project_name
             }
           }
+          notes
         }
       }
     `;
-    const response = await graphqlClient.query(TimersQuery);
-    return response.data.timers.map(item => timeEntriesListFormatter({item}));
+    const response = await graphqlClient.query(TimersQuery, {
+      startsAt,
+      endsAt
+    });
+    if(response.data != undefined) {
+      return response.data.timers.map(item => timeEntriesListFormatter({item}));
+    }
+    return [];
   }
   const log = async (params) => {
     const { projectTaskId, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = DateTime.now().toString() } = params;
