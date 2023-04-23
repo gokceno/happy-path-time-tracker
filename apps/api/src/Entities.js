@@ -78,6 +78,7 @@ const Timers = ({ graphqlClient }) => {
     if(startsAt == undefined || endsAt == undefined) {
       throw new Error('Required parameters not set.');
     }
+    // FIXME: Diğer sorgularda graphql param'ları ayrı veriyoruz ama between date tipinde kabul etmediği için içine gömdük.
     const TimersQuery = `
       query Timers {
         timers(filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}}) {
