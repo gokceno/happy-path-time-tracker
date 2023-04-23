@@ -18,19 +18,19 @@ const start = async ({ command, respond, ack, body, client, logger }) => {
           type: 'modal',
           title: titleElement({ title: 'Select a project' }),
           blocks: [
-          {
-            "type": "actions",
-            "block_id": "block__project_list",
-            "elements": [{
-              "type": "static_select",
-              "placeholder": {
-                "type": "plain_text",
-                "text": "Select a project",
-              },
-              "options": await projects.list(),
-              "action_id": "start__action__select_project_id"
-            }]
-          },
+            {
+              "type": "actions",
+              "block_id": "block__project_list",
+              "elements": [{
+                "type": "static_select",
+                "placeholder": {
+                  "type": "plain_text",
+                  "text": "Select a project",
+                },
+                "options": await projects.list(),
+                "action_id": "start__action__select_project_id"
+              }]
+            },
           ]
         }
       });
@@ -99,7 +99,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
           "emoji": true
         },
         "title": titleElement({ title: 'Time Entries' }),
-        "blocks": timeEntriesList({ blocks: await timers.list({ startsAt: DateTime.now().toString(), endsAt: DateTime.now().toString() }) })
+        "blocks": timeEntriesList({ blocks: await timers.list({ startsAt: DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00"), endsAt: DateTime.now().toFormat("yyyy-mm-dd'T'23:59:59") }) })
       }
     });
     logger.debug(result);

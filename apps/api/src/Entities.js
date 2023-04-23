@@ -73,15 +73,14 @@ const Timers = ({ graphqlClient }) => {
       hasRunningTimer: (response.data.timers.length == 1)
     };
   }
-  // TODO: list() Doğru zaman aralığını göstermeli 
   const list = async (params) => { 
     const { startsAt, endsAt } = params;
     if(startsAt == undefined || endsAt == undefined) {
       throw new Error('Required parameters not set.');
     }
     const TimersQuery = `
-      query Timers($startsAt: Date!, $endsAt: Date!) {
-        timers(filter: {starts_at: {_gte: $startsAt, _lte: $endsAt}}) {
+      query Timers {
+        timers(filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}}) {
           id
           duration
           starts_at
@@ -98,10 +97,7 @@ const Timers = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.query(TimersQuery, {
-      startsAt,
-      endsAt
-    });
+    const response = await graphqlClient.query(TimersQuery);
     if(response.data != undefined) {
       return response.data.timers.map(item => timeEntriesListFormatter({item}));
     }

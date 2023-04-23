@@ -25,6 +25,7 @@ const submit = (params = {}) => {
 	}
 } 
 
+// TODO: Description boş ise kötü gözükebilir.
 const timeEntry = (params = {}) => {
 	return {
 		"type": "section",

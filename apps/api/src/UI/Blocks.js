@@ -57,6 +57,7 @@ const toggle = (params = {})  => {
 	}
 }
 
+// TODO: Time entries yoksa boş kalıyor.
 const timeEntriesList = (params) => {
 	const { blocks } = params;
   return [
