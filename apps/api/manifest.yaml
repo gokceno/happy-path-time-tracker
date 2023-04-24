@@ -39,6 +39,7 @@ oauth_config:
       - im:history
       - mpim:history
       - commands
+      - users:read
 settings:
   event_subscriptions:
     request_url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events

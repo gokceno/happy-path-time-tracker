@@ -87,6 +87,13 @@ const status = async ({ command, respond, ack, body, client, logger }) => {
 // TODO: Must list users own timer only.
 const list = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
+
+  /*
+  console.log(body['user_id']);
+  const t = await client.users.info({user: 'U053CF5Q6DB'});
+  console.log(t);
+  */
+
   try {
     const timers = Timers({ graphqlClient });
     const result = await client.views.open({

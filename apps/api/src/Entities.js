@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-const { staticSelectFormatter, timeEntriesListFormatter } = require('./Formatters.js');
+const { staticSelect: staticSelectFormatter, timeEntriesList: timeEntriesListFormatter } = require('./Formatters.js');
 
 const Projects = ({ graphqlClient }) => {
   const _fetch =  async () => {
@@ -148,7 +148,6 @@ const Timers = ({ graphqlClient }) => {
       else {
         throw new Error(response.error);
         logger.error(response.error);
-        return { status: false };
       }
     }
     return { status: false };
