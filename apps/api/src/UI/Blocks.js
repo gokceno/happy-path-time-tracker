@@ -1,4 +1,4 @@
-const { label: labelElement, timerDisplay: timerDisplayElement, timeEntry: timeEntryElement } = require('./Elements.js');
+import { label as labelElement, timerDisplay as timerDisplayElement, timeEntry as timeEntryElement } from './Elements.js';
 
 const staticSelect = (params = {}) => {
 	const { id = '', label = '', placeholder = '', options = [], actionId = '' } = params;
@@ -75,4 +75,4 @@ const timeEntriesList = (params) => {
   ];
 } 
 
-module.exports = { staticSelect, input, toggle, timeEntriesList };
+export { staticSelect, input, toggle, timeEntriesList };

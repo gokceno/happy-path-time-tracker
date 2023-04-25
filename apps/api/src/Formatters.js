@@ -1,4 +1,4 @@
-const { timerDisplay: timerDisplayElement, timeEntry: timeEntryElement } = require('./UI/Elements.js');
+import { timerDisplay as timerDisplayElement, timeEntry as timeEntryElement } from './UI/Elements.js';
 
 const staticSelect = ({ id, label }) => {
   return {
@@ -17,4 +17,4 @@ const timeEntriesList = (params) => {
   ];
 }
 
-module.exports = { staticSelect, timeEntriesList };
+export { staticSelect, timeEntriesList };

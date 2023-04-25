@@ -1,4 +1,4 @@
-const { DateTime, Duration } = require('luxon');
+import { DateTime, Duration } from 'luxon';
 
 const label = (params = {}) => {
 	const { label = '' } = params;
@@ -58,4 +58,4 @@ const timerDisplay = (params = {}) => {
 	};
 }
 
-module.exports = { label, title, submit, timerDisplay, timeEntry };
+export { label, title, submit, timerDisplay, timeEntry }

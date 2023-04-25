@@ -1,5 +1,5 @@
-const { DateTime } = require("luxon");
-const { staticSelect: staticSelectFormatter, timeEntriesList: timeEntriesListFormatter } = require('./Formatters.js');
+import { DateTime } from 'luxon';
+import { staticSelect as staticSelectFormatter, timeEntriesList as timeEntriesListFormatter } from './Formatters.js';
 
 const Projects = ({ graphqlClient }) => {
   const _fetch =  async () => {
@@ -173,4 +173,4 @@ const Timers = ({ graphqlClient }) => {
   return { start, stop, log, status, list }
 }
 
-module.exports = { Projects, Tasks, Timers };
+export { Projects, Tasks, Timers }

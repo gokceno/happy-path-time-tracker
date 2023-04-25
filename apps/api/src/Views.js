@@ -1,7 +1,7 @@
-const { Client, fetchExchange } = require('@urql/core');
-const { DateTime } = require('luxon');
-const { Timers } = require('./Entities.js');
-const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
+import { Client, fetchExchange } from '@urql/core';
+import { DateTime } from 'luxon';
+import { Timers } from './Entities.js';
+import { GraphQLClient as graphqlClient } from './GraphQLClient.js';
 
 // TODO: Catch errors should notify users
 const setTimerDetails = async ({ ack, body, view, client, logger }) => {
@@ -24,4 +24,4 @@ const setTimerDetails = async ({ ack, body, view, client, logger }) => {
   }
 }
 
-module.exports = { setTimerDetails };
+export { setTimerDetails };

@@ -1,10 +1,12 @@
-const dotenv = require('dotenv');
-const { App, LogLevel } = require('@slack/bolt');
-const { setTimerDetails } = require('./src/Views.js');
-const { selectProjectId } = require('./src/Actions.js');
-const { start, stop, status, list } = require('./src/Commands.js');
+import dotenv from 'dotenv';
+import bolt from '@slack/bolt';
+import { setTimerDetails } from'./src/Views.js';
+import { selectProjectId } from './src/Actions.js';
+import { start, stop, status, list } from './src/Commands.js';
 
 dotenv.config();
+
+const { App, LogLevel } = bolt;
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,

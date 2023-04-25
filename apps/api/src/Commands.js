@@ -1,8 +1,8 @@
-const { DateTime, Duration } = require('luxon');
-const { title: titleElement } = require('./UI/Elements.js');
-const { timeEntriesList } = require('./UI/Blocks.js');
-const { Projects, Timers } = require('./Entities.js');
-const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
+import { DateTime, Duration } from 'luxon';
+import { title as titleElement } from './UI/Elements.js';
+import { timeEntriesList } from './UI/Blocks.js';
+import { Projects, Timers } from './Entities.js';
+import { GraphQLClient as graphqlClient } from './GraphQLClient.js';
 
 const start = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
@@ -106,4 +106,4 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
   }
 }
 
-module.exports = { start, stop, status, list };
+export { start, stop, status, list };

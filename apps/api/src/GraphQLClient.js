@@ -1,5 +1,5 @@
-const dotenv = require('dotenv');
-const { Client, fetchExchange } = require('@urql/core');
+import dotenv from 'dotenv';
+import { Client, fetchExchange } from '@urql/core';
 
 dotenv.config();
 
@@ -14,4 +14,4 @@ const GraphQLClient = new Client({
   },
 });
 
-module.exports = { GraphQLClient };
+export { GraphQLClient };

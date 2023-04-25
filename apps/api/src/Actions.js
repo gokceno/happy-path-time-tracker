@@ -1,7 +1,7 @@
-const { staticSelect, input } = require('./UI/Blocks.js');
-const { title: titleElement, submit: submitElement } = require('./UI/Elements.js');
-const { Tasks } = require('./Entities.js');
-const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
+import { staticSelect, input } from './UI/Blocks.js';
+import { title as titleElement, submit as submitElement } from'./UI/Elements.js';
+import { Tasks } from './Entities.js';
+import { GraphQLClient as graphqlClient } from './GraphQLClient.js';
 
 const selectProjectId = async ({ ack, body, client, logger }) => {
   await ack();
@@ -35,4 +35,4 @@ const selectProjectId = async ({ ack, body, client, logger }) => {
   }
 }
 
-module.exports = { selectProjectId };
+export { selectProjectId };
