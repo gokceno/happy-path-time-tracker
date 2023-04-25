@@ -1,6 +1,6 @@
 import { Client, fetchExchange } from '@urql/core';
 import { DateTime } from 'luxon';
-import { Timers } from './Entities.js';
+import { Timers } from './Entities/Timers.js';
 import { GraphQLClient as graphqlClient } from './GraphQLClient.js';
 
 // TODO: Catch errors should notify users

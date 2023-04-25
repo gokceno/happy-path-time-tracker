@@ -1,7 +1,8 @@
 import { DateTime, Duration } from 'luxon';
 import { title as titleElement } from './UI/Elements.js';
 import { timeEntriesList } from './UI/Blocks.js';
-import { Projects, Timers } from './Entities.js';
+import { Timers } from './Entities/Timers.js';
+import { Projects} from './Entities/Projects.js';
 import { GraphQLClient as graphqlClient } from './GraphQLClient.js';
 
 const start = async ({ command, respond, ack, body, client, logger }) => {
