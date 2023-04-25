@@ -4,12 +4,11 @@ const { timeEntriesList } = require('./UI/Blocks.js');
 const { Projects, Timers } = require('./Entities.js');
 const { GraphQLClient: graphqlClient } = require('./GraphQLClient.js');
 
-// TODO: Must start users own timer only.
 const start = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
     const timers = Timers({ graphqlClient });
-    const { hasRunningTimer } = await timers.status();
+    const { hasRunningTimer } = await timers.status({ externalUserId: body['user_id'] });
     if(!hasRunningTimer) {
       const projects = Projects({ graphqlClient });
       const result = await client.views.open({
@@ -46,12 +45,11 @@ const start = async ({ command, respond, ack, body, client, logger }) => {
   }
 }
 
-// TODO: Must stop users own timer only.
 const stop = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
     const timers = Timers({ graphqlClient });
-    const { status, data } = await timers.stop();
+    const { status, data } = await timers.stop({ externalUserId: body['user_id'] });
     if(status === true) {
       await respond(`Running timer ⏳ stopped at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You logged a total time of ${Duration.fromObject({minutes: data.duration}).toHuman({ unitDisplay: 'short' })}. Good job 👍`);
     }
@@ -65,12 +63,11 @@ const stop = async ({ command, respond, ack, body, client, logger }) => {
   }
 }
 
-// TODO: Must show users own timer only.
 const status = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
     const timers = Timers({ graphqlClient });
-    const {timer, hasRunningTimer } = await timers.status();
+    const {timer, hasRunningTimer } = await timers.status({ externalUserId: body['user_id'] });
     if(hasRunningTimer === true) {
       await respond(`You have a running timer for ${Duration.fromObject({minutes: timer.duration}).toHuman({ unitDisplay: 'short' })}, from project ${timer.task.projects_id.project_name}. Keep going 🏁`);
     }
@@ -84,16 +81,8 @@ const status = async ({ command, respond, ack, body, client, logger }) => {
   }
 }
 
-// TODO: Must list users own timer only.
 const list = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
-
-  /*
-  console.log(body['user_id']);
-  const t = await client.users.info({user: 'U053CF5Q6DB'});
-  console.log(t);
-  */
-
   try {
     const timers = Timers({ graphqlClient });
     const result = await client.views.open({
@@ -106,7 +95,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
           "emoji": true
         },
         "title": titleElement({ title: 'Time Entries' }),
-        "blocks": timeEntriesList({ blocks: await timers.list({ startsAt: DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00"), endsAt: DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59") }) })
+        "blocks": timeEntriesList({ blocks: await timers.list({ externalUserId: body['user_id'], startsAt: DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00"), endsAt: DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59") }) })
       }
     });
     logger.debug(result);
