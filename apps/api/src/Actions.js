@@ -1,6 +1,6 @@
 import { staticSelect, input } from './UI/Blocks.js';
 import { title as titleElement, submit as submitElement } from'./UI/Elements.js';
-import { Tasks } from './Entities.js';
+import { Tasks } from './Entities/Tasks.js';
 import { GraphQLClient as graphqlClient } from './GraphQLClient.js';
 
 const selectProjectId = async ({ ack, body, client, logger }) => {
