@@ -86,20 +86,26 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
     const timers = Timers({ graphqlClient });
-    const result = await client.views.open({
-      trigger_id: body.trigger_id,
-      view: {
-        "type": "modal",
-        "close": {
-          "type": "plain_text",
-          "text": "Close",
-          "emoji": true
-        },
-        "title": titleElement({ title: 'Time Entries' }),
-        "blocks": timeEntriesList({ blocks: await timers.list({ externalUserId: body['user_id'], startsAt: DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00"), endsAt: DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59") }) })
-      }
-    });
-    logger.debug(result);
+    const timersList = await timers.list({ externalUserId: body['user_id'], startsAt: DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00"), endsAt: DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59") });
+    if(timersList.length > 0) {
+      const result = await client.views.open({
+        trigger_id: body.trigger_id,
+        view: {
+          "type": "modal",
+          "close": {
+            "type": "plain_text",
+            "text": "Close",
+            "emoji": true
+          },
+          "title": titleElement({ title: 'Time Entries' }),
+          "blocks": timeEntriesList({ blocks: timersList })
+        }
+      });
+      logger.debug(result);
+    }
+    else {
+      await respond(`You don't have any time entries ⌛️ for today. Use /start to start a new timer. Good luck 🍀`);
+    }
   }
   catch (error) {
     await respond(`🚨🚨🚨 ${error}`);
