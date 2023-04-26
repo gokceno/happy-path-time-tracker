@@ -1,5 +1,5 @@
 import { Client, fetchExchange } from '@urql/core';
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import { Timers } from './Entities/Timers.js';
 import { GraphQLClient as graphqlClient } from './GraphQLClient.js';
 
@@ -24,7 +24,7 @@ const setTimerDetails = async ({ ack, body, view, client, logger }) => {
       });
       await client.chat.postMessage({
         channel: body['user']['id'],
-        text: `Congratulations 🎉, you logged ${duration} minutes to ${DateTime.fromISO(onDate).toLocaleString(DateTime.DATE_MED)}. Keep it going 🏁`
+        text: `Congratulations 🎉, you logged ${Duration.fromObject({minutes: duration}).toHuman({ unitDisplay: 'short' })} to ${DateTime.fromISO(onDate).toLocaleString(DateTime.DATE_MED)}. Keep it going 🏁`
       });
     }
     else {
