@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { label as labelElement, timerDisplay as timerDisplayElement, timeEntry as timeEntryElement } from './Elements.js';
 
 const staticSelect = (params = {}) => {
@@ -34,6 +35,25 @@ const input = (params = {}) => {
 	}
 }
 
+const datePicker = (params = {}) => {
+	const { id = '', actionId = '', label = 'Select a date', placeholder = 'Select a date', initialDate = DateTime.now().toISODate() } = params;
+	return {
+		"type": "input",
+		"block_id": id,
+		"element": {
+			"type": "datepicker",
+			"action_id": actionId,
+			"initial_date": initialDate,
+			"placeholder": {
+				"type": "plain_text",
+				"text": placeholder,
+				"emoji": true
+			},
+		},
+		"label": labelElement({ label })
+	}
+}
+
 const toggle = (params = {})  => {
 	const { id = '', label = '', placeholder = '', actionId = '' } = params;
 	return {
@@ -57,7 +77,6 @@ const toggle = (params = {})  => {
 	}
 }
 
-// TODO: Time entries yoksa boş kalıyor.
 const timeEntriesList = (params) => {
 	const { blocks } = params;
   return [
@@ -75,4 +94,4 @@ const timeEntriesList = (params) => {
   ];
 } 
 
-export { staticSelect, input, toggle, timeEntriesList };
+export { staticSelect, input, toggle, timeEntriesList, datePicker };

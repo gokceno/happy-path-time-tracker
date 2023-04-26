@@ -5,12 +5,12 @@ import { Timers } from './Entities/Timers.js';
 import { Projects} from './Entities/Projects.js';
 import { GraphQLClient as graphqlClient } from './GraphQLClient.js';
 
-const start = async ({ command, respond, ack, body, client, logger }) => {
+const start = async ({ command, respond, ack, body, client, logger }, actionId) => {
   await ack();
   try {
     const timers = Timers({ graphqlClient });
     const { hasRunningTimer } = await timers.status({ externalUserId: body['user_id'] });
-    if(!hasRunningTimer) {
+    if(!hasRunningTimer || actionId == 'log__action__select_project_id') {
       const projects = Projects({ graphqlClient });
       const result = await client.views.open({
         trigger_id: body.trigger_id,
@@ -28,7 +28,7 @@ const start = async ({ command, respond, ack, body, client, logger }) => {
                   "text": "Select a project",
                 },
                 "options": await projects.list(),
-                "action_id": "start__action__select_project_id"
+                "action_id": actionId
               }]
             },
           ]

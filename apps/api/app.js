@@ -16,9 +16,21 @@ const app = new App({
   socketMode: false
 });
 
-app.command('/start', start);
-app.action('start__action__select_project_id', selectProjectId);
-app.view('start__view__set_timer_details', setTimerDetails);
+app.command('/start', async ({ command, respond, ack, body, client, logger }) => {
+  await start({ command, respond, ack, body, client, logger }, 'start__action__select_project_id');
+});
+app.action('start__action__select_project_id', async({ ack, body, client, logger }) => {
+  await selectProjectId({ ack, body, client, logger }, 'start__action__select_project_id', 'view__set_timer_details');
+});
+
+app.command('/log', async ({ command, respond, ack, body, client, logger }) => {
+  await start({ command, respond, ack, body, client, logger }, 'log__action__select_project_id');
+});
+app.action('log__action__select_project_id', async({ ack, body, client, logger }) => {
+  await selectProjectId({ ack, body, client, logger }, 'log__action__select_project_id', 'view__set_timer_details');
+});
+
+app.view('view__set_timer_details', setTimerDetails);
 
 app.command('/stop', stop);
 
