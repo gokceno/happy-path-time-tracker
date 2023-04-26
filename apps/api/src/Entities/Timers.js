@@ -67,7 +67,9 @@ const Timers = ({ graphqlClient }) => {
   }
   const log = async (params) => {
     const { projectTaskId, externalUserId, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = DateTime.now().toString() } = params;
-    if(projectTaskId == undefined || externalUserId == undefined) throw new Error('projectTaskId and externalUserId must be set');
+    if(projectTaskId == undefined || externalUserId == undefined) {
+      throw new Error('projectTaskId and externalUserId must be set');
+    }
     const CreateTimerMutation = `
       mutation Create_timers_item($externalUserId: String!, $duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String) {
         create_timers_item(
