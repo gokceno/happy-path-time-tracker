@@ -9,6 +9,7 @@ const setTimerDetails = async ({ ack, body, view, client, logger }) => {
   const timers = Timers({ graphqlClient });
   const duration = view['state']['values']['block__duration']['action__duration'].value;
   try {
+    let responseText;
     const commonParams = {
       externalUserId: body['user']['id'],
       projectTaskId: view['state']['values']['block__task_type']['action__task_type'].selected_option.value, 
@@ -22,18 +23,16 @@ const setTimerDetails = async ({ ack, body, view, client, logger }) => {
         startsAt: onDate + 'T00:00:00',
         endsAt: onDate + 'T00:00:00'
       });
-      await client.chat.postMessage({
-        channel: body['user']['id'],
-        text: `Congratulations 🎉, you logged ${Duration.fromObject({minutes: duration}).toHuman({ unitDisplay: 'short' })} to ${DateTime.fromISO(onDate).toLocaleString(DateTime.DATE_MED)}. Keep it going 🏁`
-      });
+      responseText = `Congratulations 🎉, you logged ${Duration.fromObject({minutes: duration}).toHuman({ unitDisplay: 'short' })} to ${DateTime.fromISO(onDate).toLocaleString(DateTime.DATE_MED)}. Keep it going 🏁`;
     }
     else {
       await timers.start(commonParams);
-      await client.chat.postMessage({
-        channel: body['user']['id'],
-        text: `Congratulations 🎉, you started a new timer ⏳ at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You can stop it with /stop once you're done with it.`
-      });
+      responseText = `Congratulations 🎉, you started a new timer ⏳ at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You can stop it with /stop once you're done with it.`;
     }
+    await client.chat.postMessage({
+      channel: body['user']['id'],
+      text: responseText
+    });
   }
   catch (error) {
     logger.error(error);
