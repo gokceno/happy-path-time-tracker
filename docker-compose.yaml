@@ -14,11 +14,6 @@ services:
     networks:
       - directus
     command: ["yarn", "start"]
-  cache:
-    container_name: cache
-    image: redis:6
-    networks:
-      - directus
   directus:
     container_name: directus
     image: directus/directus:latest
@@ -28,8 +23,6 @@ services:
       - ./public/uploads:/directus/uploads
     networks:
       - directus
-    depends_on:
-      - cache
     env_file:
       - ./apps/directus/.env
 networks:
