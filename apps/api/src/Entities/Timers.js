@@ -34,14 +34,14 @@ const Timers = ({ graphqlClient }) => {
   }
   const list = async (params) => { 
     const { startsAt, endsAt, externalUserId } = params;
-    if(startsAt == undefined || endsAt == undefined) {
+    if(startsAt == undefined || endsAt == undefined || externalUserId == undefined) {
       throw new Error('Required parameters not set.');
     }
     // FIXME: Diğer sorgularda graphql param'ları ayrı veriyoruz ama between date tipinde kabul etmediği için içine gömdük.
     const TimersQuery = `
       query Timers {
         timers(
-        filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}, user_id: {_eq: "${externalUserId}"}}
+        filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}, user_id: { id: {_eq: "${externalUserId}"}}}
         ) {
           id
           duration
@@ -95,7 +95,6 @@ const Timers = ({ graphqlClient }) => {
     }
     else {
       throw new Error(response.error);
-      logger.error(response.error);
     }
     return { status: false };
   }
@@ -118,7 +117,6 @@ const Timers = ({ graphqlClient }) => {
       }
       else {
         throw new Error(response.error);
-        logger.error(response.error);
       }
     }
     return { status: false };
