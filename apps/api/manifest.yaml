@@ -6,23 +6,23 @@ features:
     always_online: false
   slash_commands:
     - command: /start
-      url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
+      url: https://app.usehappypath.com/api/slack/events
       description: Start timer
       should_escape: false
     - command: /stop
-      url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
+      url: https://app.usehappypath.com/api/slack/events
       description: Stop timer
       should_escape: false
     - command: /log
-      url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
+      url: https://app.usehappypath.com/api/slack/events
       description: Log time
       should_escape: false
     - command: /show
-      url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
+      url: https://app.usehappypath.com/api/slack/events
       description: Check status
       should_escape: false
     - command: /list
-      url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
+      url: https://app.usehappypath.com/api/slack/events
       description: List entries
       should_escape: false
 oauth_config:
@@ -42,7 +42,7 @@ oauth_config:
       - users:read
 settings:
   event_subscriptions:
-    request_url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
+    request_url: https://app.usehappypath.com/api/slack/events
     bot_events:
       - message.channels
       - message.groups
@@ -50,7 +50,7 @@ settings:
       - message.mpim
   interactivity:
     is_enabled: true
-    request_url: https://gokcens-macbook-air.tailb7e82.ts.net/slack/events
+    request_url: https://app.usehappypath.com/api/slack/events
   org_deploy_enabled: false
   socket_mode_enabled: false
   token_rotation_enabled: false
