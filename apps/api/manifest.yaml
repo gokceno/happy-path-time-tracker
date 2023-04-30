@@ -25,6 +25,10 @@ features:
       url: https://app.usehappypath.com/api/slack/events
       description: List entries
       should_escape: false
+    - command: /sync
+      url: https://app.usehappypath.com/api/slack/events
+      description: Sync user
+      should_escape: false
 oauth_config:
   scopes:
     user:

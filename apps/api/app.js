@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import bolt from '@slack/bolt';
 import { setTimerDetails } from'./src/Views.js';
 import { selectProjectId } from './src/Actions.js';
-import { start, stop, status, list } from './src/Commands.js';
+import { start, stop, status, list, sync } from './src/Commands.js';
 
 dotenv.config();
 
@@ -37,6 +37,8 @@ app.command('/stop', stop);
 app.command('/show', status);
 
 app.command('/list', list);
+
+app.command('/sync', sync);
 
 (async () => {
   await app.start(process.env.PORT || 3000);

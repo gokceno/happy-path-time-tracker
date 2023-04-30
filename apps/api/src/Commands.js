@@ -2,7 +2,8 @@ import { DateTime, Duration } from 'luxon';
 import { title as titleElement } from './UI/Elements.js';
 import { timeEntriesList } from './UI/Blocks.js';
 import { Timers } from './Entities/Timers.js';
-import { Projects} from './Entities/Projects.js';
+import { Projects } from './Entities/Projects.js';
+import { Users } from './Entities/Users.js';
 import { GraphQLClient as graphqlClient } from './GraphQLClient.js';
 
 const start = async ({ command, respond, ack, body, client, logger }, actionId) => {
@@ -113,4 +114,37 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
   }
 }
 
-export { start, stop, status, list };
+const sync = async ({ command, respond, ack, body, client, logger }) => {
+  await ack();
+  try {
+    const result = await client.users.info({ user: body['user_id'] });
+    console.log(result);
+    if(result.ok == true) {
+      const users = Users({ graphqlClient });
+      const { status, data } = await users.sync({ 
+        externalId: result.user.id,
+        firstName: result.user.profile.first_name,
+        lastName: result.user.profile.last_name,
+        timezone: result.user.tz
+      });
+      if(status === true) {
+        await respond(`User info synced. This was a one-off operation. Good job 👍`);
+      }
+      else {
+        await respond(`Couldn't sync user info 🤦`); 
+        logger.debug(data);
+      }
+    }
+    else {
+      await respond(`Unable to get user info 🤦`); 
+      logger.debug(result);
+    }
+  }
+  catch (error) {
+    await respond(`🚨🚨🚨 ${error}`);
+    logger.error(error);
+  }
+}
+
+
+export { start, stop, status, list, sync };
