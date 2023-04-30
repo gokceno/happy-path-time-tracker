@@ -7,25 +7,29 @@ Currently it's work-in-progress (although usable), and single-tenant, so use it 
 ## Running
 
 ### Running Locally
-TBA
+A `docker-compose.yml` file is present in the repo, give `docker-compose up -d` command to start the stack locally. You can find the port numbers in the mentioned YML file.
+
+Once started use the `docker-compose logs --follow` command to see the logs.
 
 ### Running for Development
-TBA
+To run for development, you need to start the API and the Slack handler separately. Start the Directus API by:
 
-### Backend API
+1. Run  `docker-compose build directus`  to build the container.
+2. Run `docker-compose start directus` to start the API.
 
-Backend uses Directus for APIs and data handling.
+Then run `turbo start` to start the Slack handler. 
+
+To try it out locally, you'll need to update your Slack App configuration to point to your local setup, you can expose your local servers by [Ngrok](http://ngrok.com/) or [Tailscale Funnel](https://tailscale.com/blog/introducing-tailscale-funnel/).
+
+### Releasing
+Issue `yarn release` in your project folder to create a new release, it works best if you use [conventional commits](http://conventionalcommits.org/) in your commit messages.
 
 ### Migrations 
-
-Please [consult the documentation](https://docs.directus.io/self-hosted/cli.html#migrate-schema-to-a-different-environment) for migrations.
+Backend uses [Directus](http://directus.io/) for APIs and data handling. Please [consult the documentation](https://docs.directus.io/self-hosted/cli.html#migrate-schema-to-a-different-environment) for migrations.
 
 Snapshots reside under `snapshots/` directory.
 
 ## Installation
-
-### Running on DigitalOcean App Platform
-TBA
 
 ### Add to Slack
 Add to Slack by creating a new App for your workspace, unfortunately it's not available on the Slack Marketplace, yet. Steps:
