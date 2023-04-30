@@ -6,6 +6,8 @@ Currently it's work-in-progress (although usable), and single-tenant, so use it 
 
 ## Running
 
+> **Running for the first time?** Make sure you apply the migrations to [Directus](http://directus.io/) right after you start it, [follow the migrations guide here](https://docs.directus.io/self-hosted/cli.html#applying-a-snapshot).
+
 ### Running Locally
 A `docker-compose.yml` file is present in the repo, give `docker-compose up -d` command to start the stack locally. You can find the port numbers in the mentioned YML file.
 
