@@ -118,7 +118,6 @@ const sync = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
     const result = await client.users.info({ user: body['user_id'] });
-    console.log(result);
     if(result.ok == true) {
       const users = Users({ graphqlClient });
       const { status, data } = await users.sync({ 
