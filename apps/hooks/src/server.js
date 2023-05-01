@@ -72,8 +72,8 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
     res.json({ok: true, data: mutationResponse.data.update_timers_item});
   }
   else {
-    res.log.info(`Timer id: ${queryResponse.data.timers_by_id} total duration already updated.`);
-    res.json({ok: false, msg: `Timer id: ${queryResponse.data.timers_by_id} total duration already updated.`});
+    res.log.info(`Timer id: ${queryResponse.data.timers_by_id.id} total duration already updated.`);
+    res.json({ok: false, msg: `Timer id: ${queryResponse.data.timers_by_id.id} total duration already updated.`});
   }
 });
 
