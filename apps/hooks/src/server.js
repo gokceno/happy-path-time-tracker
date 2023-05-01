@@ -56,16 +56,11 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
     `;
     const queryResponse = await GraphQLClient.query(TimersQuery, { timerId: req.body.keys[0] });
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
-      if(queryResponse.data.timers_by_id.starts_at != undefined && queryResponse.data.timers_by_id.ends_at != undefined) {
-        // Calculate totalDuration
-        const startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
-        const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
-        const duration = endsAt.diff(startsAt, 'minutes');
-        const { minutes: durationInMinutes } = duration.toObject();
-      }
-      else {
-        const durationInMinutes = 0;
-      }
+      // Calculate totalDuration
+      const startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
+      const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
+      const duration = endsAt.diff(startsAt, 'minutes');
+      const { minutes: durationInMinutes } = duration.toObject();
       const totalDuration = Math.ceil(durationInMinutes + queryResponse.data.timers_by_id.duration);
       // Update totalDuration
       if(queryResponse.data.timers_by_id.total_duration !== totalDuration) {
