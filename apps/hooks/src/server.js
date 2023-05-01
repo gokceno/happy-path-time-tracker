@@ -45,6 +45,7 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
       starts_at
       ends_at
       duration
+      total_duration
     }
   }
   `;
@@ -57,17 +58,23 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
   const totalDuration = Math.ceil(durationInMinutes + queryResponse.data.timers_by_id.duration);
 
   // Update totalDuration
-  const TimersMutation = `
-  mutation ppdate_timers_item($timerId: ID!, $totalDuration: Int!) {
-    update_timers_item(id: $timerId, data: {total_duration: $totalDuration}) {
-      id
-      total_duration
+  if(queryResponse.data.timers_by_id.total_duration !== totalDuration) {
+    const TimersMutation = `
+    mutation ppdate_timers_item($timerId: ID!, $totalDuration: Int!) {
+      update_timers_item(id: $timerId, data: {total_duration: $totalDuration}) {
+        id
+        total_duration
+      }
     }
+    `;
+    const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId: req.body.keys[0], totalDuration });
   }
-  `;
-  const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId: req.body.keys[0], totalDuration });
+  else {
+    res.log.info(`Timer id: ${queryResponse.data.timers_by_id} total duration already updated.`);
+    res.json({ok: false, msg: `Timer id: ${queryResponse.data.timers_by_id} total duration already updated.`});
+  }
   // Return payload
-  res.json({ok: true, data: mutationResponse.data.update_timers_item});
+  res.json({ok: true});
 });
 
 (async () => {
