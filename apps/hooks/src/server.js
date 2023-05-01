@@ -54,7 +54,7 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
   const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
   const duration = endsAt.diff(startsAt, 'minutes');
   const { minutes: durationInMinutes } = duration.toObject();
-  const totalDuration = durationInMinutes + queryResponse.data.timers_by_id.duration;
+  const totalDuration = Math.ceil(durationInMinutes + queryResponse.data.timers_by_id.duration);
 
   // Update totalDuration
   const TimersMutation = `
