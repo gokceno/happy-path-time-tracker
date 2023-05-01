@@ -39,6 +39,7 @@ const GraphQLClient = new Client({
 
 app.post('/timers/update/total-duration', async function (req, res, next) {
   let timerId = 0;
+  console.log(req.body.keys);
   if(Array.isArray(req.body.keys) && req.body.keys.length > 0) {
     timerId = req.body.keys[0];
   }
