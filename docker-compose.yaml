@@ -25,5 +25,16 @@ services:
       - directus
     env_file:
       - ./apps/directus/.env
+  hooks:
+    container_name: hooks
+    build:
+      context: ./apps/hooks/
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    networks:
+      - directus
+    env_file:
+      - ./apps/hooks/.env
 networks:
   directus:
