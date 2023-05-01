@@ -1,5 +1,10 @@
+const dotenv =  require('dotenv');
 const express = require('express');
 const bodyParser = require('body-parser');
+const { Client, fetchExchange } = require('@urql/core');
+const { DateTime } =  require('luxon');
+
+dotenv.config();
 
 // Init Express
 const app = express();
@@ -21,12 +26,51 @@ app.use(pinoHttp);
 app.use(bodyParser.json());
 app.use(express.json());
 
-app.post('/register', async function (req, res, next) {
-  res.json({ok: true});
-  res.log.info(`All good! ${req.body.keys[0]}`);
+const GraphQLClient = new Client({
+  url: process.env.DIRECTUS_API_URL,
+  exchanges: [fetchExchange],
+  fetchOptions: () => {
+    const token = process.env.DIRECTUS_API_TOKEN;
+    return {
+      headers: { authorization: token ? `Bearer ${token}` : '' },
+    };
+  },
+});
+
+app.post('/timers/update/total-duration', async function (req, res, next) {
+  const TimersQuery = `
+  query timers_by_id($timerId: ID!) {
+    timers_by_id(id: $timerId) {
+      id
+      starts_at
+      ends_at
+      duration
+    }
+  }
+  `;
+  const queryResponse = await GraphQLClient.query(TimersQuery, { timerId: req.body.keys[0] });
+  // Calculate totalDuration
+  const startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
+  const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
+  const duration = endsAt.diff(startsAt, 'minutes');
+  const { minutes: durationInMinutes } = duration.toObject();
+  const totalDuration = durationInMinutes + queryResponse.data.timers_by_id.duration;
+
+  // Update totalDuration
+  const TimersMutation = `
+  mutation ppdate_timers_item($timerId: ID!, $totalDuration: Int!) {
+    update_timers_item(id: $timerId, data: {total_duration: $totalDuration}) {
+      id
+      total_duration
+    }
+  }
+  `;
+  const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId: req.body.keys[0], totalDuration });
+  // Return payload
+  res.json({ok: true, data: mutationResponse.data.update_timers_item});
 });
 
 (async () => {
   app.listen(4000);
-  logger.info('Running 👊');
+  logger.info('Happy Path hooks are running 👊');
 })();
