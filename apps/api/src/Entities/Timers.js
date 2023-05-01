@@ -45,6 +45,7 @@ const Timers = ({ graphqlClient }) => {
         ) {
           id
           duration
+          total_duration
           starts_at
           ends_at
           task {

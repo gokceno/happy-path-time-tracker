@@ -44,7 +44,7 @@ const timerDisplay = (params = {}) => {
 		"elements": [
 			{
 				"type": "mrkdwn",
-				"text": `*Logged time:* ${Duration.fromObject({ minutes: params.item.duration }).toHuman({ unitDisplay: 'short' })}`
+				"text": `*Logged time:* ${Duration.fromObject({ minutes: params.item.total_duration }).toHuman({ unitDisplay: 'short' })}`
 			},
 			{
 				"type": "mrkdwn",
