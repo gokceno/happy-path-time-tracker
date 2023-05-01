@@ -3,7 +3,8 @@
   "private": true,
   "license": "UNLICENSED",
   "workspaces": [
-    "apps/api"
+    "apps/api",
+    "apps/hooks"
   ],
   "packageManager": "yarn@1.22.19",
   "scripts": {
