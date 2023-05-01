@@ -38,42 +38,58 @@ const GraphQLClient = new Client({
 });
 
 app.post('/timers/update/total-duration', async function (req, res, next) {
-  const TimersQuery = `
-  query timers_by_id($timerId: ID!) {
-    timers_by_id(id: $timerId) {
-      id
-      starts_at
-      ends_at
-      duration
-      total_duration
-    }
-  }
-  `;
-  const queryResponse = await GraphQLClient.query(TimersQuery, { timerId: req.body.keys[0] });
-  // Calculate totalDuration
-  const startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
-  const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
-  const duration = endsAt.diff(startsAt, 'minutes');
-  const { minutes: durationInMinutes } = duration.toObject();
-  const totalDuration = Math.ceil(durationInMinutes + queryResponse.data.timers_by_id.duration);
-
-  // Update totalDuration
-  if(queryResponse.data.timers_by_id.total_duration !== totalDuration) {
-    const TimersMutation = `
-    mutation ppdate_timers_item($timerId: ID!, $totalDuration: Int!) {
-      update_timers_item(id: $timerId, data: {total_duration: $totalDuration}) {
-        id
-        total_duration
-      }
-    }
-    `;
-    const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId: req.body.keys[0], totalDuration });
-    // Return payload
-    res.json({ok: true, data: mutationResponse.data.update_timers_item});
+  if(!Array.isArray(req.body.keys) || req.body.keys.length < 1 || !Number. isInteger(req.body.keys[0])) {
+    res.log.debug(req.body);
+    res.status(412).send({error: 'No timerId int[] was provided.'});
   }
   else {
-    res.log.info(`Timer id: ${queryResponse.data.timers_by_id.id} total duration already updated.`);
-    res.json({ok: false, msg: `Timer id: ${queryResponse.data.timers_by_id.id} total duration already updated.`});
+    const TimersQuery = `
+      query timers_by_id($timerId: ID!) {
+        timers_by_id(id: $timerId) {
+          id
+          starts_at
+          ends_at
+          duration
+          total_duration
+        }
+      }
+    `;
+    const queryResponse = await GraphQLClient.query(TimersQuery, { timerId: req.body.keys[0] });
+    if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
+      if(queryResponse.data.timers_by_id.starts_at != undefined && queryResponse.data.timers_by_id.ends_at != undefined) {
+        // Calculate totalDuration
+        const startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
+        const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
+        const duration = endsAt.diff(startsAt, 'minutes');
+        const { minutes: durationInMinutes } = duration.toObject();
+      }
+      else {
+        const durationInMinutes = 0;
+      }
+      const totalDuration = Math.ceil(durationInMinutes + queryResponse.data.timers_by_id.duration);
+      // Update totalDuration
+      if(queryResponse.data.timers_by_id.total_duration !== totalDuration) {
+        const TimersMutation = `
+          mutation ppdate_timers_item($timerId: ID!, $totalDuration: Int!) {
+            update_timers_item(id: $timerId, data: {total_duration: $totalDuration}) {
+              id
+              total_duration
+            }
+          }
+        `;
+        const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId: req.body.keys[0], totalDuration });
+        // Return payload
+        res.json({ok: true, data: mutationResponse.data.update_timers_item});
+      }
+      else {
+        res.log.info(`Timer id: ${queryResponse.data.timers_by_id.id} total duration already updated.`);
+        res.status(403).send({error: `Timer id: ${queryResponse.data.timers_by_id.id} total duration already updated.`});
+      }
+    }
+    else {
+      res.log.info(`No timer entry was found for timerId ${req.body.keys[0]}`);
+      res.status(404).send({error: `No timer entry was found for timerId ${req.body.keys[0]}`});
+    }
   }
 });
 
