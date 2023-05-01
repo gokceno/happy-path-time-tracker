@@ -38,7 +38,7 @@ const GraphQLClient = new Client({
 });
 
 app.post('/timers/update/total-duration', async function (req, res, next) {
-  if(!Array.isArray(req.body.keys) || req.body.keys.length < 1 || !Number. isInteger(req.body.keys[0])) {
+  if(!Array.isArray(req.body.keys) || req.body.keys.length < 1) {
     res.log.debug(req.body);
     res.status(412).send({error: 'No timerId int[] was provided.'});
   }
