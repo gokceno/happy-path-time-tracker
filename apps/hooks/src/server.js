@@ -1,15 +1,8 @@
 const express = require('express');
-const { Pool } = require('pg');
-const app = express();
 const bodyParser = require('body-parser');
-const pool = new Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT,
-  ssl: process.env.PGSSL
-});
+
+// Init Express
+const app = express();
 
 // Set up logging
 const loggerOptions = {
