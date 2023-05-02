@@ -1,25 +1,35 @@
 
 # Happy Path Time Tracker
-Happy Path is a time tracker app built for Slack. It users [Directus](http://directus.io/) as its backend and [Slack's Bolt Framework](https://slack.dev/bolt-js/concepts) for the frontend. 
+Happy Path is a time tracker app built for Slack. It uses [Directus](http://directus.io/) as its backend and [Slack's Bolt Framework](https://slack.dev/bolt-js/concepts) for the frontend. 
 
 Currently it's work-in-progress (although usable), and single-tenant, so use it at your own risk and expect to receive breaking updates.
+
+## Understanding the Layout
+
+Happy Path has 3 main components:
+1. **Slack handler:** For communication with Slack; to receive and send messages, process the received commands, etc. Named "api" in the Docker Compose file.
+2. **Directus API layer:** Main component for storing all the information and exposing GraphQL APIs for communication.  It's a  [Directus](http://directus.io/) backed service.
+3. **Hooks handler:** Webhook handler for data transformation and enrichment.
 
 ## Running
 
 > **Running for the first time?** Make sure you apply the migrations to [Directus](http://directus.io/) right after you start it, [follow the migrations guide here](https://docs.directus.io/self-hosted/cli.html#applying-a-snapshot).
 
 ### Running Locally
+Start by setting up the env variables in the respective repos.
+
 A `docker-compose.yml` file is present in the repo, give `docker-compose up -d` command to start the stack locally. You can find the port numbers in the mentioned YML file.
 
 Once started use the `docker-compose logs --follow` command to see the logs.
 
 ### Running for Development
-To run for development, you need to start the API and the Slack handler separately. Start the Directus API by:
+To run for development, you need to start the API and Slack and hook handlers separately (as Directus doesn't require any development in its end). Start the Directus API by:
 
 1. Run  `docker-compose build directus`  to build the container.
-2. Run `docker-compose start directus` to start the API.
+2. Run `docker-compose create directus` to create the container.
+3. Run `docker-compose start directus` to start the API.
 
-Then run `turbo start` to start the Slack handler. 
+Then run `turbo start` to start the Slack and hooks handler.
 
 To try it out locally, you'll need to update your Slack App configuration to point to your local setup, you can expose your local servers by [Ngrok](http://ngrok.com/) or [Tailscale Funnel](https://tailscale.com/blog/introducing-tailscale-funnel/).
 
