@@ -62,8 +62,8 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
       // Calculate totalDuration
       let totalDuration = 0;
-      const startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
-      if(queryResponse.data.timers_by_id.ends_at) {
+      if(queryResponse.data.timers_by_id.starts_at && queryResponse.data.timers_by_id.ends_at) {
+        const startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
         const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
         const duration = endsAt.diff(startsAt, 'minutes');
         const { minutes: durationInMinutes } = duration.toObject();
