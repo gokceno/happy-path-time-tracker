@@ -113,7 +113,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
     logger.error(error);
   }
 }
-
+// TODO: İki kez çalıştırınca hata veriyor.
 const sync = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
