@@ -61,15 +61,21 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
     const queryResponse = await GraphQLClient.query(TimersQuery, { timerId });
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
       // Calculate totalDuration
+      let totalDuration = 0;
       const startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
-      const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
-      const duration = endsAt.diff(startsAt, 'minutes');
-      const { minutes: durationInMinutes } = duration.toObject();
-      const totalDuration = Math.ceil(durationInMinutes + queryResponse.data.timers_by_id.duration);
+      if(queryResponse.data.timers_by_id.ends_at) {
+        const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
+        const duration = endsAt.diff(startsAt, 'minutes');
+        const { minutes: durationInMinutes } = duration.toObject();
+        totalDuration = Math.ceil(durationInMinutes + queryResponse.data.timers_by_id.duration);  
+      }
+      else {
+        totalDuration = +queryResponse.data.timers_by_id.duration;
+      }
       // Update totalDuration
       if(queryResponse.data.timers_by_id.total_duration !== totalDuration) {
         const TimersMutation = `
-        mutation ppdate_timers_item($timerId: ID!, $totalDuration: Int!) {
+        mutation update_timers_item($timerId: ID!, $totalDuration: Int!) {
           update_timers_item(id: $timerId, data: {total_duration: $totalDuration}) {
             id
             total_duration
@@ -77,7 +83,7 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
         }
         `;
         const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId, totalDuration });
-      // Return payload
+        // Return payload
         res.json({ok: true, data: mutationResponse.data.update_timers_item});
       }
       else {
