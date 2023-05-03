@@ -6,6 +6,7 @@ const Tasks = ({ graphqlClient, queryParams }) => {
     const ProjectsTasksQuery = `
       {
         projects_tasks(filter: {projects_id: {id: {_eq: ${queryParams.projectId}}}}) {
+          id
           tasks_id {
             task_name
             id
@@ -18,7 +19,7 @@ const Tasks = ({ graphqlClient, queryParams }) => {
   }
   const list = async () => {
     const projectsTasks = await _fetch();
-    return projectsTasks.map(item => staticSelectFormatter({ id: item.tasks_id.id, label: item.tasks_id.task_name }));
+    return projectsTasks.map(item => staticSelectFormatter({ id: item.id, label: item.tasks_id.task_name }));
   }
   return { list }
 }
