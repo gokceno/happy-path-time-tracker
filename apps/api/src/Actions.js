@@ -53,7 +53,7 @@ const removeTimerItem = async ({ ack, body, client, logger }) => {
         startsAt: DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00"), 
         endsAt: DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59") 
       });
-      await client.views.update({
+      const result = await client.views.update({
         trigger_id: body.trigger_id,
         view_id: body.view.id,
         view: {
@@ -67,6 +67,7 @@ const removeTimerItem = async ({ ack, body, client, logger }) => {
           "blocks": timeEntriesList({ blocks: timersList })
         }
       });
+      logger.debug(result);
       await client.chat.postMessage({
         channel: body['user']['id'],
         text: `You just removed a time entry 👍`
