@@ -15,7 +15,7 @@ const selectProjectId = async ({ ack, body, client, logger }, previousActionId, 
     let blocks = [
       staticSelect({id: 'block__task_type', options: await tasks.list(), label: 'Task type', placeholder: 'Select a task type', actionId: 'action__task_type'}),
       input({id: 'block__task_comment', label: 'What are you working on?', actionId: 'action__task_comment', isMultiline: true}),
-      input({id: 'block__duration', label: 'Duration (in minutes)', actionId: 'action__duration', type: 'number_input' })
+      input({id: 'block__duration', label: 'Duration (optional, in minutes)', initialValue: '0', actionId: 'action__duration', type: 'number_input' })
     ];
     if(previousActionId == 'log__action__select_project_id') {
       blocks.push(datePicker({ id: 'block__on_date', actionId: 'action__on_date', label: 'Select a date to log' }));

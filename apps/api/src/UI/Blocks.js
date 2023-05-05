@@ -21,13 +21,14 @@ const staticSelect = (params = {}) => {
 }
 
 const input = (params = {}) => {
-	const { id = '', label = '', actionId = '', isMultiline = false, type = 'plain_text_input', isDecimalAllowed = true } = params;
+	const { id = '', label = '', actionId = '', initialValue = '', isMultiline = false, type = 'plain_text_input', isDecimalAllowed = true } = params;
 	return {
 		"type": "input",
 		"block_id": id,
 		"element": {
 			"type": type,
 			"action_id": actionId,
+			"initial_value": initialValue,
 			...(type == 'plain_text_input' && { "multiline": isMultiline }),
 			...(type == 'number_input' && { "is_decimal_allowed": isDecimalAllowed })
 		},
