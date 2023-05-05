@@ -88,7 +88,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
   try {
     let startsAt = DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00");
     let endsAt = DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59");
-    const [dateInterval = 'today'] = command.text.split(' ');
+    const [dateInterval] = (command.text ? command.text : 'today').split(' '); // Values: today|yesterday
     if(dateInterval === 'yesterday') {
       startsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'00:00:00");
       endsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'23:59:59");
@@ -112,7 +112,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
       logger.debug(result);
     }
     else {
-      await respond(`You don't have any time entries ⌛️ for today. Use /start to start a new timer. Good luck 🍀`);
+      await respond(`You don't have any time entries ⌛️ for ${dateInterval}. Use /start to start a new timer. Good luck 🍀`);
     }
   }
   catch (error) {
