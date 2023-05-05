@@ -86,8 +86,15 @@ const status = async ({ command, respond, ack, body, client, logger }) => {
 const list = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
+    let startsAt = DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00");
+    let endsAt = DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59");
+    const [dateInterval = 'today'] = command.text.split(' ');
+    if(dateInterval === 'yesterday') {
+      startsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'00:00:00");
+      endsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'23:59:59");
+    }
     const timers = Timers({ graphqlClient });
-    const timersList = await timers.list({ externalUserId: body['user_id'], startsAt: DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00"), endsAt: DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59") });
+    const timersList = await timers.list({ externalUserId: body['user_id'], startsAt, endsAt });
     if(timersList.length > 0) {
       const result = await client.views.open({
         trigger_id: body.trigger_id,
