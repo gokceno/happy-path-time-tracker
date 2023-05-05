@@ -122,6 +122,24 @@ const Timers = ({ graphqlClient }) => {
     }
     return { status: false };
   }
+  const remove = async (params) => {
+    const { timerId } = params;
+    const RemoveTimerMutation = `
+      mutation delete_timers_item($timerId: ID!) {
+        delete_timers_item(id: $timerId) {
+          id
+        }
+      }
+    `;
+    const response = await graphqlClient.mutation(RemoveTimerMutation, { timerId });
+    if(response.error == undefined) {
+      return { status: true, data: response.data.delete_timers_item };
+    }
+    else {
+      throw new Error(response.error);
+    }
+    return { status: false };
+  }
   const start = async (params) => {
     const { hasRunningTimer } = await _findRunningTimer(params);
     if(!hasRunningTimer) {
@@ -135,7 +153,7 @@ const Timers = ({ graphqlClient }) => {
   const status = async (params) => {
     return await _findRunningTimer(params);
   }
-  return { start, stop, log, status, list }
+  return { start, stop, log, status, list, remove }
 }
 
 export { Timers }

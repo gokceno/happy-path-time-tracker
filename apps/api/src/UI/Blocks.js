@@ -63,14 +63,14 @@ const toggle = (params = {})  => {
 		"element": {
 			"type": "checkboxes",
 			"options": [
-				{
-					"text": {
-						"type": "plain_text",
-						"text": placeholder,
-						"emoji": true
-					},
-					"value": "true"
-				}
+			{
+				"text": {
+					"type": "plain_text",
+					"text": placeholder,
+					"emoji": true
+				},
+				"value": "true"
+			}
 			],
 			"action_id": actionId
 		},
@@ -80,19 +80,28 @@ const toggle = (params = {})  => {
 
 const timeEntriesList = (params) => {
 	const { blocks } = params;
-  return [
-    {
-      type: "section",
-      text: {
-        type: "mrkdwn",
-        text: "Below is a list of your time entries for *today*.",
-      },
-    },
-    {
-      type: "divider",
-    },
-    ...blocks.flat(),
-  ];
+	if(blocks.length) {
+		return [
+		{
+			type: "section",
+			text: {
+				type: "mrkdwn",
+				text: "Below is a list of your time entries ⌛️",
+			},
+		},
+		{
+			type: "divider",
+		},
+		...blocks.flat(),
+		];
+	}
+	return [{
+		type: "section",
+		text: {
+			type: "mrkdwn",
+			text: "You don't have any time entries ⌛️ Feel free to close this window 👍",
+		},
+	}];
 } 
 
 export { staticSelect, input, toggle, timeEntriesList, datePicker };
