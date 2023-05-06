@@ -18,7 +18,7 @@ const selectProjectId = async ({ ack, body, client, logger }, previousActionId, 
       staticSelect({id: 'block__task_type', options: await tasks.list(), label: 'Task type', placeholder: 'Select a task type', actionId: 'action__task_type'}),
       input({id: 'block__task_comment', label: 'What are you working on?', actionId: 'action__task_comment', isMultiline: true}),
       input({id: 'block__duration', label: 'Duration (optional, in minutes)', initialValue: '0', actionId: 'action__duration', type: 'number_input' })
-    ];
+      ];
     if(previousActionId == 'log__action__select_project_id') {
       blocks.push(datePicker({ id: 'block__on_date', actionId: 'action__on_date', label: 'Select a date to log' }));
     }
@@ -80,4 +80,42 @@ const removeTimerItem = async ({ ack, body, client, logger }) => {
   }
 }
 
-export { selectProjectId, removeTimerItem };
+const editTimerItem = async ({ ack, body, client, logger }) => {
+  await ack();
+  try {
+    const timers = Timers({ graphqlClient });
+    const { data } = await timers.get({ timerId: body.actions[0].value });
+    let blocks = [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "💡 You can only edit certain fields in a time entry, feel free to recreate it, if it doesn't work for you.",
+        },
+      },
+      {
+        type: "divider",
+      },
+      input({id: 'block__task_comment', initialValue: data.notes, label: 'What are you working on?', actionId: 'action__task_comment', isMultiline: true}),
+      input({id: 'block__duration', initialValue: data.duration + '', label: 'Duration (optional, in minutes)', actionId: 'action__duration', type: 'number_input' })
+    ];
+    const result = await client.views.update({
+      trigger_id: body.trigger_id,
+      view_id: body.view.id,
+      hash: body.view.hash,
+      view: {
+        type: 'modal',
+        callback_id: 'view__edit_timer_details',
+        title: titleElement({ title: 'Edit timer details' }),
+        blocks,
+        submit: submitElement()
+      }
+    });
+    logger.debug(result);
+  }
+  catch (error) {
+    logger.error(error);
+  }
+};
+
+export { selectProjectId, removeTimerItem, editTimerItem };

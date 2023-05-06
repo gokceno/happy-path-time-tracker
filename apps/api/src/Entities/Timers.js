@@ -153,7 +153,33 @@ const Timers = ({ graphqlClient }) => {
   const status = async (params) => {
     return await _findRunningTimer(params);
   }
-  return { start, stop, log, status, list, remove }
+  const get = async(params) => {
+    const { timerId } = params;
+    if(timerId == undefined) {
+      throw new Error('timerId not set.');
+    }
+    const TimersQuery = `
+    query timers_by_id($timerId: ID!) {
+      timers_by_id(id: $timerId) {
+        id
+        starts_at
+        ends_at
+        duration
+        total_duration
+        notes
+      }
+    }
+    `;
+    const queryResponse = await graphqlClient.query(TimersQuery, { timerId });
+    if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
+      return { status: true, data: queryResponse.data.timers_by_id };
+    }
+    else {
+      throw new Error(queryResponse.error);
+    }
+    return { status: false };
+  }
+  return { start, stop, log, status, list, remove, get }
 }
 
 export { Timers }

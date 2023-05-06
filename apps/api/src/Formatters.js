@@ -17,7 +17,6 @@ const timeEntriesList = (params) => {
     {
       "type": "actions",
       "elements": [
-        /*
         {
           "type": "button",
           "text": {
@@ -28,7 +27,6 @@ const timeEntriesList = (params) => {
           "value": params.item.id,
           "action_id": "action__edit_time_entry"
         },
-        */
         {
           "type": "button",
           "text": {
