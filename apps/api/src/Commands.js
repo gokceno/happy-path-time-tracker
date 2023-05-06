@@ -20,6 +20,13 @@ const start = async ({ command, respond, ack, body, client, logger }, actionId) 
           title: titleElement({ title: 'Select a project' }),
           blocks: [
             {
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: "💡 Remaining options will be displayed in the next screen.",
+              },
+            },
+            {
               "type": "actions",
               "block_id": "block__project_list",
               "elements": [{
