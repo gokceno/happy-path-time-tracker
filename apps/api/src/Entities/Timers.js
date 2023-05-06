@@ -124,6 +124,9 @@ const Timers = ({ graphqlClient }) => {
   }
   const remove = async (params) => {
     const { timerId } = params;
+    if(timerId == undefined) {
+      throw new Error('Required parameters not set.');
+    }
     const RemoveTimerMutation = `
       mutation delete_timers_item($timerId: ID!) {
         delete_timers_item(id: $timerId) {
@@ -181,6 +184,9 @@ const Timers = ({ graphqlClient }) => {
   }
   const update = async(params) => {
     const { timerId, data } = params;
+    if(timerId == undefined) {
+      throw new Error('Required parameters not set.');
+    }
     const EditTimerMutation = `
       mutation update_timers_item($timerId: ID!, $taskComment: String, $duration: Int!) {
         update_timers_item(id: $timerId, data: {notes: $taskComment, duration: $duration}) {
