@@ -140,12 +140,12 @@ const sync = async ({ command, respond, ack, body, client, logger }) => {
         lastName: result.user.profile.last_name,
         timezone: result.user.tz
       });
+      logger.debug(data);
       if(status === true) {
         await respond(`User info synced. This was a one-off operation. Good job 👍`);
       }
       else {
         await respond(`Couldn't sync user info 🤦`); 
-        logger.debug(data);
       }
     }
     else {

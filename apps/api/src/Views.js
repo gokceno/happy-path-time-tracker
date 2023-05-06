@@ -44,13 +44,14 @@ const editTimerItem = async ({ ack, body, view, client, logger }) => {
   try {
     let responseText = `🚨 Failed to edit time entry.`;
     const timers = Timers({ graphqlClient });
-    const { status } = await timers.update({ 
+    const { status, data } = await timers.update({ 
       timerId: body.view.private_metadata,
       data: {
         taskComment: view['state']['values']['block__task_comment']['action__task_comment'].value,
         duration: view['state']['values']['block__duration']['action__duration'].value,
       }
     });
+    logger.debug(data);
     if(status == true) {
       responseText = `You just edited a time entry 👍`
     }
