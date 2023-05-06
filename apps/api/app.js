@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import bolt from '@slack/bolt';
-import { setTimerDetails } from'./src/Views.js';
-import { selectProjectId, removeTimerItem, editTimerItem } from './src/Actions.js';
+import { setTimerDetails as setTimerDetailsView, editTimerItem as editTimerItemView } from'./src/Views.js';
+import { selectProjectId, removeTimerItem as removeTimerItemAction, editTimerItem as editTimerItemAction } from './src/Actions.js';
 import { start, stop, status, list, sync } from './src/Commands.js';
 
 dotenv.config();
@@ -30,11 +30,13 @@ app.action('log__action__select_project_id', async({ ack, body, client, logger }
   await selectProjectId({ ack, body, client, logger }, 'log__action__select_project_id', 'view__set_timer_details');
 });
 
-app.action('action__remove_time_entry', removeTimerItem);
+app.action('action__remove_time_entry', removeTimerItemAction);
 
-app.action('action__edit_time_entry', editTimerItem);
+app.action('action__edit_time_entry', editTimerItemAction);
 
-app.view('view__set_timer_details', setTimerDetails);
+app.view('view__set_timer_details', setTimerDetailsView);
+
+app.view('view__edit_timer_details', editTimerItemView);
 
 app.command('/stop', stop);
 

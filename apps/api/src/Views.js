@@ -39,4 +39,29 @@ const setTimerDetails = async ({ ack, body, view, client, logger }) => {
   }
 }
 
-export { setTimerDetails };
+const editTimerItem = async ({ ack, body, view, client, logger }) => {
+  await ack();
+  try {
+    let responseText = `🚨 Failed to edit time entry.`;
+    const timers = Timers({ graphqlClient });
+    const { status } = await timers.update({ 
+      timerId: body.view.private_metadata,
+      data: {
+        taskComment: view['state']['values']['block__task_comment']['action__task_comment'].value,
+        duration: view['state']['values']['block__duration']['action__duration'].value,
+      }
+    });
+    if(status == true) {
+      responseText = `You just edited a time entry 👍`
+    }
+    await client.chat.postMessage({
+     channel: body['user']['id'],
+      text: responseText
+    });
+  }
+  catch (error) {
+    logger.error(error);
+  }
+};
+
+export { setTimerDetails, editTimerItem };

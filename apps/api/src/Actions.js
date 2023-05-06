@@ -72,7 +72,6 @@ const removeTimerItem = async ({ ack, body, client, logger }) => {
         channel: body['user']['id'],
         text: `You just removed a time entry 👍`
       });
-
     }
   }
   catch (error) {
@@ -105,6 +104,7 @@ const editTimerItem = async ({ ack, body, client, logger }) => {
       hash: body.view.hash,
       view: {
         type: 'modal',
+        private_metadata: body.actions[0].value,
         callback_id: 'view__edit_timer_details',
         title: titleElement({ title: 'Edit timer details' }),
         blocks,

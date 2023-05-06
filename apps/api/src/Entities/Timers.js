@@ -179,7 +179,29 @@ const Timers = ({ graphqlClient }) => {
     }
     return { status: false };
   }
-  return { start, stop, log, status, list, remove, get }
+  const update = async(params) => {
+    const { timerId, data } = params;
+    const EditTimerMutation = `
+      mutation update_timers_item($timerId: ID!, $taskComment: String, $duration: Int!) {
+        update_timers_item(id: $timerId, data: {notes: $taskComment, duration: $duration}) {
+          id
+        }
+      }
+    `;
+    const response = await graphqlClient.mutation(EditTimerMutation, {
+      timerId: +timerId,
+      duration: +data.duration,
+      taskComment: data.taskComment
+    });
+    if(response.error == undefined) {
+      return { status: true, data: response.data.update_timers_item };
+    }
+    else {
+      throw new Error(response.error);
+    }
+    return { status: false };
+  }
+  return { start, stop, log, status, list, remove, get, update }
 }
 
 export { Timers }
