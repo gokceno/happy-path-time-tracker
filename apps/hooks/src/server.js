@@ -62,23 +62,27 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
       // Calculate totalDuration
       let totalDuration = 0;
+      let totalDurationInHours = 0;
       if(queryResponse.data.timers_by_id.starts_at && queryResponse.data.timers_by_id.ends_at) {
         const startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
         const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
         const duration = endsAt.diff(startsAt, 'minutes');
         const { minutes: durationInMinutes } = duration.toObject();
-        totalDuration = Math.ceil(durationInMinutes + queryResponse.data.timers_by_id.duration);  
+        totalDuration = Math.ceil(durationInMinutes + queryResponse.data.timers_by_id.duration);
+        totalDurationInHours = totalDuration / 60;
       }
       else {
         totalDuration = +queryResponse.data.timers_by_id.duration;
+        totalDurationInHours = totalDuration / 60;
       }
       // Update totalDuration
       if(queryResponse.data.timers_by_id.total_duration !== totalDuration) {
         const TimersMutation = `
-        mutation update_timers_item($timerId: ID!, $totalDuration: Int!) {
-          update_timers_item(id: $timerId, data: {total_duration: $totalDuration}) {
+        mutation update_timers_item($timerId: ID!, $totalDuration: Int!, $totalDurationInHours: Float!) {
+          update_timers_item(id: $timerId, data: {total_duration: $totalDuration, total_duration_in_hours: $totalDurationInHours}) {
             id
             total_duration
+            total_duration_in_hours
           }
         }
         `;
