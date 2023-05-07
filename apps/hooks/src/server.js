@@ -62,19 +62,17 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
       // Calculate totalDuration
       let totalDuration = 0;
-      let totalDurationInHours = 0;
       if(queryResponse.data.timers_by_id.starts_at && queryResponse.data.timers_by_id.ends_at) {
         const startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
         const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
         const duration = endsAt.diff(startsAt, 'minutes');
         const { minutes: durationInMinutes } = duration.toObject();
         totalDuration = Math.ceil(durationInMinutes + queryResponse.data.timers_by_id.duration);
-        totalDurationInHours = totalDuration / 60;
       }
       else {
         totalDuration = +queryResponse.data.timers_by_id.duration;
-        totalDurationInHours = totalDuration / 60;
       }
+      const totalDurationInHours = +((totalDuration / 60).toFixed(2));
       // Update totalDuration
       if(queryResponse.data.timers_by_id.total_duration !== totalDuration) {
         const TimersMutation = `
@@ -88,7 +86,13 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
         `;
         const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId, totalDuration, totalDurationInHours });
         // Return payload
-        res.json({ok: true, data: mutationResponse.data.update_timers_item});
+        if(mutationResponse.error == undefined) {
+          res.json({ok: true, data: mutationResponse.data.update_timers_item});
+        }
+        else {
+          res.log.error(mutationResponse.error);
+          res.json({ok: false, error: mutationResponse.error}); 
+        }
       }
       else {
         res.log.info(`Timer id: ${queryResponse.data.timers_by_id.id} total duration already updated.`);
