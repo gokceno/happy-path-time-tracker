@@ -86,7 +86,7 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
           }
         }
         `;
-        const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId, totalDuration });
+        const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId, totalDuration, totalDurationInHours });
         // Return payload
         res.json({ok: true, data: mutationResponse.data.update_timers_item});
       }
