@@ -1,30 +1,9 @@
 const dotenv =  require('dotenv');
-const express = require('express');
-const bodyParser = require('body-parser');
+const YAML = require('yaml');
 const { Client, fetchExchange } = require('@urql/core');
 const { DateTime } =  require('luxon');
 
 dotenv.config();
-
-// Init Express
-const app = express();
-
-// Set up logging
-const loggerOptions = {
-  level: process.env.LOGLEVEL,
-  transport: {
-    target: 'pino-pretty',
-    options: {
-      colorize: true
-    }
-  },
-};
-const pinoHttp = require('pino-http')(loggerOptions);
-const logger = require('pino')(loggerOptions);
-
-app.use(pinoHttp);
-app.use(bodyParser.json());
-app.use(express.json());
 
 const GraphQLClient = new Client({
   url: process.env.DIRECTUS_API_URL,
@@ -37,7 +16,8 @@ const GraphQLClient = new Client({
   },
 });
 
-app.post('/timers/update/total-duration', async function (req, res, next) {
+// TODO: Billable olmayan task tipleri?
+const calculateTotalDuration = async function (req, res, next) {
   // Find timerId
   let timerId = undefined;
   if(req.body.event == 'timers.items.create') { timerId = req.body.key; }
@@ -48,15 +28,29 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
   }
   if(timerId != undefined) {
     const TimersQuery = `
-    query timers_by_id($timerId: ID!) {
-      timers_by_id(id: $timerId) {
-        id
-        starts_at
-        ends_at
-        duration
-        total_duration
+      query timers_by_id($timerId: ID!) {
+          timers_by_id(id: $timerId) {
+              id
+              starts_at
+              ends_at
+              duration
+              total_duration
+              task {
+                  tasks_id {
+                      task_name
+                      id
+                  }
+                  projects_id {
+                      id
+                      project_name
+                      metadata
+                  }
+              }
+              user_id {
+                  id
+              }
+          }
       }
-    }
     `;
     const queryResponse = await GraphQLClient.query(TimersQuery, { timerId });
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
@@ -67,24 +61,46 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
         const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
         const duration = endsAt.diff(startsAt, 'minutes');
         const { minutes: durationInMinutes } = duration.toObject();
-        totalDuration = Math.ceil(durationInMinutes + queryResponse.data.timers_by_id.duration);
+        totalDuration = Math.floor(durationInMinutes + queryResponse.data.timers_by_id.duration);
       }
       else {
         totalDuration = +queryResponse.data.timers_by_id.duration;
       }
       const totalDurationInHours = +((totalDuration / 60).toFixed(2));
-      // Update totalDuration
+      // Calculate totalCost
+      let totalCost = 0;
+      if(queryResponse.data.timers_by_id.task?.projects_id?.metadata != undefined) {
+        const metadata = YAML.parse(queryResponse.data.timers_by_id.task.projects_id.metadata)
+        const matchedGroup = metadata?.groups?.filter(group => {
+          const { members } = group[Object.keys(group)[0]];
+          return members.some(member => member === queryResponse.data.timers_by_id.user_id.id);
+        });
+        let matchedGroupName;
+        if(matchedGroup?.length > 0) {
+          matchedGroupName = Object.keys(matchedGroup[0])[0];
+          const matchedPrice = metadata?.prices?.filter(price => {
+            const { groups, valid_until: validUntil } = price[Object.keys(price)[0]];
+            return (groups.some(group => group === matchedGroupName) && DateTime.now() <= DateTime.fromISO(validUntil));
+          });
+          if(matchedPrice != undefined && matchedPrice?.length > 0) {
+            const price = matchedPrice[0]?.[Object.keys(matchedPrice[0])[0]]?.price;
+            totalCost = +((price * totalDurationInHours).toFixed(2));
+          }
+        }
+      }
+      // Update totalDuration+totalCost
       if(queryResponse.data.timers_by_id.total_duration !== totalDuration) {
         const TimersMutation = `
-        mutation update_timers_item($timerId: ID!, $totalDuration: Int!, $totalDurationInHours: Float!) {
-          update_timers_item(id: $timerId, data: {total_duration: $totalDuration, total_duration_in_hours: $totalDurationInHours}) {
+        mutation update_timers_item($timerId: ID!, $totalDuration: Int!, $totalDurationInHours: Float!, $totalCost: Float!) {
+          update_timers_item(id: $timerId, data: {total_duration: $totalDuration, total_duration_in_hours: $totalDurationInHours, total_cost: $totalCost}) {
             id
             total_duration
             total_duration_in_hours
+            total_cost
           }
         }
         `;
-        const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId, totalDuration, totalDurationInHours });
+        const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId, totalDuration, totalDurationInHours, totalCost });
         // Return payload
         if(mutationResponse.error == undefined) {
           res.json({ok: true, data: mutationResponse.data.update_timers_item});
@@ -108,9 +124,6 @@ app.post('/timers/update/total-duration', async function (req, res, next) {
     res.log.debug(req.body);
     res.status(412).send({error: `timerId is not present. Exiting.`});
   }
-});
+}
 
-(async () => {
-  app.listen(4000);
-  logger.info('Happy Path hooks are running 👊');
-})();
+module.exports = { calculateTotalDuration }
