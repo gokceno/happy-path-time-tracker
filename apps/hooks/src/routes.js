@@ -17,6 +17,9 @@ const GraphQLClient = new Client({
 });
 
 // TODO: Billable olmayan task tipleri?
+// TODO: Bozuk YAML'lar tüm process'i patlatıyor
+// TODO: import statements
+// TODO: İki farklı hook'a bölmek?
 const calculateTotalDuration = async function (req, res, next) {
   // Find timerId
   let timerId = undefined;
