@@ -71,9 +71,15 @@ const calculateTotalDuration = async function (req, res, next) {
       }
       const totalDurationInHours = +((totalDuration / 60).toFixed(2));
       // Calculate totalCost
-      let totalCost = 0;
+      let totalCost = 0, defaultMetadataString = '';
       if(queryResponse.data.timers_by_id.task?.projects_id?.metadata != undefined) {
-        const metadata = YAML.parse(queryResponse.data.timers_by_id.task.projects_id.metadata)
+        const {status: metadataStatus, data: defaultMetadata } = await fetchDefaultMetadata();
+        if(metadataStatus === true) {
+          defaultMetadataString += defaultMetadata.trim();
+          defaultMetadataString += '\n';
+        }
+        defaultMetadataString += queryResponse.data.timers_by_id.task.projects_id.metadata;
+        const metadata = YAML.parse(defaultMetadataString)
         const matchedGroup = metadata?.groups?.filter(group => {
           const { members } = group[Object.keys(group)[0]];
           return members.some(member => member === queryResponse.data.timers_by_id.user_id.id);
@@ -127,6 +133,24 @@ const calculateTotalDuration = async function (req, res, next) {
     res.log.debug(req.body);
     res.status(412).send({error: `timerId is not present. Exiting.`});
   }
+}
+
+const fetchDefaultMetadata = async function() {
+  const MetadataQuery = `
+    query metadata {
+      metadata {
+        metadata
+      }
+    }
+  `;
+  const queryResponse = await GraphQLClient.query(MetadataQuery);
+  if(queryResponse?.data?.metadata != undefined) {
+    return {status: true, data: queryResponse.data.metadata.metadata }
+  }
+  else {
+    throw new Error(queryResponse.error);
+  }
+  return { status: false }
 }
 
 module.exports = { calculateTotalDuration }
