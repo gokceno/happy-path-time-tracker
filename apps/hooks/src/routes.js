@@ -17,7 +17,6 @@ const GraphQLClient = new Client({
 });
 
 // TODO: Billable olmayan task tipleri?
-// TODO: Bozuk YAML'lar tüm process'i patlatıyor
 // TODO: import statements
 // TODO: İki farklı hook'a bölmek?
 const calculateTotalDuration = async function (req, res, next) {
@@ -79,22 +78,27 @@ const calculateTotalDuration = async function (req, res, next) {
           defaultMetadataString += '\n';
         }
         defaultMetadataString += queryResponse.data.timers_by_id.task.projects_id.metadata;
-        const metadata = YAML.parse(defaultMetadataString)
-        const matchedGroup = metadata?.groups?.filter(group => {
-          const { members } = group[Object.keys(group)[0]];
-          return members.some(member => member === queryResponse.data.timers_by_id.user_id.id);
-        });
-        let matchedGroupName;
-        if(matchedGroup?.length > 0) {
-          matchedGroupName = Object.keys(matchedGroup[0])[0];
-          const matchedPrice = metadata?.prices?.filter(price => {
-            const { groups, valid_until: validUntil } = price[Object.keys(price)[0]];
-            return (groups.some(group => group === matchedGroupName) && DateTime.now() <= DateTime.fromISO(validUntil));
+        try {
+          const metadata = YAML.parse(defaultMetadataString);
+          const matchedGroup = metadata?.groups?.filter(group => {
+            const { members } = group[Object.keys(group)[0]];
+            return members.some(member => member === queryResponse.data.timers_by_id.user_id.id);
           });
-          if(matchedPrice != undefined && matchedPrice?.length > 0) {
-            const price = matchedPrice[0]?.[Object.keys(matchedPrice[0])[0]]?.price;
-            totalCost = +((price * totalDurationInHours).toFixed(2));
+          let matchedGroupName;
+          if(matchedGroup?.length > 0) {
+            matchedGroupName = Object.keys(matchedGroup[0])[0];
+            const matchedPrice = metadata?.prices?.filter(price => {
+              const { groups, valid_until: validUntil } = price;
+              return (groups.some(group => group === matchedGroupName) && DateTime.now() <= DateTime.fromISO(validUntil));
+            });
+            if(matchedPrice != undefined && matchedPrice?.length > 0) {
+              const price = matchedPrice[0]?.price;
+              totalCost = +((price * totalDurationInHours).toFixed(2));
+            }
           }
+        }
+        catch(e) {
+          res.log.error(e);
         }
       }
       // Update totalDuration+totalCost
