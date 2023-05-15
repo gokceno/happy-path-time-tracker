@@ -67,4 +67,84 @@ Your new Slack App should be ready to go now!
 
 You can call the slash commands (`/start`, `/list`, etc) from anywhere, but the responses will be sent by the app via private message, so it's better to initiate the conversation from there. To do that, start a direct chat with your app.
 
+## Using the App
+
+### Adding Billable's
+
+Platfrom is able to calculate the billable for each time entry, this is done through configuring the "metadata". There are various metadata in the platform, namely;
+
+- The default metadata, which is effective platfrom-wide
+- Project-specific metadata
+
+During processing these two are concatonated allowing to use YAML anchors. A common use case is configuring the user groups in the default metadata (as it's a static) and using them within the project-specific metadata through YAML anchors.
+
+> 💡 Keep in mind that billable's are always calculated through project metadata, the default metadata is supplied for convenience.
+
+**A typical project metadata**
+
+Below you'll see the entire project metadata which you can configure to produce the billables.
+
+Basically, you define the user groups first, define the prices and add user groups to the prices along with a validity date.
+
+```yaml
+groups:
+  - sr. developers:
+      members:
+        - U02H92T46R4
+  - jr. developers:
+      members:
+        - U02H1476563
+prices:
+  - price: 200
+    valid_until: 2025-01-01
+    groups:
+      - jr. developers
+      - sr. developers
+```
+However, in real-life we can divide this data into two for easy-of-use:
+
+**Default metadata:**
+
+```yaml
+default_groups: &default_groups
+  - sr. developers:
+      members:
+        - U03CP3X0Y
+  - project managers:
+      members:
+        - U039LBY4K
+        - UKG5RT3KQ
+default_prices: &default_prices
+  - price: 100
+    valid_until: 2025-01-01
+    groups:
+      - sr. developers
+      - project managers
+  - price: 200
+    valid_until: 2025-01-01
+    groups:
+      - jr. developers
+      - jr. qa
+```
+
+and reference these values with anchors. For instance a default project would look like:
+
+```yaml
+groups: *default_groups
+prices: *default_prices
+```
+or we can keep the groups and override the prices:
+
+```yaml
+groups: *default_groups
+prices:
+  - price: 0
+    valid_until: 2025-01-01
+    groups:
+      - sr. developers
+      - project managers
+      - jr. developers
+      - jr. qa
+```
+
 > Written with [StackEdit](https://stackedit.io/).
