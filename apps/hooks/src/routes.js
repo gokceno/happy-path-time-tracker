@@ -31,27 +31,27 @@ const calculateTotalDuration = async function (req, res, next) {
   if(timerId != undefined) {
     const TimersQuery = `
       query timers_by_id($timerId: ID!) {
-          timers_by_id(id: $timerId) {
+        timers_by_id(id: $timerId) {
+          id
+          starts_at
+          ends_at
+          duration
+          total_duration
+          task {
+            tasks_id {
+              task_name
               id
-              starts_at
-              ends_at
-              duration
-              total_duration
-              task {
-                  tasks_id {
-                      task_name
-                      id
-                  }
-                  projects_id {
-                      id
-                      project_name
-                      metadata
-                  }
-              }
-              user_id {
-                  id
-              }
+            }
+            projects_id {
+              id
+              project_name
+              metadata
+            }
           }
+          user_id {
+            id
+          }
+        }
       }
     `;
     const queryResponse = await GraphQLClient.query(TimersQuery, { timerId });
