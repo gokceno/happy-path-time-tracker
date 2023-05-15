@@ -16,16 +16,10 @@ const app = new App({
   socketMode: false
 });
 
-app.command('/start', async ({ command, respond, ack, body, client, logger }) => {
-  await start({ command, respond, ack, body, client, logger }, 'start__action__select_project_id');
-});
 app.action('start__action__select_project_id', async({ ack, body, client, logger }) => {
   await selectProjectId({ ack, body, client, logger }, 'start__action__select_project_id', 'view__set_timer_details');
 });
 
-app.command('/log', async ({ command, respond, ack, body, client, logger }) => {
-  await start({ command, respond, ack, body, client, logger }, 'log__action__select_project_id');
-});
 app.action('log__action__select_project_id', async({ ack, body, client, logger }) => {
   await selectProjectId({ ack, body, client, logger }, 'log__action__select_project_id', 'view__set_timer_details');
 });
@@ -38,13 +32,52 @@ app.view('view__set_timer_details', setTimerDetailsView);
 
 app.view('view__edit_timer_details', editTimerItemView);
 
+/*
 app.command('/stop', stop);
-
 app.command('/show', status);
-
 app.command('/list', list);
-
 app.command('/sync', sync);
+app.command('/start', async ({ command, respond, ack, body, client, logger }) => {
+  await start({ command, respond, ack, body, client, logger }, 'start__action__select_project_id');
+});
+app.command('/log', async ({ command, respond, ack, body, client, logger }) => {
+  await start({ command, respond, ack, body, client, logger }, 'log__action__select_project_id');
+});
+*/
+
+
+app.command('/hp', async({ command, respond, ack, body, client, logger }) => {
+  const [commandName] = (command.text ? command.text : '').split(' '); // Values: start|log|stop|show|list|sync
+  if (commandName != undefined) {
+    switch(commandName) {
+      case 'stop':
+        stop({ command, respond, ack, body, client, logger });
+        break;
+      case 'show':
+        status({ command, respond, ack, body, client, logger });
+        break;
+      case 'list':
+        list({ command, respond, ack, body, client, logger });
+        break;
+      case 'sync':
+        sync({ command, respond, ack, body, client, logger });
+        break;
+      case 'start':
+        await start({ command, respond, ack, body, client, logger }, 'start__action__select_project_id');
+        break;
+      case 'log':
+        await start({ command, respond, ack, body, client, logger }, 'log__action__select_project_id');
+        break;
+      default:
+        await ack();
+        await respond(`🚨🚨🚨 Command not found. Available commands are /start, /log, /stop, /show, /list, /sync. Good luck 🍀`);
+    }
+  }
+  else {
+    await ack();
+    await respond(`Please type a valid command. Available commands are /start, /log, /stop, /show, /list, /sync. Good luck 🍀`);
+  }
+});
 
 (async () => {
   await app.start(process.env.PORT || 3000);
