@@ -32,20 +32,6 @@ app.view('view__set_timer_details', setTimerDetailsView);
 
 app.view('view__edit_timer_details', editTimerItemView);
 
-/*
-app.command('/stop', stop);
-app.command('/show', status);
-app.command('/list', list);
-app.command('/sync', sync);
-app.command('/start', async ({ command, respond, ack, body, client, logger }) => {
-  await start({ command, respond, ack, body, client, logger }, 'start__action__select_project_id');
-});
-app.command('/log', async ({ command, respond, ack, body, client, logger }) => {
-  await start({ command, respond, ack, body, client, logger }, 'log__action__select_project_id');
-});
-*/
-
-
 app.command('/hp', async({ command, respond, ack, body, client, logger }) => {
   const [commandName] = (command.text ? command.text : '').split(' '); // Values: start|log|stop|show|list|sync
   if (commandName != undefined) {
