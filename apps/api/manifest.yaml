@@ -5,7 +5,7 @@ features:
     display_name: Happy Path Time Tracker
     always_online: false
   slash_commands:
-    - command: /hp
+    - command: /happy
       url: https://app.usehappypath.com/api/slack/events
       description: Happy Path commands → start, stop, log, show, list, sync
       should_escape: false

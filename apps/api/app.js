@@ -32,7 +32,7 @@ app.view('view__set_timer_details', setTimerDetailsView);
 
 app.view('view__edit_timer_details', editTimerItemView);
 
-app.command('/hp', async({ command, respond, ack, body, client, logger }) => {
+app.command('/happy', async({ command, respond, ack, body, client, logger }) => {
   const [commandName] = (command.text ? command.text : '').split(' '); // Values: start|log|stop|show|list|sync
   if (commandName != undefined) {
     switch(commandName) {
