@@ -95,7 +95,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
   try {
     let startsAt = DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00");
     let endsAt = DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59");
-    const [commandName, dateInterval] = (command.text ? command.text : 'today').split(' '); // Values: today|yesterday
+    const [commandName, dateInterval] = (command.text ? command.text : 'list today').split(' '); // Values: today|yesterday
     if(dateInterval === 'yesterday') {
       startsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'00:00:00");
       endsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'23:59:59");
