@@ -45,7 +45,7 @@ const start = async ({ command, respond, ack, body, client, logger }, actionId) 
       logger.debug(result);
     }
     else {
-      await respond('You have a running timer, please stop it first with /stop command. Good luck 🍀');
+      await respond('You have a running timer, please stop it first with /happy stop command. Good luck 🍀');
     }
   }
   catch (error) {
@@ -63,7 +63,7 @@ const stop = async ({ command, respond, ack, body, client, logger }) => {
       await respond(`Running timer ⏳ stopped at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You logged a total time of ${Duration.fromObject({minutes: data.duration}).toHuman({ unitDisplay: 'short' })}. Good job 👍`);
     }
     else {
-      await respond(`You don't have any running timers. You can start a new timer by typing /start. Good luck 🍀`); 
+      await respond(`You don't have any running timers. You can start a new timer by typing /happy start. Good luck 🍀`); 
     }
   }
   catch (error) {
@@ -81,7 +81,7 @@ const status = async ({ command, respond, ack, body, client, logger }) => {
       await respond(`You have a running timer for ${Duration.fromObject({minutes: timer.duration}).toHuman({ unitDisplay: 'short' })}, from project ${timer.task.projects_id.project_name}. Keep going 🏁`);
     }
     else {
-      await respond(`You don't have any running timers. You can start a new timer by typing /start. Good luck 🍀`);
+      await respond(`You don't have any running timers. You can start a new timer by typing /happy start. Good luck 🍀`);
     }
   }
   catch (error) {
@@ -119,7 +119,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
       logger.debug(result);
     }
     else {
-      await respond(`You don't have any time entries ⌛️ for ${dateInterval}. Use /start to start a new timer. Good luck 🍀`);
+      await respond(`You don't have any time entries ⌛️ for ${dateInterval}. Use /happy start to start a new timer. Good luck 🍀`);
     }
   }
   catch (error) {
