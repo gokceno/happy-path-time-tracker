@@ -93,7 +93,7 @@ const calculateTotalDuration = async function (req, res, next) {
               return (groups.some(group => group === matchedGroupName) && DateTime.now() <= DateTime.fromISO(validUntil));
             });
             if(matchedPrice != undefined && matchedPrice?.length > 0) {
-              const priceModifiersToApply = ['overtime',  'noLessThanOneHour'];
+              const priceModifiersToApply = ['weekends',  'noLessThanOneHour'];
               const availablePriceModifiersToApply = Object.entries(priceModifiers)
                 .filter(([methodName, method]) => typeof method === 'function' && priceModifiersToApply.includes(methodName))
                 .map(([methodName, method]) => method);
