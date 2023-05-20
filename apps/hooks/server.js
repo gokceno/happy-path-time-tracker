@@ -1,10 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { calculateTotalDuration } = require('./src/routes.js');
-
 const fs = require('fs');
 const YAML = require('yaml');
-
 // Init Express
 const app = express();
 

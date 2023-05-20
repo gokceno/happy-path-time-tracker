@@ -2,6 +2,7 @@ const dotenv =  require('dotenv');
 const YAML = require('yaml');
 const { Client, fetchExchange } = require('@urql/core');
 const { DateTime } =  require('luxon');
+const priceModifiers = require('./Price/Modifiers.js');
 
 dotenv.config();
 
@@ -57,10 +58,10 @@ const calculateTotalDuration = async function (req, res, next) {
     const queryResponse = await GraphQLClient.query(TimersQuery, { timerId });
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
       // Calculate totalDuration
-      let totalDuration = 0;
+      let totalDuration = 0, startsAt, endsAt;
       if(queryResponse.data.timers_by_id.starts_at && queryResponse.data.timers_by_id.ends_at) {
-        const startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
-        const endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
+        startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
+        endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
         const duration = endsAt.diff(startsAt, 'minutes');
         const { minutes: durationInMinutes } = duration.toObject();
         totalDuration = Math.floor(durationInMinutes + queryResponse.data.timers_by_id.duration);
@@ -92,7 +93,11 @@ const calculateTotalDuration = async function (req, res, next) {
               return (groups.some(group => group === matchedGroupName) && DateTime.now() <= DateTime.fromISO(validUntil));
             });
             if(matchedPrice != undefined && matchedPrice?.length > 0) {
-              const price = matchedPrice[0]?.price;
+              const priceModifiersToApply = ['overtime',  'noLessThanOneHour'];
+              const availablePriceModifiersToApply = Object.entries(priceModifiers)
+                .filter(([methodName, method]) => typeof method === 'function' && priceModifiersToApply.includes(methodName))
+                .map(([methodName, method]) => method);
+              const price = availablePriceModifiersToApply.reduce((acc, func) => func(acc, totalDuration, startsAt, endsAt), matchedPrice[0]?.price);
               totalCost = +((price * totalDurationInHours).toFixed(2));
             }
           }
