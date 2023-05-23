@@ -20,14 +20,13 @@ const GraphQLClient = new Client({
 // TODO: Billable olmayan task tipleri?
 // TODO: import statements
 // TODO: İki farklı hook'a bölmek?
-// TODO: metadata webhook'dan gelebilir
 // FIXME: arada #totalCost not null hatası veriyor
 
 const calculateTotalDuration = async (req, res, next) => {
   // Find timerId
   let timerId = undefined;
-  if(req.body.event == 'timers.items.create') { timerId = req.body.key; }
-  else if(req.body.event == 'timers.items.update') { timerId = req.body.keys[0]; }
+  if(req.body.data.event == 'timers.items.create') { timerId = req.body.data.key; }
+  else if(req.body.data.event == 'timers.items.update') { timerId = req.body.data.keys[0]; }
   else {
     res.log.debug(req.body);
     res.status(403).send({error: `Requested hook type doesn't exist. Exiting.`});
@@ -78,12 +77,9 @@ const calculateTotalDuration = async (req, res, next) => {
       const totalDurationInHours = +((totalDuration / 60).toFixed(2));
       // Calculate totalCost
       let totalCost = 0, defaultMetadataString = '';
-      if(queryResponse.data.timers_by_id.task?.projects_id?.metadata != undefined) {
-        const {status: metadataStatus, data: defaultMetadata } = await fetchDefaultMetadata();
-        if(metadataStatus === true) {
-          defaultMetadataString += defaultMetadata.trim();
-          defaultMetadataString += '\n';
-        }
+      if(queryResponse.data.timers_by_id.task?.projects_id?.metadata != undefined && req.body?.metadata[0]?.metadata != undefined) {
+        defaultMetadataString += req.body.metadata[0].metadata.trim();
+        defaultMetadataString += '\n';
         defaultMetadataString += queryResponse.data.timers_by_id.task.projects_id.metadata;
         try {
           const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, userId: queryResponse.data.timers_by_id.user_id.id, startsAt, endsAt: DateTime.now()});
@@ -99,14 +95,14 @@ const calculateTotalDuration = async (req, res, next) => {
               res.json({ok: false, error: mutationResponse.error}); 
             }
           }
+          else {
+            res.log.info(`Timer id: ${queryResponse.data.timers_by_id.id} total duration already updated.`);
+            res.status(403).send({error: `Timer id: ${queryResponse.data.timers_by_id.id} total duration already updated.`});
+          }
         }
         catch(e) {
           res.log.error(e);
         }
-      }
-      else {
-        res.log.info(`Timer id: ${queryResponse.data.timers_by_id.id} total duration already updated.`);
-        res.status(403).send({error: `Timer id: ${queryResponse.data.timers_by_id.id} total duration already updated.`});
       }
     }
     else {
@@ -186,25 +182,6 @@ const calculateTotalCost = (params) => {
     }
   }
   return totalCost;
-}
-
-// TODO: Metadata entity'si içine taşınmalı
-const fetchDefaultMetadata = async () => {
-  const MetadataQuery = `
-    query metadata {
-      metadata {
-        metadata
-      }
-    }
-  `;
-  const queryResponse = await GraphQLClient.query(MetadataQuery);
-  if(queryResponse?.data?.metadata != undefined) {
-    return {status: true, data: queryResponse.data.metadata.metadata }
-  }
-  else {
-    throw new Error(queryResponse.error);
-  }
-  return { status: false }
 }
 
 // TODO: Project entity'si içine taşınmalı
