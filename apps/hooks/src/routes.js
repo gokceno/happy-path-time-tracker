@@ -88,16 +88,6 @@ const calculateTotalDuration = async (req, res, next) => {
           const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, userId: queryResponse.data.timers_by_id.user_id.id, startsAt, endsAt: DateTime.now()});
           // Update totalDuration+totalCost
           if(queryResponse.data.timers_by_id.total_duration !== totalDuration) {
-            const TimersMutation = `
-            mutation update_timers_item($timerId: ID!, $totalDuration: Int!, $totalDurationInHours: Float!, $totalCost: Float!) {
-              update_timers_item(id: $timerId, data: {total_duration: $totalDuration, total_duration_in_hours: $totalDurationInHours, total_cost: $totalCost}) {
-                id
-                total_duration
-                total_duration_in_hours
-                total_cost
-              }
-            }
-            `;
             const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId, totalDuration, totalDurationInHours, totalCost });
             // Return payload
             if(mutationResponse.error == undefined) {
@@ -177,7 +167,7 @@ const calculateTotalCost = (params) => {
     const { members } = group[Object.keys(group)[0]];
     return members.some(member => member === userId);
   });
-  let matchedGroupName, totalCost;
+  let matchedGroupName, totalCost = 0;
   if(matchedGroup?.length > 0) {
     matchedGroupName = Object.keys(matchedGroup[0])[0];
     const matchedPrice = metadata?.prices?.filter(price => {
