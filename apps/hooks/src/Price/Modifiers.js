@@ -15,10 +15,12 @@ const noLessThanOneHour = (price, totalDuration, startsAt, endsAt)  => {
 const overtime = (price, totalDuration, startsAt, endsAt) => {
 	const weekdays = [1, 2, 3, 4, 5];
 	const overtimeHours = [19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7];
-	if(!(startsAt.toFormat('HH:mm:ss') == '00:00:00' && endsAt.toFormat('HH:mm:ss') == '00:00:00')) {
-		if(weekdays.includes(startsAt.weekday) && weekdays.includes(endsAt.weekday)) {
-			if(overtimeHours.includes(startsAt.hour) || overtimeHours.includes(endsAt.hour)) {
-				return price * 1.5;
+	if(startsAt !== undefined && endsAt !== undefined) {
+		if(!(startsAt.toFormat('HH:mm:ss') == '00:00:00' && endsAt.toFormat('HH:mm:ss') == '00:00:00')) {
+			if(weekdays.includes(startsAt.weekday) && weekdays.includes(endsAt.weekday)) {
+				if(overtimeHours.includes(startsAt.hour) || overtimeHours.includes(endsAt.hour)) {
+					return price * 1.5;
+				}
 			}
 		}
 	}
