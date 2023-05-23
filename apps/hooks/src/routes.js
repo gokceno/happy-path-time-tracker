@@ -21,6 +21,7 @@ const GraphQLClient = new Client({
 // TODO: import statements
 // TODO: İki farklı hook'a bölmek?
 // TODO: metadata webhook'dan gelebilir
+// FIXME: arada #totalCost not null hatası veriyor
 
 const calculateTotalDuration = async (req, res, next) => {
   // Find timerId
