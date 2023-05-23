@@ -10,6 +10,7 @@ const Timers = ({ graphqlClient }) => {
         timers(filter: {ends_at: {_null: true}, user_id: {id: {_eq: $externalUserId}}}) {
           id
           duration
+          total_duration
           starts_at
           ends_at
           task {
@@ -106,6 +107,7 @@ const Timers = ({ graphqlClient }) => {
         mutation Update_timers_item($timerId: ID!, $endsAt: Date!) {
           update_timers_item(id: $timerId, data: {ends_at: $endsAt}) {
             duration
+            total_duration
           }
         }
       `;
