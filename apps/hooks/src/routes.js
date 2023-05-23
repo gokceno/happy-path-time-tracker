@@ -87,7 +87,7 @@ const calculateTotalDuration = async (req, res, next) => {
         try {
           const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, userId: queryResponse.data.timers_by_id.user_id.id, startsAt, endsAt: DateTime.now()});
           // Update totalDuration+totalCost
-          if(queryResponse.data.timers_by_id.total_duration !== totalDuration) {
+          if(queryResponse.data.timers_by_id.total_duration !== totalDuration && totalCost != undefined) {
             const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId, totalDuration, totalDurationInHours, totalCost });
             // Return payload
             if(mutationResponse.error == undefined) {
@@ -119,6 +119,7 @@ const calculateTotalDuration = async (req, res, next) => {
   }
 }
 
+// TODO: sadece güncelleme varsa edit'lemeli
 const calculateTotalDurationRegularly = async (req, res, next) => {
   if(req.body.metadata != undefined && req.body.data != undefined && typeof req.body.data == 'object') {
     req.body.data.forEach(async (item) => {
@@ -134,7 +135,7 @@ const calculateTotalDurationRegularly = async (req, res, next) => {
         defaultMetadataString += projectData.metadata;
         try {
           const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, userId: item.user_id, startsAt, endsAt: DateTime.now()});
-          if(totalCost !== undefined) {
+          if(totalCost != undefined) {
             const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId: item.id, totalDuration, totalDurationInHours, totalCost });
             if(mutationResponse.error != undefined) {
               res.log.error(mutationResponse.error);
