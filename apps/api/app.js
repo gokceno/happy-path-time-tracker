@@ -56,12 +56,12 @@ app.command('/happy', async({ command, respond, ack, body, client, logger }) => 
         break;
       default:
         await ack();
-        await respond(`🚨🚨🚨 Command not found. Available commands are /start, /log, /stop, /show, /list, /sync. Good luck 🍀`);
+        await respond(`🚨🚨🚨 Command not found. Available sub-commands are start, log, stop, show, list, sync. Good luck 🍀`);
     }
   }
   else {
     await ack();
-    await respond(`Please type a valid command. Available commands are /start, /log, /stop, /show, /list, /sync. Good luck 🍀`);
+    await respond(`Please type a valid command. Available sub-commands are start, log, stop, show, list, sync. Good luck 🍀`);
   }
 });
 
