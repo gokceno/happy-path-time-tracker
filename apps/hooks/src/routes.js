@@ -19,7 +19,7 @@ const GraphQLClient = new Client({
 
 // TODO: Billable olmayan task tipleri?
 // TODO: import statements
-// TODO: İki farklı hook'a bölmek?
+// TODO: proje datasının hook'dan gelmesi
 // FIXME: arada #totalCost not null hatası veriyor
 
 const calculateTotalDuration = async (req, res, next) => {
@@ -161,15 +161,6 @@ const calculateTotalCost = (params) => {
 
 // TODO: Project entity'si içine taşınmalı
 const fetchProjectByTaskId = async (projectTaskId) => {
-  const ProjectMetadataQuery = `
-    query projects_tasks_by_id($projectTaskId: ID!) {
-      projects_tasks_by_id(id: $projectTaskId) {
-        projects_id {
-          metadata
-        }
-      }
-    }
-  `;
   const queryResponse = await GraphQLClient.query(ProjectMetadataQuery, { projectTaskId });
   if(queryResponse?.data?.projects_tasks_by_id.projects_id != undefined && typeof queryResponse.data.projects_tasks_by_id.projects_id == 'object') {
     return { status: true, data: queryResponse.data.projects_tasks_by_id.projects_id }
@@ -179,6 +170,16 @@ const fetchProjectByTaskId = async (projectTaskId) => {
   }
   return { status: false }
 }
+
+const ProjectMetadataQuery = `
+  query projects_tasks_by_id($projectTaskId: ID!) {
+    projects_tasks_by_id(id: $projectTaskId) {
+      projects_id {
+        metadata
+      }
+    }
+  }
+`;
 
 const TimersQuery = `
   query timers_by_id($timerId: ID!) {
