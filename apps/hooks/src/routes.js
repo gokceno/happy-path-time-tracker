@@ -32,31 +32,6 @@ const calculateTotalDuration = async (req, res, next) => {
     res.status(403).send({error: `Requested hook type doesn't exist. Exiting.`});
   }
   if(timerId != undefined) {
-    const TimersQuery = `
-      query timers_by_id($timerId: ID!) {
-        timers_by_id(id: $timerId) {
-          id
-          starts_at
-          ends_at
-          duration
-          total_duration
-          task {
-            tasks_id {
-              task_name
-              id
-            }
-            projects_id {
-              id
-              project_name
-              metadata
-            }
-          }
-          user_id {
-            id
-          }
-        }
-      }
-    `;
     const queryResponse = await GraphQLClient.query(TimersQuery, { timerId });
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
       // Calculate totalDuration
@@ -204,6 +179,32 @@ const fetchProjectByTaskId = async (projectTaskId) => {
   }
   return { status: false }
 }
+
+const TimersQuery = `
+  query timers_by_id($timerId: ID!) {
+    timers_by_id(id: $timerId) {
+      id
+      starts_at
+      ends_at
+      duration
+      total_duration
+      task {
+        tasks_id {
+          task_name
+          id
+        }
+        projects_id {
+          id
+          project_name
+          metadata
+        }
+      }
+      user_id {
+        id
+      }
+    }
+  }
+`;
 
 const TimersMutation = `
   mutation update_timers_item($timerId: ID!, $totalDuration: Int!, $totalDurationInHours: Float!, $totalCost: Float!) {
