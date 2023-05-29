@@ -164,16 +164,24 @@ const Timers = ({ graphqlClient }) => {
       throw new Error('timerId not set.');
     }
     const TimersQuery = `
-    query timers_by_id($timerId: ID!) {
-      timers_by_id(id: $timerId) {
-        id
-        starts_at
-        ends_at
-        duration
-        total_duration
-        notes
+      query timers_by_id($timerId: ID!) {
+        timers_by_id(id: $timerId) {
+          id
+          starts_at
+          ends_at
+          duration
+          total_duration
+          notes
+          task {
+            tasks_id {
+              task_name
+            }
+            projects_id {
+              project_name
+            }
+          }
+        }
       }
-    }
     `;
     const queryResponse = await graphqlClient.query(TimersQuery, { timerId });
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {

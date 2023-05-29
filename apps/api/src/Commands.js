@@ -93,12 +93,31 @@ const status = async ({ command, respond, ack, body, client, logger }) => {
 const list = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
-    let startsAt = DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00");
-    let endsAt = DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59");
-    const [commandName, dateInterval] = (command.text ? command.text : 'list today').split(' '); // Values: today|yesterday
-    if(dateInterval === 'yesterday') {
-      startsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'00:00:00");
-      endsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'23:59:59");
+    const commandTextTokens = command.text.split(' ');
+    let startsAt, endsAt, humanReadableDateInterval;
+    if(commandTextTokens.length == 3) {
+      const [commandName, startDateInput, endDateInput] = commandTextTokens;
+      startsAt = DateTime.fromISO(startDateInput + 'T00:00:00');
+      endsAt = DateTime.fromISO(endDateInput + 'T23:59:59');
+      if(startsAt.diff(endsAt, 'days').toObject().days < -7) {
+        throw new Error('You can list time entries for a maximum duration of 7 days.');
+      }
+      humanReadableDateInterval = `${startsAt.toFormat('dd LLL, yyyy')} - ${endsAt.toFormat('dd LLL, yyyy')}`;
+    }
+    else {
+      const [commandName, dateInterval = 'today'] = commandTextTokens; // Values: today|yesterday
+      if(dateInterval === 'yesterday') {
+        startsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'00:00:00");
+        endsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'23:59:59");
+      }
+      else {
+        startsAt = DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00");
+        endsAt = DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59");
+      }
+      humanReadableDateInterval = dateInterval;
+    }
+    if(startsAt === undefined || endsAt === undefined) {
+      throw new Error('Missing start date or end date parameter.');
     }
     const timers = Timers({ graphqlClient });
     const timersList = await timers.list({ externalUserId: body['user_id'], startsAt, endsAt });
@@ -119,7 +138,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
       logger.debug(result);
     }
     else {
-      await respond(`You don't have any time entries ⌛️ for ${dateInterval}. Use /happy start to start a new timer. Good luck 🍀`);
+      await respond(`You don't have any time entries ⌛️ for ${humanReadableDateInterval}. Use /happy start to start a new timer. Good luck 🍀`);
     }
   }
   catch (error) {

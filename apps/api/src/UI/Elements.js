@@ -53,6 +53,14 @@ const timerDisplay = (params = {}) => {
 			{
 				"type": "mrkdwn",
 				"text": `*From:* ${DateTime.fromISO(params.item.starts_at).toLocaleString(DateTime.TIME_SIMPLE)} *to* ${timerEndTime}`
+			},
+			{
+				"type": "mrkdwn",
+				"text": "|"
+			},
+			{
+				"type": "mrkdwn",
+				"text": `*On:* ${DateTime.fromISO(params.item.starts_at).toLocaleString(DateTime.DATE_SHORT)}`
 			}
 		]
 	};
