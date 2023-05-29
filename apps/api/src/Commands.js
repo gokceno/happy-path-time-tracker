@@ -99,6 +99,9 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
       const [commandName, startDateInput, endDateInput] = commandTextTokens;
       startsAt = DateTime.fromISO(startDateInput + 'T00:00:00');
       endsAt = DateTime.fromISO(endDateInput + 'T23:59:59');
+      if(!startsAt.isValid || !endsAt.isValid) {
+        throw new Error('Supplied dates are not in correct format (eg. 2023-12-31)');
+      }
       if(startsAt.diff(endsAt, 'days').toObject().days < -7) {
         throw new Error('You can list time entries for a maximum duration of 7 days.');
       }
@@ -109,12 +112,13 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
       if(dateInterval === 'yesterday') {
         startsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'00:00:00");
         endsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'23:59:59");
+        humanReadableDateInterval = dateInterval;
       }
       else {
         startsAt = DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00");
         endsAt = DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59");
+        humanReadableDateInterval = 'today';
       }
-      humanReadableDateInterval = dateInterval;
     }
     if(startsAt === undefined || endsAt === undefined) {
       throw new Error('Missing start date or end date parameter.');
