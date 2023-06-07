@@ -81,6 +81,14 @@ const Timers = ({ graphqlClient }) => {
           starts_at
           ends_at
           duration
+          task {
+            tasks_id {
+              task_name
+            }
+            projects_id {
+              project_name
+            }
+          }
         }
       }
     `;
@@ -108,6 +116,14 @@ const Timers = ({ graphqlClient }) => {
           update_timers_item(id: $timerId, data: {ends_at: $endsAt}) {
             duration
             total_duration
+            task {
+            tasks_id {
+              task_name
+            }
+            projects_id {
+              project_name
+            }
+          }
           }
         }
       `;
@@ -201,6 +217,14 @@ const Timers = ({ graphqlClient }) => {
       mutation update_timers_item($timerId: ID!, $taskComment: String, $duration: Int!) {
         update_timers_item(id: $timerId, data: {notes: $taskComment, duration: $duration}) {
           id
+          task {
+            tasks_id {
+              task_name
+            }
+            projects_id {
+              project_name
+            }
+          }
         }
       }
     `;

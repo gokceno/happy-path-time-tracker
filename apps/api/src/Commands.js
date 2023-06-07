@@ -60,7 +60,7 @@ const stop = async ({ command, respond, ack, body, client, logger }) => {
     const timers = Timers({ graphqlClient });
     const { status, data } = await timers.stop({ externalUserId: body['user_id'] });
     if(status === true) {
-      await respond(`Running timer ⏳ stopped at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You logged a total time of ${Duration.fromObject({minutes: data.total_duration}).toHuman({ unitDisplay: 'short' })}. Good job 👍`);
+      await respond(`Running timer ⏳ for "${data.task.tasks_id.task_name}" in "${data.task.projects_id.project_name}" stopped at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You logged a total time of ${Duration.fromObject({minutes: data.total_duration}).toHuman({ unitDisplay: 'short' })}. Good job 👍`);
     }
     else {
       await respond(`You don't have any running timers. You can start a new timer by typing /happy start. Good luck 🍀`); 

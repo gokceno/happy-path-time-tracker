@@ -18,16 +18,16 @@ const setTimerDetails = async ({ ack, body, view, client, logger }) => {
     }
     if(view['state']['values']['block__on_date'] != undefined) {
       const onDate = view['state']['values']['block__on_date']['action__on_date'].selected_date;
-      await timers.log({
+      const {status, data} = await timers.log({
         ...commonParams,
         startsAt: onDate + 'T00:00:00',
         endsAt: onDate + 'T00:00:00'
       });
-      responseText = `Congratulations 🎉, you logged ${Duration.fromObject({minutes: duration}).toHuman({ unitDisplay: 'short' })} to ${DateTime.fromISO(onDate).toLocaleString(DateTime.DATE_MED)}. Keep it going 🏁`;
+      responseText = `Congratulations 🎉, you logged ${Duration.fromObject({minutes: duration}).toHuman({ unitDisplay: 'short' })} to ${DateTime.fromISO(onDate).toLocaleString(DateTime.DATE_MED)} for "${data.task.tasks_id.task_name}" in "${data.task.projects_id.project_name}". Keep it going 🏁`;
     }
     else {
-      await timers.start(commonParams);
-      responseText = `Congratulations 🎉, you started a new timer ⏳ at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You can stop it with /stop once you're done with it.`;
+      const {status, data} = await timers.start(commonParams);
+      responseText = `Congratulations 🎉, you started a new timer ⏳ for "${data.task.tasks_id.task_name}" in "${data.task.projects_id.project_name}" at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You can stop it with /stop once you're done with it.`;
     }
     await client.chat.postMessage({
       channel: body['user']['id'],
@@ -53,7 +53,7 @@ const editTimerItem = async ({ ack, body, view, client, logger }) => {
     });
     logger.debug(data);
     if(status == true) {
-      responseText = `You just edited a time entry 👍`
+      responseText = `You just edited a time entry ⏳ for "${data.task.tasks_id.task_name}" in "${data.task.projects_id.project_name}" 👍`
     }
     await client.chat.postMessage({
      channel: body['user']['id'],
