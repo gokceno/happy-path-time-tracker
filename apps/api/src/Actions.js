@@ -119,6 +119,6 @@ const editTimerItem = async ({ ack, body, client, logger }) => {
   catch (error) {
     logger.error(error);
   }
-};
+}
 
 export { selectProjectId, removeTimerItem, editTimerItem };

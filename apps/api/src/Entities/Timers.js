@@ -214,7 +214,7 @@ const Timers = ({ graphqlClient }) => {
       throw new Error('Required parameters not set.');
     }
     const EditTimerMutation = `
-      mutation update_timers_item($timerId: ID!, $taskComment: String, $duration: Int!, $startsAt: Date!, $endsAt: Date!) {
+      mutation update_timers_item($timerId: ID!, $taskComment: String, $duration: Int!, $startsAt: Date, $endsAt: Date) {
         update_timers_item(id: $timerId, data: {notes: $taskComment, duration: $duration, starts_at: $startsAt, ends_at: $endsAt}) {
           id
           task {

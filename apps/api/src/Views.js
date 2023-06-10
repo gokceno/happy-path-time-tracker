@@ -42,16 +42,21 @@ const setTimerDetails = async ({ ack, body, view, client, logger }) => {
 const editTimerItem = async ({ ack, body, view, client, logger }) => {
   await ack();
   try {
+    let startsAt, endsAt;
     let responseText = `🚨 Failed to edit time entry.`;
     const timers = Timers({ graphqlClient });
-    const onDate = view['state']['values']['block__on_date']['action__on_date'].selected_date;
+    if(view['state']['values']['block__on_date']) {
+      const onDate = view['state']['values']['block__on_date']['action__on_date'].selected_date;
+      startsAt = onDate + 'T00:00:00';
+      endsAt = onDate + 'T00:00:00';
+    }
     const { status, data } = await timers.update({ 
       timerId: body.view.private_metadata,
       data: {
         taskComment: view['state']['values']['block__task_comment']['action__task_comment'].value,
         duration: view['state']['values']['block__duration']['action__duration'].value,
-        startsAt: onDate + 'T00:00:00',
-        endsAt: onDate + 'T00:00:00'
+        startsAt,
+        endsAt
       }
     });
     logger.debug(data);
