@@ -96,8 +96,11 @@ const editTimerItem = async ({ ack, body, client, logger }) => {
         type: "divider",
       },
       input({id: 'block__task_comment', initialValue: data.notes, label: 'What are you working on?', actionId: 'action__task_comment', isMultiline: true}),
-      input({id: 'block__duration', initialValue: data.duration + '', label: 'Duration (optional, in minutes)', actionId: 'action__duration', type: 'number_input' })
+      input({id: 'block__duration', initialValue: data.duration + '', label: 'Duration (optional, in minutes)', actionId: 'action__duration', type: 'number_input' }),
     ];
+    if(data.starts_at == data.ends_at) {
+      blocks.push(datePicker({ id: 'block__on_date', actionId: 'action__on_date', label: 'Select a date', initialDate: DateTime.fromISO(data.starts_at).toFormat('yyyy-MM-dd') }));
+    }
     const result = await client.views.update({
       trigger_id: body.trigger_id,
       view_id: body.view.id,
