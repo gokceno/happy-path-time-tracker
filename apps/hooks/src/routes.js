@@ -1,4 +1,5 @@
-const dotenv =  require('dotenv');
+const dotenv = require('dotenv');
+const bolt = require('@slack/bolt');
 const YAML = require('yaml');
 const { Client, fetchExchange } = require('@urql/core');
 const { DateTime } =  require('luxon');
@@ -171,6 +172,43 @@ const fetchProjectByTaskId = async (projectTaskId) => {
   return { status: false }
 }
 
+const notifyUsersWithAbsentTimers = async (req, res, next) => {
+  const { App, LogLevel } = bolt;
+  const app = new App({
+    token: process.env.SLACK_BOT_TOKEN,
+    signingSecret: process.env.SLACK_SIGNING_SECRET,
+    appToken: process.env.SLACK_APP_TOKEN,
+    logLevel: LogLevel.INFO,
+    socketMode: false
+  });
+  const queryResponse = await GraphQLClient.query(UserTimersQuery, { 
+    startsAt: DateTime.now().toFormat("yyyy-MM-dd'T00:00:00'"), 
+    endsAt: DateTime.now().toFormat("yyyy-MM-dd'T23:59:59'")
+  });
+  const usersWithNoTimers = queryResponse.data.users.filter(item => item.timers.length == 0);
+  const usersWithLowTimers = queryResponse.data.users.filter(item => { 
+    if(item.timers.length > 0) {
+      const totalTimerLength = item.timers.reduce((acc, item) => acc + item.total_duration, 0);
+      return (totalTimerLength < 120);
+    }
+    return false;
+  });
+  usersWithNoTimers.forEach(item => {
+    app.client.chat.postMessage({
+      channel: item.id,
+      text: `You haven't started any timers ⏳ today. Care to log some? 🙏`
+    });
+  });
+  usersWithLowTimers.forEach(item => {
+    app.client.chat.postMessage({
+      channel: item.id,
+      text: `How is your day going? I see that you haven't logged much time ⏳ today. Care to log more? 🙏`
+    });
+  });
+  res.json({ok: true, numOfUsersWithNoTimers: usersWithNoTimers.length, numOfUsersWithLowTimers: usersWithLowTimers.length});
+}
+
+
 const ProjectMetadataQuery = `
   query projects_tasks_by_id($projectTaskId: ID!) {
     projects_tasks_by_id(id: $projectTaskId) {
@@ -218,4 +256,18 @@ const TimersMutation = `
   }
 `;
 
-module.exports = { calculateTotalDuration, calculateTotalDurationRegularly }
+const UserTimersQuery = `
+  query users($startsAt: String!, $endsAt: String!) {
+    users {
+      timers(
+      filter: {starts_at: {_gte: $startsAt}, ends_at: {_lte: $endsAt}}
+      ) {
+        duration
+        total_duration
+      }
+      id
+    }
+  }
+`;
+
+module.exports = { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers }

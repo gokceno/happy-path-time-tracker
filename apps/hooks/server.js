@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { calculateTotalDuration, calculateTotalDurationRegularly } = require('./src/routes.js');
+const { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers } = require('./src/routes.js');
 
 // Init Express
 const app = express();
@@ -24,6 +24,7 @@ app.use(express.json());
 
 app.post('/timers/update/total-duration', calculateTotalDuration);
 app.post('/timers/update/regularly/total-duration', calculateTotalDurationRegularly);
+app.post('/notify/users/with/absent/timers', notifyUsersWithAbsentTimers);
 
 (async () => {
   app.listen(process.env.PORT || 4000);

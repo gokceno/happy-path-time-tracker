@@ -64,7 +64,7 @@ const editTimerItem = async ({ ack, body, view, client, logger }) => {
       responseText = `You just edited a time entry ⏳ for "${data.task.tasks_id.task_name}" in "${data.task.projects_id.project_name}" 👍`
     }
     await client.chat.postMessage({
-     channel: body['user']['id'],
+      channel: body['user']['id'],
       text: responseText
     });
   }
