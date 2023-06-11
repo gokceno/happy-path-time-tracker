@@ -9,6 +9,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@slack/bolt": "^3.13.0",
     "@urql/core": "^4.0.4",
     "body-parser": "1.20.2",
     "dotenv": "^16.0.3",
