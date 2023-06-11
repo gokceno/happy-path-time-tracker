@@ -18,9 +18,18 @@ const loggerOptions = {
 const pinoHttp = require('pino-http')(loggerOptions);
 const logger = require('pino')(loggerOptions);
 
+const authenticate = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if(token == undefined || token == null) return res.sendStatus(401);
+  if(token != process.env.ACCESS_TOKEN) return res.sendStatus(403);
+  next();
+}
+
 app.use(pinoHttp);
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(authenticate);
 
 app.post('/timers/update/total-duration', calculateTotalDuration);
 app.post('/timers/update/regularly/total-duration', calculateTotalDurationRegularly);
