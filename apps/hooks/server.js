@@ -34,6 +34,7 @@ app.use(authenticate);
 app.post('/timers/update/total-duration', calculateTotalDuration);
 app.post('/timers/update/regularly/total-duration', calculateTotalDurationRegularly);
 app.post('/notify/users/with/absent/timers', notifyUsersWithAbsentTimers);
+app.post('/notify/users/with/prolonged/timers', notifyUsersWithProlongedTimers);
 
 (async () => {
   app.listen(process.env.PORT || 4000);

@@ -196,18 +196,37 @@ const notifyUsersWithAbsentTimers = async (req, res, next) => {
   usersWithNoTimers.forEach(item => {
     app.client.chat.postMessage({
       channel: item.id,
-      text: `You haven't started any timers ⏳ today. Care to log some? 🙏`
+      text: `You haven't started any timers ⏳ today. Care to log some time? 🙏`
     });
   });
   usersWithLowTimers.forEach(item => {
     app.client.chat.postMessage({
       channel: item.id,
-      text: `How is your day going? I see that you haven't logged much time ⏳ today. Care to log more? 🙏`
+      text: `How is your day going? I see that you haven't logged much time ⏳ today. Care to log more time? 🙏`
     });
   });
   res.json({ok: true, numOfUsersWithNoTimers: usersWithNoTimers.length, numOfUsersWithLowTimers: usersWithLowTimers.length});
 }
 
+const notifyUsersWithProlongedTimers = async (req, res, next) => {
+  if(req.body.data != undefined && typeof req.body.data == 'object') {
+    req.body.data.forEach(async (item) => {
+      if(item.ends_at == undefined) {
+        const startsAt = DateTime.fromISO(item.starts_at);
+        const { minutes: durationInMinutes } = DateTime.now().diff(startsAt, 'minutes').toObject();
+
+        if(durationInMinutes >= (process.env.PROLONGED_TIMER_SHUTDOWN_TRESHOLD || 960)) {
+        }
+        else if(durationInMinutes >= (process.env.PROLONGED_TIMER_TRESHOLD_2 || 480)) {
+        }
+        else if(durationInMinutes >= (process.env.PROLONGED_TIMER_TRESHOLD_1 || 240)) {
+        }
+        else {
+        }
+      }
+    });
+  }
+}
 
 const ProjectMetadataQuery = `
   query projects_tasks_by_id($projectTaskId: ID!) {
@@ -270,4 +289,4 @@ const UserTimersQuery = `
   }
 `;
 
-module.exports = { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers }
+module.exports = { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers }
