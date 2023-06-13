@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers } = require('./src/routes.js');
+const { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers } = require('./src/routes.js');
 
 // Init Express
 const app = express();
