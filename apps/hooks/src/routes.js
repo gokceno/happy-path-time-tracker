@@ -7,6 +7,10 @@ const priceModifiers = require('./Price/Modifiers.js');
 
 dotenv.config();
 
+Array.prototype.random = function () {
+  return this[Math.floor((Math.random()*this.length))];
+}
+
 const GraphQLClient = new Client({
   url: process.env.DIRECTUS_API_URL,
   exchanges: [fetchExchange],
@@ -172,15 +176,20 @@ const fetchProjectByTaskId = async (projectTaskId) => {
   return { status: false }
 }
 
-const notifyUsersWithAbsentTimers = async (req, res, next) => {
+const initSlackClient = () => {
   const { App, LogLevel } = bolt;
-  const app = new App({
+  const slackClientApp = new App({
     token: process.env.SLACK_BOT_TOKEN,
     signingSecret: process.env.SLACK_SIGNING_SECRET,
     appToken: process.env.SLACK_APP_TOKEN,
     logLevel: LogLevel.INFO,
     socketMode: false
   });
+  return slackClientApp;
+}
+
+const notifyUsersWithAbsentTimers = async (req, res, next) => {
+  const slackClientApp = initSlackClient();
   const queryResponse = await GraphQLClient.query(UserTimersQuery, { 
     startsAt: DateTime.now().toFormat("yyyy-MM-dd'T00:00:00'"), 
     endsAt: DateTime.now().toFormat("yyyy-MM-dd'T23:59:59'")
@@ -194,13 +203,13 @@ const notifyUsersWithAbsentTimers = async (req, res, next) => {
     return false;
   });
   usersWithNoTimers.forEach(item => {
-    app.client.chat.postMessage({
+    slackClientApp.client.chat.postMessage({
       channel: item.id,
       text: `You haven't started any timers ⏳ today. Care to log some time? 🙏`
     });
   });
   usersWithLowTimers.forEach(item => {
-    app.client.chat.postMessage({
+    slackClientApp.client.chat.postMessage({
       channel: item.id,
       text: `How is your day going? I see that you haven't logged much time ⏳ today. Care to log more time? 🙏`
     });
@@ -210,21 +219,68 @@ const notifyUsersWithAbsentTimers = async (req, res, next) => {
 
 const notifyUsersWithProlongedTimers = async (req, res, next) => {
   if(req.body.data != undefined && typeof req.body.data == 'object') {
+    const slackClientApp = initSlackClient();
     req.body.data.forEach(async (item) => {
-      if(item.ends_at == undefined) {
+      res.log.debug(item);
+      if(item.ends_at == undefined || item.ends_at == null) {
         const startsAt = DateTime.fromISO(item.starts_at);
         const { minutes: durationInMinutes } = DateTime.now().diff(startsAt, 'minutes').toObject();
-
-        if(durationInMinutes >= (process.env.PROLONGED_TIMER_SHUTDOWN_TRESHOLD || 960)) {
+        if(durationInMinutes >= (process.env.PROLONGED_TIMER_SHUTDOWN_TRESHOLD || 480)) {
+          const mutation = await GraphQLClient.mutation(StopTimerMutation, { 
+            timerId: item.id, 
+            endsAt: DateTime.now().toISO() 
+          });
+          if(mutation.error == undefined) {
+            try {
+              await slackClientApp.client.chat.postMessage({
+                channel: item.user_id,
+                text: `Ok, let's stop your timer now 🏁, you've done great. Go ahead and start a new timer ⏱️ if you're still here.`
+              });
+            }
+            catch(e) {
+              res.log.error(e);
+            }
+          }
+          else {
+            res.log.error(mutation.error);
+          }
         }
-        else if(durationInMinutes >= (process.env.PROLONGED_TIMER_TRESHOLD_2 || 480)) {
+        else if(durationInMinutes >= (process.env.PROLONGED_TIMER_TRESHOLD_2 || 420)) {
+          try {
+            await slackClientApp.client.chat.postMessage({
+              channel: item.user_id,
+              text: `You're marvellous 👑, but I start to worry. Are you still there? 👀 I'll shut down your timer within the next hour.`
+            });
+          }
+          catch(e) {
+            res.log.error(e);
+          }
         }
         else if(durationInMinutes >= (process.env.PROLONGED_TIMER_TRESHOLD_1 || 240)) {
+          const messages = [
+            `You're such a hard worker 💪. It's been hours ⏱️ and you're still going. Keep it up. 👍`,
+            `It's been quite some time since you started 👀, care to give some break?`,
+            `Are you still there? It's been hours ⏱️, keep up the good work. 👍`,
+            `You're unstoppable 🚀, keep it going. 👍`
+          ];
+          try {
+            await slackClientApp.client.chat.postMessage({
+              channel: item.user_id,
+              text: messages.random()
+            });
+          }
+          catch(e) {
+            res.log.error(e);
+          }
         }
-        else {
-        }
+        else {}
       }
     });
+    res.json({ok: true}); 
+  }
+  else {
+    res.log.debug(req.body);
+    res.status(403).send({error: `Requested data is missing. Exiting.`});
   }
 }
 
@@ -271,6 +327,17 @@ const TimersMutation = `
       total_duration
       total_duration_in_hours
       total_cost
+    }
+  }
+`;
+
+const StopTimerMutation = `
+  mutation update_timers_item($timerId: ID!, $endsAt: Date!) {
+    update_timers_item(id: $timerId, data: {ends_at: $endsAt}) {
+      id
+      total_duration
+      starts_at
+      ends_at
     }
   }
 `;
