@@ -27,7 +27,7 @@ const setTimerDetails = async ({ ack, body, view, client, logger }) => {
     }
     else {
       const {status, data} = await timers.start(commonParams);
-      responseText = `Congratulations 🎉, you started a new timer ⏳ for "${data.task.tasks_id.task_name}" in "${data.task.projects_id.project_name}" at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You can stop it with /stop once you're done with it.`;
+      responseText = `Congratulations 🎉, you started a new timer ⏳ for "${data.task.tasks_id.task_name}" in "${data.task.projects_id.project_name}" at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You can stop it with /happy stop once you're done with it.`;
     }
     await client.chat.postMessage({
       channel: body['user']['id'],
