@@ -1,5 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } = require('graphql');
+const { createHandler } = require('graphql-http/lib/use/express');
+
 const { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers } = require('./src/routes.js');
 
 // Init Express
@@ -35,6 +39,107 @@ app.post('/timers/update/total-duration', calculateTotalDuration);
 app.post('/timers/update/regularly/total-duration', calculateTotalDurationRegularly);
 app.post('/notify/users/with/absent/timers', notifyUsersWithAbsentTimers);
 app.post('/notify/users/with/prolonged/timers', notifyUsersWithProlongedTimers);
+
+const schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: 'Query',
+    fields: {
+      timers: {
+        args: {
+          start: { type: new GraphQLNonNull(GraphQLString) },
+          end: { type: new GraphQLNonNull(GraphQLString) },
+        },
+        type: new GraphQLList(new GraphQLObjectType({
+          name: 'Timers',
+          fields: {
+            id: { type: GraphQLString }
+          }
+        })),
+        resolve: (_, { name }) => {
+          return [{id: 'Deneme'}];
+        },
+      },
+      projects: {
+        type: new GraphQLList(new GraphQLObjectType({
+          name: 'Projects',
+          fields: {
+            id: { type: GraphQLString }
+          }
+        })),
+        resolve: (_, { name }) => {
+          return [{id: 'Deneme'}];
+        },
+      },
+      tasks: {
+        type: new GraphQLList(new GraphQLObjectType({
+          name: 'Tasks',
+          fields: {
+            id: { type: GraphQLString }
+          }
+        })),
+        args: {
+          projectId: { type: new GraphQLNonNull(GraphQLInt) }
+        },
+        resolve: (_, { name }) => {
+          return [{id: 'Deneme'}];
+        },
+      },
+    },
+  }),
+  mutation: new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+      start: {
+        type: new GraphQLList(new GraphQLObjectType({
+          name: 'Start',
+          fields: {
+            id: { type: GraphQLString }
+          }
+        })),
+        args: {
+          start: { type: new GraphQLNonNull(GraphQLString) },
+          end: { type: new GraphQLNonNull(GraphQLString) },
+        },
+        resolve: (_, { name }) => {
+          return [{id: 'Deneme'}];
+        },
+      },
+      stop: {
+        type: new GraphQLList(new GraphQLObjectType({
+          name: 'Stop',
+          fields: {
+            id: { type: GraphQLString }
+          }
+        })),
+        args: {
+          start: { type: new GraphQLNonNull(GraphQLString) },
+          end: { type: new GraphQLNonNull(GraphQLString) },
+        },
+        resolve: (_, { name }) => {
+          return [{id: 'Deneme'}];
+        },
+      },
+      log: {
+        type: new GraphQLList(new GraphQLObjectType({
+          name: 'Log',
+          fields: {
+            id: { type: GraphQLString }
+          }
+        })),
+        args: {
+          start: { type: new GraphQLNonNull(GraphQLString) },
+          end: { type: new GraphQLNonNull(GraphQLString) },
+        },
+        resolve: (_, { name }) => {
+          return [{id: 'Deneme'}];
+        },
+      },
+    },
+  }),
+});
+
+app.all('/graphql', createHandler({ schema }));
+
 
 (async () => {
   app.listen(process.env.PORT || 4000);
