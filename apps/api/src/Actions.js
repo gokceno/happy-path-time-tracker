@@ -1,9 +1,10 @@
 import { DateTime } from 'luxon';
 import { staticSelect, input, datePicker, timeEntriesList } from './UI/Blocks.js';
 import { title as titleElement, submit as submitElement } from'./UI/Elements.js';
-import { Tasks } from './Entities/Tasks.js';
-import { Timers } from './Entities/Timers.js';
-import { GraphQLClient as graphqlClient } from './GraphQLClient.js';
+import { staticSelect as staticSelectFormatter } from './Formatters.js';
+import { Tasks } from '@happy-path/graphql-entities';
+import { Timers } from '@happy-path/graphql-entities';
+import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
 
 const selectProjectId = async ({ ack, body, client, logger }, previousActionId, callbackId) => {
   await ack();
@@ -15,7 +16,7 @@ const selectProjectId = async ({ ack, body, client, logger }, previousActionId, 
       } 
     });
     let blocks = [
-      staticSelect({id: 'block__task_type', options: await tasks.list(), label: 'Task type', placeholder: 'Select a task type', actionId: 'action__task_type'}),
+      staticSelect({id: 'block__task_type', options: await tasks.list(staticSelectFormatter), label: 'Task type', placeholder: 'Select a task type', actionId: 'action__task_type'}),
       input({id: 'block__task_comment', label: 'What are you working on?', actionId: 'action__task_comment', isMultiline: true}),
       input({id: 'block__duration', label: 'Duration (optional, in minutes)', initialValue: '0', actionId: 'action__duration', type: 'number_input' })
       ];

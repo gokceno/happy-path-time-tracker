@@ -1,5 +1,3 @@
-import { staticSelect as staticSelectFormatter } from '../Formatters.js';
-
 const Tasks = ({ graphqlClient, queryParams }) => {
   const _fetch =  async () => {
     if (queryParams == undefined || queryParams.projectId == undefined) throw new Error('queryParams.projectId must be set');
@@ -17,9 +15,9 @@ const Tasks = ({ graphqlClient, queryParams }) => {
     const response = await graphqlClient.query(ProjectsTasksQuery);
     return response.data.projects_tasks;
   }
-  const list = async () => {
+  const list = async (formatter) => {
     const projectsTasks = await _fetch();
-    return projectsTasks.map(item => staticSelectFormatter({ id: item.id, label: item.tasks_id.task_name }));
+    return projectsTasks.map(item => formatter({ id: item.id, label: item.tasks_id.task_name }));
   }
   return { list }
 }

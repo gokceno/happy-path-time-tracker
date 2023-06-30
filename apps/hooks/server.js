@@ -1,10 +1,12 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-
-const { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } = require('graphql');
-const { createHandler } = require('graphql-http/lib/use/express');
-
-const { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers } = require('./src/routes.js');
+import express from 'express';
+import bodyParser from 'body-parser';
+import pino from 'pino';
+import pinoHttp from 'pino-http';
+import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from 'graphql';
+import { createHandler } from 'graphql-http/lib/use/express';
+import { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers } from './src/routes.js';
+import { Projects } from '@happy-path/graphql-entities';
+import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
 
 // Init Express
 const app = express();
@@ -19,8 +21,9 @@ const loggerOptions = {
     }
   },
 };
-const pinoHttp = require('pino-http')(loggerOptions);
-const logger = require('pino')(loggerOptions);
+
+const logger = pino(loggerOptions);
+const pinoHttpLogger = pinoHttp(loggerOptions);
 
 const authenticate = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -30,7 +33,7 @@ const authenticate = (req, res, next) => {
   next();
 }
 
-app.use(pinoHttp);
+app.use(pinoHttpLogger);
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(authenticate);
@@ -63,11 +66,13 @@ const schema = new GraphQLSchema({
         type: new GraphQLList(new GraphQLObjectType({
           name: 'Projects',
           fields: {
-            id: { type: GraphQLString }
+            id: { type: GraphQLString },
+            projectName: { type: GraphQLString }
           }
         })),
-        resolve: (_, { name }) => {
-          return [{id: 'Deneme'}];
+        resolve: async (_, { name }) => {
+          const projects = Projects({ graphqlClient });
+          return (await projects.list()).map(item => ({ id: item.id, projectName: item.project_name }));
         },
       },
       tasks: {

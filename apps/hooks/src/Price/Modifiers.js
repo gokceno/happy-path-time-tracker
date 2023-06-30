@@ -8,7 +8,7 @@ const weekends = (price, totalDuration, startsAt, endsAt) => {
 	return price * 1;
 }
 
-const noLessThanOneHour = (price, totalDuration, startsAt, endsAt)  => {
+const noLessThanOneHour = (price, totalDuration, startsAt, endsAt)  => { 
 	return (totalDuration < 60) ? (price * (60 / totalDuration)) : (price * 1);
 }
 
@@ -27,4 +27,4 @@ const overtime = (price, totalDuration, startsAt, endsAt) => {
 	return price * 1;
 }
 
-module.exports = { weekends, noLessThanOneHour, overtime }
+export { weekends, noLessThanOneHour, overtime }

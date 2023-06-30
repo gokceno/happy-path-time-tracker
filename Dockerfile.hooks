@@ -1,4 +1,4 @@
- # Specify a base image
+# Specify a base image
 FROM node:18 AS build 
 
 # Change working directory
@@ -7,8 +7,10 @@ WORKDIR /usr/app
 # Copy in the app and weights
 COPY ./ /usr/app
 
+# Install dependencies
+RUN yarn global add turbo
 RUN yarn install
 
 EXPOSE 4000
 
-CMD ["npm", "run", "start"]
+CMD turbo start --filter='./apps/hooks'

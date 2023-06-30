@@ -1,5 +1,3 @@
-import { staticSelect as staticSelectFormatter } from '../Formatters.js';
-
 const Projects = ({ graphqlClient }) => {
   const _fetch =  async () => {
     const ProjectsQuery = `
@@ -13,9 +11,13 @@ const Projects = ({ graphqlClient }) => {
     const response = await graphqlClient.query(ProjectsQuery);
     return response.data.projects;
   }
-  const list = async () => {
+  const list = async (formatter) => {
     const projects = await _fetch();
-    return projects.map(item => staticSelectFormatter({id: item.id, label: item.project_name}));
+    if(formatter !== undefined) {
+      return projects.map(item => formatter({id: item.id, label: item.project_name}));  
+    }
+    return projects;
+    
   }
   return { list }
 }

@@ -1,0 +1,6 @@
+{
+  "name": "@happy-path/graphql-client",
+  "version": "0.0.0",
+  "main": "./src/GraphQLClient.js",
+  "type": "module"
+}

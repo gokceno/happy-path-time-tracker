@@ -7,9 +7,10 @@ WORKDIR /usr/app
 # Copy in the app and weights
 COPY ./ /usr/app
 
-# Install NPM dependencies
+# Install dependencies
+RUN yarn global add turbo
 RUN yarn install
 
 EXPOSE 3000
 
-CMD ["yarn", "start"]
+CMD turbo start --filter='./apps/api'

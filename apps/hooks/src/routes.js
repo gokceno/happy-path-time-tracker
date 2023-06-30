@@ -1,9 +1,9 @@
-const dotenv = require('dotenv');
-const bolt = require('@slack/bolt');
-const YAML = require('yaml');
-const { Client, fetchExchange } = require('@urql/core');
-const { DateTime } =  require('luxon');
-const priceModifiers = require('./Price/Modifiers.js');
+import dotenv from 'dotenv';
+import bolt from '@slack/bolt';
+import YAML from 'yaml';
+import { Client, fetchExchange } from '@urql/core';
+import { DateTime } from 'luxon';
+import * as priceModifiers from './Price/Modifiers.js';
 
 dotenv.config();
 
@@ -356,4 +356,4 @@ const UserTimersQuery = `
   }
 `;
 
-module.exports = { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers }
+export { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers }

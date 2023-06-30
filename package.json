@@ -4,7 +4,10 @@
   "license": "UNLICENSED",
   "workspaces": [
     "apps/api",
-    "apps/hooks"
+    "apps/hooks",
+    "packages/*",
+    "packages/graphql-client/*",
+    "packages/graphql-entities/*"
   ],
   "packageManager": "yarn@1.22.19",
   "scripts": {

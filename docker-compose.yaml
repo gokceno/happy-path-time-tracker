@@ -3,8 +3,8 @@ services:
   api:
     container_name: api
     build:
-      context: ./apps/api/
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: Dockerfile.api
     ports:
       - 3000:3000
     env_file:
@@ -13,7 +13,6 @@ services:
       - directus
     networks:
       - directus
-    command: ["yarn", "start"]
   directus:
     container_name: directus
     image: directus/directus:latest
@@ -28,8 +27,8 @@ services:
   hooks:
     container_name: hooks
     build:
-      context: ./apps/hooks/
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: Dockerfile.hooks
     ports:
       - 4000:4000
     networks:

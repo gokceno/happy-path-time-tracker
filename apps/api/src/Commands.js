@@ -1,10 +1,11 @@
 import { DateTime, Duration } from 'luxon';
 import { title as titleElement } from './UI/Elements.js';
 import { timeEntriesList } from './UI/Blocks.js';
-import { Timers } from './Entities/Timers.js';
-import { Projects } from './Entities/Projects.js';
-import { Users } from './Entities/Users.js';
-import { GraphQLClient as graphqlClient } from './GraphQLClient.js';
+import { staticSelect as staticSelectFormatter } from './Formatters.js';
+import { Timers } from '@happy-path/graphql-entities';
+import { Projects } from '@happy-path/graphql-entities';
+import { Users } from '@happy-path/graphql-entities';
+import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
 
 const start = async ({ command, respond, ack, body, client, logger }, actionId) => {
   await ack();
@@ -35,7 +36,7 @@ const start = async ({ command, respond, ack, body, client, logger }, actionId) 
                   "type": "plain_text",
                   "text": "Select a project",
                 },
-                "options": await projects.list(),
+                "options": await projects.list(staticSelectFormatter),
                 "action_id": actionId
               }]
             },
@@ -124,7 +125,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
       throw new Error('Missing start date or end date parameter.');
     }
     const timers = Timers({ graphqlClient });
-    const timersList = await timers.list({ externalUserId: body['user_id'], startsAt, endsAt });
+    const timersList = await timers.list({ externalUserId: body['user_id'], startsAt, endsAt }, staticSelectFormatter);
     if(timersList.length > 0) {
       const result = await client.views.open({
         trigger_id: body.trigger_id,

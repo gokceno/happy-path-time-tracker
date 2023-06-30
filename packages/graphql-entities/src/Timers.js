@@ -1,5 +1,4 @@
 import { DateTime } from 'luxon';
-import { timeEntriesList as timeEntriesListFormatter } from '../Formatters.js';
 
 const Timers = ({ graphqlClient }) => {
   const _findRunningTimer = async (params) => {
@@ -33,7 +32,7 @@ const Timers = ({ graphqlClient }) => {
       hasRunningTimer: (response.data.timers.length == 1)
     };
   }
-  const list = async (params) => { 
+  const list = async (params, formatter) => { 
     const { startsAt, endsAt, externalUserId } = params;
     if(startsAt == undefined || endsAt == undefined || externalUserId == undefined) {
       throw new Error('Required parameters not set.');
@@ -63,7 +62,7 @@ const Timers = ({ graphqlClient }) => {
     `;
     const response = await graphqlClient.query(TimersQuery);
     if(response.data != undefined) {
-      return response.data.timers.map(item => timeEntriesListFormatter({item}));
+      return response.data.timers.map(item => formatter({item}));
     }
     return [];
   }
