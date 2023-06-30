@@ -1,7 +1,7 @@
 import { DateTime, Duration } from 'luxon';
 import { title as titleElement } from './UI/Elements.js';
 import { timeEntriesList } from './UI/Blocks.js';
-import { staticSelect as staticSelectFormatter } from './Formatters.js';
+import { staticSelect as staticSelectFormatter, timeEntriesList as timeEntriesListFormatter } from './Formatters.js';
 import { Timers } from '@happy-path/graphql-entities';
 import { Projects } from '@happy-path/graphql-entities';
 import { Users } from '@happy-path/graphql-entities';
@@ -125,7 +125,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
       throw new Error('Missing start date or end date parameter.');
     }
     const timers = Timers({ graphqlClient });
-    const timersList = await timers.list({ externalUserId: body['user_id'], startsAt, endsAt }, staticSelectFormatter);
+    const timersList = await timers.list({ externalUserId: body['user_id'], startsAt, endsAt }, timeEntriesListFormatter);
     if(timersList.length > 0) {
       const result = await client.views.open({
         trigger_id: body.trigger_id,
