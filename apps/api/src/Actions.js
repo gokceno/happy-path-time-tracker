@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { staticSelect, input, datePicker, timeEntriesList } from './UI/Blocks.js';
 import { title as titleElement, submit as submitElement } from'./UI/Elements.js';
-import { staticSelect as staticSelectFormatter } from './Formatters.js';
+import { staticSelect as staticSelectFormatter, timeEntriesList as timeEntriesListFormatter } from './Formatters.js';
 import { Tasks } from '@happy-path/graphql-entities';
 import { Timers } from '@happy-path/graphql-entities';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
@@ -53,7 +53,7 @@ const removeTimerItem = async ({ ack, body, client, logger }) => {
         externalUserId: body.user.id, 
         startsAt: DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00"), 
         endsAt: DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59") 
-      });
+      }, timeEntriesListFormatter);
       const result = await client.views.update({
         trigger_id: body.trigger_id,
         view_id: body.view.id,
