@@ -5,7 +5,7 @@ import pinoHttp from 'pino-http';
 import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from 'graphql';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers } from './src/routes.js';
-import { Projects } from '@happy-path/graphql-entities';
+import { Projects, Tasks } from '@happy-path/graphql-entities';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
 
 // Init Express
@@ -79,14 +79,16 @@ const schema = new GraphQLSchema({
         type: new GraphQLList(new GraphQLObjectType({
           name: 'Tasks',
           fields: {
-            id: { type: GraphQLString }
+            id: { type: GraphQLString },
+            taskName: { type: GraphQLString }
           }
         })),
         args: {
           projectId: { type: new GraphQLNonNull(GraphQLInt) }
         },
-        resolve: (_, { name }) => {
-          return [{id: 'Deneme'}];
+        resolve: async (_, { projectId }) => {
+          const tasks = Tasks({ graphqlClient, queryParams: { projectId } });
+          return (await tasks.list()).map(item => ({ id: item.id, taskName: item.tasks_id.task_name }));
         },
       },
     },

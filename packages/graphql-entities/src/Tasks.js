@@ -17,7 +17,10 @@ const Tasks = ({ graphqlClient, queryParams }) => {
   }
   const list = async (formatter) => {
     const projectsTasks = await _fetch();
-    return projectsTasks.map(item => formatter({ id: item.id, label: item.tasks_id.task_name }));
+    if(formatter !== undefined) {
+      return projectsTasks.map(item => formatter({ id: item.id, label: item.tasks_id.task_name }));
+    }
+    return projectsTasks;
   }
   return { list }
 }
