@@ -51,6 +51,7 @@ const schema = new GraphQLSchema({
         args: {
           startsAt: { type: new GraphQLNonNull(GraphQLString) },
           endsAt: { type: new GraphQLNonNull(GraphQLString) },
+          externalUserId: { type: new GraphQLNonNull(GraphQLString) },
         },
         type: new GraphQLList(new GraphQLObjectType({
           name: 'Timers',
@@ -75,8 +76,7 @@ const schema = new GraphQLSchema({
             }})},
           }
         })),
-        resolve: async (_, { startsAt, endsAt }) => {
-          const externalUserId = 'U039LBY4K';
+        resolve: async (_, { startsAt, endsAt, externalUserId }) => {
           const timers = Timers({ graphqlClient });
           return (await timers.list({ startsAt, endsAt, externalUserId })).map(item => ({ 
             id: item.id, 
