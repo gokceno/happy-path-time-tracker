@@ -5,7 +5,7 @@ import pinoHttp from 'pino-http';
 import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from 'graphql';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers } from './src/routes.js';
-import { Projects, Tasks } from '@happy-path/graphql-entities';
+import { Projects, Tasks, Timers } from '@happy-path/graphql-entities';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
 
 // Init Express
@@ -49,17 +49,51 @@ const schema = new GraphQLSchema({
     fields: {
       timers: {
         args: {
-          start: { type: new GraphQLNonNull(GraphQLString) },
-          end: { type: new GraphQLNonNull(GraphQLString) },
+          startsAt: { type: new GraphQLNonNull(GraphQLString) },
+          endsAt: { type: new GraphQLNonNull(GraphQLString) },
         },
         type: new GraphQLList(new GraphQLObjectType({
           name: 'Timers',
           fields: {
-            id: { type: GraphQLString }
+            id: { type: GraphQLInt },
+            startsAt: { type: GraphQLString },
+            endsAt: { type: GraphQLString },
+            duration: { type: GraphQLInt },
+            totalDuration: { type: GraphQLInt },
+            notes: { type: GraphQLString },
+            project: {type: new GraphQLObjectType({
+              name: 'Project',
+              fields: {
+                id: { type: GraphQLInt },
+                name: { type: GraphQLString },
+            }})},
+            task: {type: new GraphQLObjectType({
+              name: 'Task',
+              fields: {
+                id: { type: GraphQLInt },
+                name: { type: GraphQLString },
+            }})},
           }
         })),
-        resolve: (_, { name }) => {
-          return [{id: 'Deneme'}];
+        resolve: async (_, { startsAt, endsAt }) => {
+          const externalUserId = 'U039LBY4K';
+          const timers = Timers({ graphqlClient });
+          return (await timers.list({ startsAt, endsAt, externalUserId })).map(item => ({ 
+            id: item.id, 
+            startsAt: item.starts_at,
+            endsAt: item.ends_at,
+            duration: item.duration,
+            totalDuration: item.total_duration,
+            notes: item.notes,
+            project: { 
+              id: item.task.projects_id.id,
+              name: item.task.projects_id.project_name 
+            },
+            task: { 
+              id: item.task.id,
+              name: item.task.tasks_id.task_name 
+            }
+          }));
         },
       },
       projects: {

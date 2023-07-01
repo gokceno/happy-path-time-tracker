@@ -49,10 +49,12 @@ const Timers = ({ graphqlClient }) => {
           starts_at
           ends_at
           task {
+            id
             tasks_id {
               task_name
             }
             projects_id {
+              id
               project_name
             }
           }
@@ -62,7 +64,10 @@ const Timers = ({ graphqlClient }) => {
     `;
     const response = await graphqlClient.query(TimersQuery);
     if(response.data != undefined) {
-      return response.data.timers.map(item => formatter({item}));
+      if(formatter !== undefined) {
+        return response.data.timers.map(item => formatter({item}));
+      }
+      return response.data.timers;
     }
     return [];
   }
