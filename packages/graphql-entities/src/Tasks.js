@@ -1,3 +1,4 @@
+// TODO: Should move queryParams to list or _fetch
 const Tasks = ({ graphqlClient, queryParams }) => {
   const _fetch =  async () => {
     if (queryParams == undefined || queryParams.projectId == undefined) throw new Error('queryParams.projectId must be set');
