@@ -145,6 +145,7 @@ const Timers = ({ graphqlClient }) => {
     return { status: false };
   }
   const remove = async (params) => {
+    // TODO: Check user when deleting timer entry
     const { timerId } = params;
     if(timerId == undefined) {
       throw new Error('Required parameters not set.');
