@@ -131,48 +131,99 @@ const schema = new GraphQLSchema({
     name: 'Mutation',
     fields: {
       start: {
-        type: new GraphQLList(new GraphQLObjectType({
+        type: new GraphQLObjectType({
           name: 'Start',
           fields: {
             id: { type: GraphQLString }
           }
-        })),
+        }),
         args: {
-          start: { type: new GraphQLNonNull(GraphQLString) },
-          end: { type: new GraphQLNonNull(GraphQLString) },
+          projectTaskId: { type: new GraphQLNonNull(GraphQLInt) },
+          externalUserId: { type: new GraphQLNonNull(GraphQLString) },
+          duration: { type: GraphQLInt },
+          notes: { type: GraphQLString }
         },
-        resolve: (_, { name }) => {
-          return [{id: 'Deneme'}];
+        resolve: async (_, { projectTaskId, externalUserId, startsAt, duration, notes }) => {
+          const timers = Timers({ graphqlClient });
+          const timer = await timers.start({
+            projectTaskId,
+            externalUserId,
+            duration,
+            taskComment: notes
+          });
+          if(timer.status == true) {
+            return { id: timer.data.id };
+          }
         },
       },
       stop: {
-        type: new GraphQLList(new GraphQLObjectType({
+        type: new GraphQLObjectType({
           name: 'Stop',
           fields: {
-            id: { type: GraphQLString }
+            totalDuration: { type: GraphQLInt }
           }
-        })),
+        }),
         args: {
-          start: { type: new GraphQLNonNull(GraphQLString) },
-          end: { type: new GraphQLNonNull(GraphQLString) },
+          timerId: { type: new GraphQLNonNull(GraphQLInt) },
+          externalUserId: { type: new GraphQLNonNull(GraphQLString) },
         },
-        resolve: (_, { name }) => {
-          return [{id: 'Deneme'}];
+        resolve: async (_, { timerId, externalUserId }) => {
+          const timers = Timers({ graphqlClient });
+          const timer = await timers.stop({ timerId, externalUserId });          
+          if(timer.status == true) {
+            return { totalDuration: timer.data.total_duration };
+          }
+          else {
+            throw new Error('Running timer not found.');
+          }
         },
       },
       log: {
-        type: new GraphQLList(new GraphQLObjectType({
+        type: new GraphQLObjectType({
           name: 'Log',
           fields: {
             id: { type: GraphQLString }
           }
-        })),
+        }),
         args: {
-          start: { type: new GraphQLNonNull(GraphQLString) },
-          end: { type: new GraphQLNonNull(GraphQLString) },
+          projectTaskId: { type: new GraphQLNonNull(GraphQLInt) },
+          externalUserId: { type: new GraphQLNonNull(GraphQLString) },
+          duration: { type: GraphQLInt },
+          notes: { type: GraphQLString },
+          startsAt: { type: GraphQLString },
+          endsAt: { type: GraphQLString }
         },
-        resolve: (_, { name }) => {
-          return [{id: 'Deneme'}];
+        resolve: async (_, { projectTaskId, externalUserId, duration, notes, startsAt, endsAt }) => {
+          const timers = Timers({ graphqlClient });
+          const timer = await timers.log({
+            projectTaskId,
+            externalUserId,
+            duration,
+            taskComment: notes,
+            startsAt,
+            endsAt
+          });
+          if(timer.status == true) {
+            return { id: timer.data.id };
+          }
+        },
+      },
+      remove: {
+        type: new GraphQLObjectType({
+          name: 'Remove',
+          fields: {
+            id: { type: GraphQLInt }
+          }
+        }),
+        args: {
+          timerId: { type: new GraphQLNonNull(GraphQLInt) },
+        },
+        resolve: async (_, { timerId, externalUserId }) => {
+          const timers = Timers({ graphqlClient });
+          const timer = await timers.remove({ timerId, externalUserId });
+          if(timer.status == true) {
+            return { id: timer.data.id };
+          }
         },
       },
     },
