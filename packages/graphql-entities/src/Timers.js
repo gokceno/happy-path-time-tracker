@@ -214,12 +214,13 @@ const Timers = ({ graphqlClient }) => {
     return { status: false };
   }
   const update = async(params) => {
+    // TODO: Check user when updating timer entry
     const { timerId, data } = params;
     if(timerId == undefined) {
       throw new Error('Required parameters not set.');
     }
     const EditTimerMutation = `
-      mutation update_timers_item($timerId: ID!, $taskComment: String, $duration: Int!, $startsAt: Date, $endsAt: Date) {
+      mutation update_timers_item($timerId: ID!, $taskComment: String, $duration: Int, $startsAt: Date, $endsAt: Date) {
         update_timers_item(id: $timerId, data: {notes: $taskComment, duration: $duration, starts_at: $startsAt, ends_at: $endsAt}) {
           id
           task {
