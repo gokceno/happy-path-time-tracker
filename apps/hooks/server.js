@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
-import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLInputObjectType } from 'graphql';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers } from './src/routes.js';
 import { Projects, Tasks, Timers } from '@happy-path/graphql-entities';
@@ -221,6 +221,38 @@ const schema = new GraphQLSchema({
         resolve: async (_, { timerId, externalUserId }) => {
           const timers = Timers({ graphqlClient });
           const timer = await timers.remove({ timerId, externalUserId });
+          if(timer.status == true) {
+            return { id: timer.data.id };
+          }
+        },
+      },
+      update: {
+        type: new GraphQLObjectType({
+          name: 'Update',
+          fields: {
+            id: { type: GraphQLInt }
+          }
+        }),
+        args: {
+          timerId: { type: new GraphQLNonNull(GraphQLInt) },
+          input: { type: new GraphQLInputObjectType({
+            name: 'Input',
+            fields: {
+              duration: { type: GraphQLInt },
+              startsAt: { type: GraphQLString },
+              endsAt: { type: GraphQLString },
+              notes: { type: GraphQLString }
+            }
+          })}
+        },
+        resolve: async (_, { timerId, input }) => {
+          const timers = Timers({ graphqlClient });
+          const timer = await timers.update({ timerId, data: {
+            duration: input?.duration,
+            startsAt: input?.startsAt,
+            endsAt: input?.endsAt,
+            taskComment: input?.notes
+          }});
           if(timer.status == true) {
             return { id: timer.data.id };
           }
