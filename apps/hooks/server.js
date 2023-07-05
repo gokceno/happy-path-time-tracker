@@ -2,11 +2,17 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
+import { createRequire } from "module";
 import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLInputObjectType } from 'graphql';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers } from './src/routes.js';
 import { Projects, Tasks, Timers } from '@happy-path/graphql-entities';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
+
+// Apply some hacks & init Magic
+const require = createRequire(import.meta.url);
+const { Magic } = require('@magic-sdk/admin');
+const magic = new Magic(process.env.MAGIC_SECRET_KEY);
 
 // Init Express
 const app = express();
@@ -25,7 +31,7 @@ const loggerOptions = {
 const logger = pino(loggerOptions);
 const pinoHttpLogger = pinoHttp(loggerOptions);
 
-const authenticate = (req, res, next) => {
+const authenticateAPI = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if(token == undefined || token == null) return res.sendStatus(401);
@@ -33,20 +39,45 @@ const authenticate = (req, res, next) => {
   next();
 }
 
+const authenticateUser = async (req, res, next) => {
+  try {
+    magic.token.validate(req.headers['authorization'].split(' ')[1]);
+  }
+  catch(e) {
+    res.log.debug(e);
+    return res.sendStatus(403);
+  }
+  next();
+}
+
 app.use(pinoHttpLogger);
 app.use(bodyParser.json());
 app.use(express.json());
-app.use(authenticate);
 
-app.post('/timers/update/total-duration', calculateTotalDuration);
-app.post('/timers/update/regularly/total-duration', calculateTotalDurationRegularly);
-app.post('/notify/users/with/absent/timers', notifyUsersWithAbsentTimers);
-app.post('/notify/users/with/prolonged/timers', notifyUsersWithProlongedTimers);
+app.post('/timers/update/total-duration', authenticateAPI, calculateTotalDuration);
+app.post('/timers/update/regularly/total-duration', authenticateAPI, calculateTotalDurationRegularly);
+app.post('/notify/users/with/absent/timers', authenticateAPI, notifyUsersWithAbsentTimers);
+app.post('/notify/users/with/prolonged/timers', authenticateAPI, notifyUsersWithProlongedTimers);
 
 const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'Query',
     fields: {
+      me: {
+        type: new GraphQLObjectType({
+          name: 'Me',
+          fields: {
+            did: { type: GraphQLString },
+            email: { type: GraphQLString }
+          }
+        }),
+        resolve: async (_, { name }, context) => {
+          return {
+            did: context.issuer,
+            email: context.email,
+          }
+        },
+      },
       timers: {
         args: {
           startsAt: { type: new GraphQLNonNull(GraphQLString) },
@@ -262,7 +293,10 @@ const schema = new GraphQLSchema({
   }),
 });
 
-app.all('/graphql', createHandler({ schema }));
+app.all('/graphql', authenticateUser, createHandler({ 
+  schema, 
+  context: async (req) => await magic.users.getMetadataByToken(req.headers['authorization'].split(' ')[1]) 
+}));
 
 
 (async () => {
