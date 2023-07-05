@@ -205,13 +205,13 @@ const notifyUsersWithAbsentTimers = async (req, res, next) => {
   });
   usersWithNoTimers.forEach(item => {
     slackClientApp.client.chat.postMessage({
-      channel: item.id,
+      channel: item.slack_user_id,
       text: `You haven't started any timers ⏳ today. Care to log some time? 🙏`
     });
   });
   usersWithLowTimers.forEach(item => {
     slackClientApp.client.chat.postMessage({
-      channel: item.id,
+      channel: item.slack_user_id,
       text: `How is your day going? I see that you haven't logged much time ⏳ today. Care to log more time? 🙏`
     });
   });
@@ -315,7 +315,7 @@ const TimersQuery = `
         }
       }
       user_id {
-        id
+        slack_user_id
       }
     }
   }
@@ -352,7 +352,7 @@ const UserTimersQuery = `
         duration
         total_duration
       }
-      id
+      slack_user_id
     }
   }
 `;
