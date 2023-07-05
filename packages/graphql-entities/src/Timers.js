@@ -77,7 +77,7 @@ const Timers = ({ graphqlClient }) => {
       throw new Error('projectTaskId and externalUserId must be set');
     }
     const CreateTimerMutation = `
-      mutation create_timers_item($externalUserId: ID!, $duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String) {
+      mutation create_timers_item($externalUserId: String!, $duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String) {
         create_timers_item(
           data: {user_id: {slack_user_id: $externalUserId}, duration: $duration, ends_at: $endsAt, starts_at: $startsAt, notes: $taskComment, task: {id: $projectTaskId}}
         ) {
