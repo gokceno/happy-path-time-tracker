@@ -4,7 +4,7 @@ const Users = ({ graphqlClient }) => {
     const CreateUserMutation = `
       mutation create_users_item($firstName: String, $lastName: String, $timezone: String!, $externalId: ID!) {
         create_users_item(
-        data: {id: $externalId, first_name: $firstName, last_name: $lastName, timezone: $timezone}
+        data: {slack_user_id: $externalId, first_name: $firstName, last_name: $lastName, timezone: $timezone}
         ) {
           id
         }

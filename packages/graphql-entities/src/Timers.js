@@ -6,7 +6,7 @@ const Timers = ({ graphqlClient }) => {
     if(externalUserId == undefined) throw new Error('externalUserId must be set');
     const TimersQuery = `
       query Timers($externalUserId: String!) {
-        timers(filter: {ends_at: {_null: true}, user_id: {id: {_eq: $externalUserId}}}) {
+        timers(filter: {ends_at: {_null: true}, user_id: {slack_user_id: {_eq: $externalUserId}}}) {
           id
           duration
           total_duration
@@ -41,7 +41,7 @@ const Timers = ({ graphqlClient }) => {
     const TimersQuery = `
       query Timers {
         timers(
-        filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}, user_id: { id: {_eq: "${externalUserId}"}}}
+        filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}, user_id: { slack_user_id: {_eq: "${externalUserId}"}}}
         ) {
           id
           duration
@@ -79,7 +79,7 @@ const Timers = ({ graphqlClient }) => {
     const CreateTimerMutation = `
       mutation create_timers_item($externalUserId: ID!, $duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String) {
         create_timers_item(
-          data: {user_id: {id: $externalUserId}, duration: $duration, ends_at: $endsAt, starts_at: $startsAt, notes: $taskComment, task: {id: $projectTaskId}}
+          data: {user_id: {slack_user_id: $externalUserId}, duration: $duration, ends_at: $endsAt, starts_at: $startsAt, notes: $taskComment, task: {id: $projectTaskId}}
         ) {
           id
           starts_at
