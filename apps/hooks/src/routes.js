@@ -11,6 +11,7 @@ Array.prototype.random = function () {
   return this[Math.floor((Math.random()*this.length))];
 }
 
+// TODO: Should use from packages.
 const GraphQLClient = new Client({
   url: process.env.DIRECTUS_API_URL,
   exchanges: [fetchExchange],
