@@ -81,8 +81,7 @@ const schema = new GraphQLSchema({
       timers: {
         args: {
           startsAt: { type: new GraphQLNonNull(GraphQLString) },
-          endsAt: { type: new GraphQLNonNull(GraphQLString) },
-          externalUserId: { type: new GraphQLNonNull(GraphQLString) },
+          endsAt: { type: new GraphQLNonNull(GraphQLString) }
         },
         type: new GraphQLList(new GraphQLObjectType({
           name: 'Timers',
@@ -107,9 +106,9 @@ const schema = new GraphQLSchema({
             }})},
           }
         })),
-        resolve: async (_, { startsAt, endsAt, externalUserId }) => {
+        resolve: async (_, { startsAt, endsAt }, context) => {
           const timers = Timers({ graphqlClient });
-          return (await timers.list({ startsAt, endsAt, externalUserId })).map(item => ({ 
+          return (await timers.list({ startsAt, endsAt, did: context.issuer })).map(item => ({ 
             id: item.id, 
             startsAt: item.starts_at,
             endsAt: item.ends_at,
@@ -135,7 +134,7 @@ const schema = new GraphQLSchema({
             projectName: { type: GraphQLString }
           }
         })),
-        resolve: async (_, { name }) => {
+        resolve: async (_, { name }, context) => {
           const projects = Projects({ graphqlClient });
           return (await projects.list()).map(item => ({ id: item.id, projectName: item.project_name }));
         },
@@ -151,7 +150,7 @@ const schema = new GraphQLSchema({
         args: {
           projectId: { type: new GraphQLNonNull(GraphQLInt) }
         },
-        resolve: async (_, { projectId }) => {
+        resolve: async (_, { projectId }, context) => {
           const tasks = Tasks({ graphqlClient, queryParams: { projectId } });
           return (await tasks.list()).map(item => ({ id: item.id, taskName: item.tasks_id.task_name }));
         },
@@ -170,15 +169,14 @@ const schema = new GraphQLSchema({
         }),
         args: {
           projectTaskId: { type: new GraphQLNonNull(GraphQLInt) },
-          externalUserId: { type: new GraphQLNonNull(GraphQLString) },
           duration: { type: GraphQLInt },
           notes: { type: GraphQLString }
         },
-        resolve: async (_, { projectTaskId, externalUserId, startsAt, duration, notes }) => {
+        resolve: async (_, { projectTaskId, startsAt, duration, notes }, context) => {
           const timers = Timers({ graphqlClient });
           const timer = await timers.start({
             projectTaskId,
-            externalUserId,
+            did: context.issuer,
             duration,
             taskComment: notes
           });
@@ -196,11 +194,10 @@ const schema = new GraphQLSchema({
         }),
         args: {
           timerId: { type: new GraphQLNonNull(GraphQLInt) },
-          externalUserId: { type: new GraphQLNonNull(GraphQLString) },
         },
-        resolve: async (_, { timerId, externalUserId }) => {
+        resolve: async (_, { timerId }, context) => {
           const timers = Timers({ graphqlClient });
-          const timer = await timers.stop({ timerId, externalUserId });          
+          const timer = await timers.stop({ timerId, did: context.issuer });          
           if(timer.status == true) {
             return { totalDuration: timer.data.total_duration };
           }
@@ -218,17 +215,16 @@ const schema = new GraphQLSchema({
         }),
         args: {
           projectTaskId: { type: new GraphQLNonNull(GraphQLInt) },
-          externalUserId: { type: new GraphQLNonNull(GraphQLString) },
           duration: { type: GraphQLInt },
           notes: { type: GraphQLString },
           startsAt: { type: GraphQLString },
           endsAt: { type: GraphQLString }
         },
-        resolve: async (_, { projectTaskId, externalUserId, duration, notes, startsAt, endsAt }) => {
+        resolve: async (_, { projectTaskId, duration, notes, startsAt, endsAt }, context) => {
           const timers = Timers({ graphqlClient });
           const timer = await timers.log({
             projectTaskId,
-            externalUserId,
+            did: context.issuer,
             duration,
             taskComment: notes,
             startsAt,
@@ -249,9 +245,9 @@ const schema = new GraphQLSchema({
         args: {
           timerId: { type: new GraphQLNonNull(GraphQLInt) },
         },
-        resolve: async (_, { timerId, externalUserId }) => {
+        resolve: async (_, { timerId }, context) => {
           const timers = Timers({ graphqlClient });
-          const timer = await timers.remove({ timerId, externalUserId });
+          const timer = await timers.remove({ timerId, did: context.issuer });
           if(timer.status == true) {
             return { id: timer.data.id };
           }
@@ -276,7 +272,7 @@ const schema = new GraphQLSchema({
             }
           })}
         },
-        resolve: async (_, { timerId, input }) => {
+        resolve: async (_, { timerId, input }, context) => {
           const timers = Timers({ graphqlClient });
           const timer = await timers.update({ timerId, data: {
             duration: input?.duration,

@@ -37,7 +37,8 @@ const Users = ({ graphqlClient }) => {
       }
       `;
       const queryResponse = await graphqlClient.query(UserQuery, { did });
-      if(queryResponse.data != undefined && typeof queryResponse.data.users == 'object') {
+      if(queryResponse?.data?.users != undefined && typeof queryResponse?.data?.users == 'object') {
+        if(queryResponse.data.users.length == 0) throw new Error('User not found');
         return +queryResponse.data.users[0].id;
       }
       else {

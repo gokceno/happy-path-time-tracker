@@ -3,9 +3,9 @@ import { Users } from '@happy-path/graphql-entities';
 
 const Timers = ({ graphqlClient }) => {
   const _findRunningTimer = async (params) => {
-    const { externalUserId } = params;
-    if(externalUserId == undefined) throw new Error('externalUserId must be set');
-    const userId = await Users({ graphqlClient }).findUserId({ externalUserId });
+    const { externalUserId, email, did } = params;
+    if(externalUserId == undefined && email == undefined && did == undefined) throw new Error('A user identifier must be set');
+    const userId = await Users({ graphqlClient }).findUserId({ externalUserId, email, did });
     const TimersQuery = `
       query Timers {
         timers(filter: {ends_at: {_null: true}, user_id: {id: {_eq: ${userId} }}}) {
@@ -35,15 +35,16 @@ const Timers = ({ graphqlClient }) => {
     };
   }
   const list = async (params, formatter) => { 
-    const { startsAt, endsAt, externalUserId } = params;
-    if(startsAt == undefined || endsAt == undefined || externalUserId == undefined) {
+    const { startsAt, endsAt, externalUserId, email, did } = params;
+    if(startsAt == undefined || endsAt == undefined || (externalUserId == undefined && did == undefined && email == undefined)) {
       throw new Error('Required parameters not set.');
     }
+    const userId = await Users({ graphqlClient }).findUserId({ externalUserId, email, did });
     // FIXME: Diğer sorgularda graphql param'ları ayrı veriyoruz ama between date tipinde kabul etmediği için içine gömdük.
     const TimersQuery = `
       query Timers {
         timers(
-        filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}, user_id: { slack_user_id: {_eq: "${externalUserId}"}}}
+        filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}, user_id: { id: {_eq: "${userId}"}}}
         ) {
           id
           duration
@@ -74,11 +75,11 @@ const Timers = ({ graphqlClient }) => {
     return [];
   }
   const log = async (params) => {
-    const { projectTaskId, externalUserId, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = DateTime.now().toString() } = params;
-    if(projectTaskId == undefined || externalUserId == undefined) {
-      throw new Error('projectTaskId and externalUserId must be set');
+    const { projectTaskId, externalUserId, email, did, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = DateTime.now().toString() } = params;
+    if(projectTaskId == undefined || (externalUserId == undefined && did == undefined && email == undefined)) {
+      throw new Error('Required parameters not set.');
     }
-    const userId = await Users({ graphqlClient }).findUserId({ externalUserId });
+    const userId = await Users({ graphqlClient }).findUserId({ externalUserId, email, did });
     const CreateTimerMutation = `
       mutation create_timers_item($userId: ID!, $duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String) {
         create_timers_item(
