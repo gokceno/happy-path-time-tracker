@@ -4,7 +4,7 @@ import YAML from 'yaml';
 import { Client, fetchExchange } from '@urql/core';
 import { DateTime } from 'luxon';
 import * as priceModifiers from './Price/Modifiers.js';
-import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
+import { GraphQLClient } from '@happy-path/graphql-client';
 
 dotenv.config();
 
