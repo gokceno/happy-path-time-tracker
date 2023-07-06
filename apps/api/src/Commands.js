@@ -160,7 +160,7 @@ const sync = async ({ command, respond, ack, body, client, logger }) => {
     if(result.ok == true) {
       const users = Users({ graphqlClient });
       const { status, data } = await users.sync({ 
-        externalId: result.user.id,
+        externalUserId: result.user.id,
         firstName: result.user.profile.first_name,
         lastName: result.user.profile.last_name,
         email: result.user.profile.email,
