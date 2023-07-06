@@ -1,12 +1,14 @@
 import { DateTime } from 'luxon';
+import { Users } from '@happy-path/graphql-entities';
 
 const Timers = ({ graphqlClient }) => {
   const _findRunningTimer = async (params) => {
     const { externalUserId } = params;
     if(externalUserId == undefined) throw new Error('externalUserId must be set');
+    const userId = await Users({ graphqlClient }).findUserId({ externalUserId });
     const TimersQuery = `
-      query Timers($externalUserId: String!) {
-        timers(filter: {ends_at: {_null: true}, user_id: {slack_user_id: {_eq: $externalUserId}}}) {
+      query Timers {
+        timers(filter: {ends_at: {_null: true}, user_id: {id: {_eq: ${userId} }}}) {
           id
           duration
           total_duration
@@ -23,7 +25,7 @@ const Timers = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.query(TimersQuery, { externalUserId });
+    const response = await graphqlClient.query(TimersQuery);
     if(response.data.timers.length > 1) {
       throw new Error('Multiple running timers found, manual intervention required.');
     }
@@ -76,10 +78,11 @@ const Timers = ({ graphqlClient }) => {
     if(projectTaskId == undefined || externalUserId == undefined) {
       throw new Error('projectTaskId and externalUserId must be set');
     }
+    const userId = await Users({ graphqlClient }).findUserId({ externalUserId });
     const CreateTimerMutation = `
-      mutation create_timers_item($externalUserId: String!, $duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String) {
+      mutation create_timers_item($userId: ID!, $duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String) {
         create_timers_item(
-          data: {user_id: {slack_user_id: $externalUserId}, duration: $duration, ends_at: $endsAt, starts_at: $startsAt, notes: $taskComment, task: {id: $projectTaskId}}
+          data: {user_id: {id: $userId}, duration: $duration, ends_at: $endsAt, starts_at: $startsAt, notes: $taskComment, task: {id: $projectTaskId}}
         ) {
           id
           starts_at
@@ -97,7 +100,7 @@ const Timers = ({ graphqlClient }) => {
       }
     `;
     const response = await graphqlClient.mutation(CreateTimerMutation, {
-      externalUserId,
+      userId,
       duration:+duration,
       projectTaskId: +projectTaskId,
       taskComment,
