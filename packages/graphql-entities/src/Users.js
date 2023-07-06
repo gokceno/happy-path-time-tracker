@@ -58,6 +58,7 @@ const Users = ({ graphqlClient }) => {
     }
   }
   const findUserId = async (params) => {
+    // TODO: Simplfy the if-blocks
     const { externalUserId, email, did, userId } = params;
     if(userId == undefined && externalUserId == undefined && email == undefined && did == undefined) throw new Error('A user identifier must be set');
     if(userId !== undefined) return +userId;
