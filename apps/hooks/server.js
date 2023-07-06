@@ -108,7 +108,7 @@ const schema = new GraphQLSchema({
         })),
         resolve: async (_, { startsAt, endsAt }, context) => {
           const timers = Timers({ graphqlClient });
-          return (await timers.list({ startsAt, endsAt, did: context.issuer })).map(item => ({ 
+          return (await timers.list({ startsAt, endsAt, email: context.email })).map(item => ({ 
             id: item.id, 
             startsAt: item.starts_at,
             endsAt: item.ends_at,
@@ -176,7 +176,7 @@ const schema = new GraphQLSchema({
           const timers = Timers({ graphqlClient });
           const timer = await timers.start({
             projectTaskId,
-            did: context.issuer,
+            email: context.email,
             duration,
             taskComment: notes
           });
@@ -197,7 +197,7 @@ const schema = new GraphQLSchema({
         },
         resolve: async (_, { timerId }, context) => {
           const timers = Timers({ graphqlClient });
-          const timer = await timers.stop({ timerId, did: context.issuer });          
+          const timer = await timers.stop({ timerId, email: context.email });          
           if(timer.status == true) {
             return { totalDuration: timer.data.total_duration };
           }
@@ -224,7 +224,7 @@ const schema = new GraphQLSchema({
           const timers = Timers({ graphqlClient });
           const timer = await timers.log({
             projectTaskId,
-            did: context.issuer,
+            email: context.email,
             duration,
             taskComment: notes,
             startsAt,
@@ -247,7 +247,7 @@ const schema = new GraphQLSchema({
         },
         resolve: async (_, { timerId }, context) => {
           const timers = Timers({ graphqlClient });
-          const timer = await timers.remove({ timerId, did: context.issuer });
+          const timer = await timers.remove({ timerId, email: context.email });
           if(timer.status == true) {
             return { id: timer.data.id };
           }

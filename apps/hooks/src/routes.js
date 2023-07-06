@@ -4,24 +4,13 @@ import YAML from 'yaml';
 import { Client, fetchExchange } from '@urql/core';
 import { DateTime } from 'luxon';
 import * as priceModifiers from './Price/Modifiers.js';
+import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
 
 dotenv.config();
 
 Array.prototype.random = function () {
   return this[Math.floor((Math.random()*this.length))];
 }
-
-// TODO: Should use from packages.
-const GraphQLClient = new Client({
-  url: process.env.DIRECTUS_API_URL,
-  exchanges: [fetchExchange],
-  fetchOptions: () => {
-    const token = process.env.DIRECTUS_API_TOKEN;
-    return {
-      headers: { authorization: token ? `Bearer ${token}` : '' },
-    };
-  },
-});
 
 // TODO: Billable olmayan task tipleri?
 // TODO: import statements
@@ -189,6 +178,7 @@ const initSlackClient = () => {
   return slackClientApp;
 }
 
+// TODO: Email users may not have slack ids
 const notifyUsersWithAbsentTimers = async (req, res, next) => {
   const slackClientApp = initSlackClient();
   const queryResponse = await GraphQLClient.query(UserTimersQuery, { 
@@ -218,6 +208,7 @@ const notifyUsersWithAbsentTimers = async (req, res, next) => {
   res.json({ok: true, numOfUsersWithNoTimers: usersWithNoTimers.length, numOfUsersWithLowTimers: usersWithLowTimers.length});
 }
 
+// TODO: Email users may not have slack ids
 const notifyUsersWithProlongedTimers = async (req, res, next) => {
   if(req.body.data != undefined && typeof req.body.data == 'object') {
     const slackClientApp = initSlackClient();

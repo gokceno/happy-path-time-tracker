@@ -4,7 +4,7 @@ const Users = ({ graphqlClient }) => {
     const CreateUserMutation = `
       mutation create_users_item($firstName: String, $lastName: String, $timezone: String, $externalUserId: String, $email: String) {
         create_users_item(
-        data: {slack_user_id: $externalUserId, first_name: $firstName, last_name: $lastName, timezone: $timezone, email: $email}
+          data: {slack_user_id: $externalUserId, first_name: $firstName, last_name: $lastName, timezone: $timezone, email: $email}
         ) {
           id
         }
@@ -22,7 +22,39 @@ const Users = ({ graphqlClient }) => {
     }
     else {
       throw new Error(response.error);
-      logger.error(response.error);
+    }
+  }
+  const _update = async (params) => {
+    const {firstName, lastName, timezone, externalUserId, email, userId } = params;
+    const UpdateUserMutation = `
+      mutation update_users_item($firstName: String, $lastName: String, $timezone: String, $externalUserId: String, $email: String, $userId: ID!) {
+        update_users_item(
+          data: {
+            email: $email, 
+            timezone: $timezone, 
+            last_name: $lastName, 
+            first_name: $firstName,
+            slack_user_id: $externalUserId
+          }
+          id: $userId
+        ) {
+          id
+        }
+      }
+    `;
+    const response = await graphqlClient.mutation(UpdateUserMutation, {
+      firstName,
+      lastName,
+      timezone,
+      externalUserId,
+      email,
+      userId
+    });
+    if(response.error == undefined) {
+      return { status: true, data: response.data.update_users_item };
+    }
+    else {
+      throw new Error(response.error);
     }
   }
   const findUserId = async (params) => {
@@ -39,7 +71,7 @@ const Users = ({ graphqlClient }) => {
       `;
       const queryResponse = await graphqlClient.query(UserQuery, { did });
       if(queryResponse?.data?.users != undefined && typeof queryResponse?.data?.users == 'object') {
-        if(queryResponse.data.users.length == 0) throw new Error('User not found');
+        if(queryResponse.data.users.length == 0) return null;
         return +queryResponse.data.users[0].id;
       }
       else {
@@ -56,7 +88,7 @@ const Users = ({ graphqlClient }) => {
       `;
       const queryResponse = await graphqlClient.query(UserQuery, { email });
       if(queryResponse?.data?.users != undefined && typeof queryResponse?.data?.users == 'object') {
-        if(queryResponse.data.users.length == 0) throw new Error('User not found');
+        if(queryResponse.data.users.length == 0) return null;
         return +queryResponse.data.users[0].id;
       }
       else {
@@ -73,7 +105,7 @@ const Users = ({ graphqlClient }) => {
       `;
       const queryResponse = await graphqlClient.query(UserQuery, { externalUserId });
       if(queryResponse?.data?.users != undefined && typeof queryResponse?.data?.users == 'object') {
-        if(queryResponse.data.users.length == 0) throw new Error('User not found');
+        if(queryResponse.data.users.length == 0) return null;
         return +queryResponse.data.users[0].id;
       }
       else {
@@ -82,10 +114,37 @@ const Users = ({ graphqlClient }) => {
     }
     return null;
   }
-  const sync = async(params) => {
-    return await _create(params);
+  const syncByExternalUserId = async(params) => {
+    const { externalUserId } = params;
+    try {
+      const userId = await findUserId({ externalUserId });
+      if(userId != undefined && userId != null) {
+        return await _update({ ...params, userId });
+      }
+      else {
+        return await _create(params);
+      }
+    }
+    catch(e) {
+      return { status: false }
+    }
   }
-  return { sync, findUserId }
+  const syncByEmail = async(params) => {
+    const { email } = params;
+    try {
+      const userId = await findUserId({ email });
+      if(userId != undefined && userId != null) {
+        return await _update({ ...params, userId });
+      }
+      else {
+        return await _create(params);
+      }
+    }
+    catch(e) {
+      return { status: false }
+    }
+  }
+  return { syncByExternalUserId, syncByEmail, findUserId }
 }
 
 export { Users }
