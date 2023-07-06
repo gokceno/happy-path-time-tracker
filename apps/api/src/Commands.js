@@ -163,6 +163,7 @@ const sync = async ({ command, respond, ack, body, client, logger }) => {
         externalId: result.user.id,
         firstName: result.user.profile.first_name,
         lastName: result.user.profile.last_name,
+        email: result.user.profile.email,
         timezone: result.user.tz
       });
       logger.debug(data);

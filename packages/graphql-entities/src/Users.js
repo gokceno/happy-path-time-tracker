@@ -1,10 +1,10 @@
 const Users = ({ graphqlClient }) => {
   const _create = async (params) => {
-    const {firstName, lastName, timezone, externalId} = params;
+    const {firstName, lastName, timezone, externalUserId, email } = params;
     const CreateUserMutation = `
-      mutation create_users_item($firstName: String, $lastName: String, $timezone: String!, $externalId: ID!) {
+      mutation create_users_item($firstName: String, $lastName: String, $timezone: String, $externalUserId: String, $email: String) {
         create_users_item(
-        data: {slack_user_id: $externalId, first_name: $firstName, last_name: $lastName, timezone: $timezone}
+        data: {slack_user_id: $externalUserId, first_name: $firstName, last_name: $lastName, timezone: $timezone, email: $email}
         ) {
           id
         }
@@ -14,7 +14,8 @@ const Users = ({ graphqlClient }) => {
       firstName,
       lastName,
       timezone,
-      externalId
+      externalUserId,
+      email
     });
     if(response.error == undefined) {
       return { status: true, data: response.data.create_users_item };
@@ -54,7 +55,8 @@ const Users = ({ graphqlClient }) => {
       }
       `;
       const queryResponse = await graphqlClient.query(UserQuery, { email });
-      if(queryResponse.data != undefined && typeof queryResponse.data.users == 'object') {
+      if(queryResponse?.data?.users != undefined && typeof queryResponse?.data?.users == 'object') {
+        if(queryResponse.data.users.length == 0) throw new Error('User not found');
         return +queryResponse.data.users[0].id;
       }
       else {
@@ -70,7 +72,8 @@ const Users = ({ graphqlClient }) => {
       }
       `;
       const queryResponse = await graphqlClient.query(UserQuery, { externalUserId });
-      if(queryResponse.data != undefined && typeof queryResponse.data.users == 'object') {
+      if(queryResponse?.data?.users != undefined && typeof queryResponse?.data?.users == 'object') {
+        if(queryResponse.data.users.length == 0) throw new Error('User not found');
         return +queryResponse.data.users[0].id;
       }
       else {
