@@ -52,7 +52,7 @@ const calculateTotalDuration = async (req, res, next) => {
         defaultMetadataString += '\n';
         defaultMetadataString += queryResponse.data.timers_by_id.task.projects_id.metadata;
         try {
-          const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, userId: queryResponse.data.timers_by_id.user_id.id, startsAt, endsAt: DateTime.now()});
+          const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, userId: queryResponse.data.timers_by_id.user_id.slack_user_id, startsAt, endsAt: DateTime.now()});
           // Update totalDuration+totalCost
           if(queryResponse.data.timers_by_id.total_duration !== totalDuration && totalCost != undefined) {
             const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId, totalDuration, totalDurationInHours, totalCost });
@@ -86,8 +86,8 @@ const calculateTotalDuration = async (req, res, next) => {
   }
 }
 
-// TODO: sadece güncelleme varsa edit'lemeli
 const calculateTotalDurationRegularly = async (req, res, next) => {
+  // TODO: Should update only if there are changed values
   if(req.body.metadata != undefined && req.body.data != undefined && typeof req.body.data == 'object') {
     req.body.data.forEach(async (item) => {
       let defaultMetadataString = '';
@@ -208,8 +208,9 @@ const notifyUsersWithAbsentTimers = async (req, res, next) => {
   res.json({ok: true, numOfUsersWithNoTimers: usersWithNoTimers.length, numOfUsersWithLowTimers: usersWithLowTimers.length});
 }
 
-// TODO: Email users may not have slack ids
 const notifyUsersWithProlongedTimers = async (req, res, next) => {
+  // TODO: Email users may not have slack ids, in that case messages  wouldn'e be delivered
+  // FIXME: Slack messages are not delivered
   if(req.body.data != undefined && typeof req.body.data == 'object') {
     const slackClientApp = initSlackClient();
     req.body.data.forEach(async (item) => {
