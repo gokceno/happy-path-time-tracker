@@ -149,8 +149,8 @@ const calculateTotalCost = (params) => {
   return totalCost;
 }
 
-// TODO: Project entity'si içine taşınmalı
 const fetchProjectByTaskId = async (projectTaskId) => {
+  // TODO: May be moved to graphql-entities within packages
   const queryResponse = await GraphQLClient.query(ProjectMetadataQuery, { projectTaskId });
   if(queryResponse?.data?.projects_tasks_by_id.projects_id != undefined && typeof queryResponse.data.projects_tasks_by_id.projects_id == 'object') {
     return { status: true, data: queryResponse.data.projects_tasks_by_id.projects_id }
@@ -162,6 +162,7 @@ const fetchProjectByTaskId = async (projectTaskId) => {
 }
 
 const initSlackClient = () => {
+  // TODO: may be moved to packages
   const { App, LogLevel } = bolt;
   const slackClientApp = new App({
     token: process.env.SLACK_BOT_TOKEN,
@@ -173,8 +174,8 @@ const initSlackClient = () => {
   return slackClientApp;
 }
 
-// TODO: Email users may not have slack ids
 const notifyUsersWithAbsentTimers = async (req, res, next) => {
+  // TODO: Email users may not have slack ids
   const slackClientApp = initSlackClient();
   const queryResponse = await GraphQLClient.query(UserTimersQuery, { 
     startsAt: DateTime.now().toFormat("yyyy-MM-dd'T00:00:00'"), 
