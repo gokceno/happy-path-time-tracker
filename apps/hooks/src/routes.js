@@ -31,18 +31,13 @@ const calculateTotalDuration = async (req, res, next) => {
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
       // Calculate totalDuration
       let startsAt, endsAt;
-      let totalDuration = queryResponse?.data?.timers_by_id?.total_duration;
+      let totalDuration = queryResponse?.data?.timers_by_id?.total_duration || 0;
       if(queryResponse.data.timers_by_id.starts_at && queryResponse.data.timers_by_id.ends_at) {
         startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
         endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
-        if(totalDuration == undefined || totalDuration == 0) {
-          const duration = endsAt.diff(startsAt, 'minutes');
-          const { minutes: durationInMinutes } = duration.toObject();
-          totalDuration = Math.floor(durationInMinutes + queryResponse.data.timers_by_id.duration);
-        }
-        else {
-          totalDuration = +queryResponse.data.timers_by_id.duration;
-        }
+        const duration = endsAt.diff(startsAt, 'minutes');
+        const { minutes: durationInMinutes } = duration.toObject();
+        totalDuration = Math.floor(durationInMinutes + queryResponse.data.timers_by_id.duration);
       }
       const totalDurationInHours = +((totalDuration / 60).toFixed(2));
       // Calculate totalCost
