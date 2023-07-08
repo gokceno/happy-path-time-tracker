@@ -5,7 +5,10 @@ import pinoHttp from 'pino-http';
 import { createRequire } from "module";
 import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLInputObjectType } from 'graphql';
 import { createHandler } from 'graphql-http/lib/use/express';
-import { calculateTotalDuration, calculateTotalDurationRegularly, notifyUsersWithAbsentTimers, notifyUsersWithProlongedTimers } from './src/routes.js';
+import { notifyUsersWithProlongedTimers } from './src/routes/notifyUsersWithProlongedTimers.js';
+import { calculateTotalDuration } from './src/Routes/calculateTotalDuration.js';
+import { calculateTotalDurationRegularly } from './src/Routes/calculateTotalDurationRegularly.js';
+import { notifyUsersWithAbsentTimers } from './src/Routes/notifyUsersWithAbsentTimers.js';
 import { Projects, Tasks, Timers } from '@happy-path/graphql-entities';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
 
