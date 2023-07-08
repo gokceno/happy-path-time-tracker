@@ -47,7 +47,7 @@ const calculateTotalDuration = async (req, res, next) => {
         defaultMetadataString += '\n';
         defaultMetadataString += queryResponse.data.timers_by_id.task.projects_id.metadata;
         try {
-          const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, userId: queryResponse.data.timers_by_id.user_id.slack_user_id, startsAt, endsAt: DateTime.now()});
+          const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, email: queryResponse.data.timers_by_id.user_id.email, startsAt, endsAt: DateTime.now()});
           // Update totalDuration+totalCost
           if(queryResponse.data.timers_by_id.total_duration !== totalDuration && totalCost != undefined) {
             const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId, totalDuration, totalDurationInHours, totalCost });
@@ -299,7 +299,7 @@ const TimersQuery = `
         }
       }
       user_id {
-        slack_user_id
+        email
       }
     }
   }
