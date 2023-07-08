@@ -4,7 +4,7 @@ import pino from 'pino';
 import pinoHttp from 'pino-http';
 import { createRequire } from "module";
 import { createHandler } from 'graphql-http/lib/use/express';
-import { notifyUsersWithProlongedTimers } from './src/routes/notifyUsersWithProlongedTimers.js';
+import { notifyUsersWithProlongedTimers } from './src/Routes/notifyUsersWithProlongedTimers.js';
 import { calculateTotalDuration } from './src/Routes/calculateTotalDuration.js';
 import { calculateTotalDurationRegularly } from './src/Routes/calculateTotalDurationRegularly.js';
 import { notifyUsersWithAbsentTimers } from './src/Routes/notifyUsersWithAbsentTimers.js';
