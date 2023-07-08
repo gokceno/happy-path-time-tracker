@@ -8,7 +8,7 @@ import { notifyUsersWithProlongedTimers } from './src/Routes/notifyUsersWithProl
 import { calculateTotalDuration } from './src/Routes/calculateTotalDuration.js';
 import { calculateTotalDurationRegularly } from './src/Routes/calculateTotalDurationRegularly.js';
 import { notifyUsersWithAbsentTimers } from './src/Routes/notifyUsersWithAbsentTimers.js';
-import { schema as graphqlSchema } from './src/Routes/schema.js';
+import { schema } from './src/Routes/schema.js';
 
 // Apply some hacks & init Magic
 const require = createRequire(import.meta.url);
@@ -60,7 +60,7 @@ app.post('/timers/update/regularly/total-duration', authenticateAPI, calculateTo
 app.post('/notify/users/with/absent/timers', authenticateAPI, notifyUsersWithAbsentTimers);
 app.post('/notify/users/with/prolonged/timers', authenticateAPI, notifyUsersWithProlongedTimers);
 app.all('/graphql', authenticateUser, createHandler({ 
-  graphqlSchema, 
+  schema, 
   context: async (req) => await magic.users.getMetadataByToken(req.headers['authorization'].split(' ')[1]) 
 }));
 
