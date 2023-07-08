@@ -11,6 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@happy-path/graphql-client": "*",
+    "@happy-path/slack-client": "*",
     "@slack/bolt": "^3.13.0",
     "@urql/core": "^4.0.4",
     "dotenv": "^16.0.3",

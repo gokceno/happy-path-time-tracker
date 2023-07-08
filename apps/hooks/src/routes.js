@@ -1,10 +1,10 @@
 import dotenv from 'dotenv';
-import bolt from '@slack/bolt';
 import YAML from 'yaml';
 import { Client, fetchExchange } from '@urql/core';
 import { DateTime } from 'luxon';
-import * as priceModifiers from './Price/Modifiers.js';
 import { GraphQLClient } from '@happy-path/graphql-client';
+import { SlackClient as slackClientApp } from '@happy-path/slack-client';
+import * as priceModifiers from './Price/Modifiers.js';
 
 dotenv.config();
 
@@ -149,22 +149,8 @@ const calculateTotalCost = (params) => {
   return totalCost;
 }
 
-const initSlackClient = () => {
-  // TODO: may be moved to packages
-  const { App, LogLevel } = bolt;
-  const slackClientApp = new App({
-    token: process.env.SLACK_BOT_TOKEN,
-    signingSecret: process.env.SLACK_SIGNING_SECRET,
-    appToken: process.env.SLACK_APP_TOKEN,
-    logLevel: LogLevel.INFO,
-    socketMode: false
-  });
-  return slackClientApp;
-}
-
 const notifyUsersWithAbsentTimers = async (req, res, next) => {
   // TODO: Email users may not have slack ids
-  const slackClientApp = initSlackClient();
   const queryResponse = await GraphQLClient.query(UserTimersQuery, { 
     startsAt: DateTime.now().toFormat("yyyy-MM-dd'T00:00:00'"), 
     endsAt: DateTime.now().toFormat("yyyy-MM-dd'T23:59:59'")
@@ -196,7 +182,6 @@ const notifyUsersWithProlongedTimers = async (req, res, next) => {
   // TODO: Email users may not have slack ids, in that case messages  wouldn'e be delivered
   // FIXME: Slack messages are not delivered
   if(req.body.data != undefined && typeof req.body.data == 'object') {
-    const slackClientApp = initSlackClient();
     req.body.data.forEach(async (item) => {
       res.log.debug(item);
       if(item.ends_at == undefined || item.ends_at == null) {

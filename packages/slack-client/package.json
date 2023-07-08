@@ -1,0 +1,6 @@
+{
+  "name": "@happy-path/slack-client",
+  "version": "0.0.0",
+  "main": "./src/SlackClient.js",
+  "type": "module"
+}
