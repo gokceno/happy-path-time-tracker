@@ -83,20 +83,20 @@ const calculateTotalDuration = async (req, res, next) => {
 
 const calculateTotalDurationRegularly = async (req, res, next) => {
   // TODO: Should update only if there are changed values
-  if(req.body.metadata != undefined && req.body.data != undefined && typeof req.body.data == 'object') {
-    req.body.data.forEach(async (item) => {
-      let defaultMetadataString = '';
-      const startsAt = DateTime.fromISO(item.starts_at);
-      const { minutes: durationInMinutes } = DateTime.now().diff(startsAt, 'minutes').toObject();
-      const totalDuration = Math.floor(durationInMinutes + item.duration);
-      const totalDurationInHours = +((totalDuration / 60).toFixed(2));
-      const {status: metadataStatus, data: projectData } = await fetchProjectByTaskId(item.task);
-      if(metadataStatus === true) {
+  if(req.body.metadata != undefined) {
+    const queryResponse = await GraphQLClient.query(TimersWithNoEndDateQuery);
+    if(queryResponse?.data?.timers != undefined && queryResponse?.data?.timers.length > 0) {
+      queryResponse.data.timers.forEach(async (item) => {
+        let defaultMetadataString = '';
+        const startsAt = DateTime.fromISO(item.starts_at);
+        const { minutes: durationInMinutes } = DateTime.now().diff(startsAt, 'minutes').toObject();
+        const totalDuration = Math.floor(durationInMinutes + item.duration);
+        const totalDurationInHours = +((totalDuration / 60).toFixed(2));
         defaultMetadataString += req.body.metadata[0].metadata.trim();
         defaultMetadataString += '\n';
-        defaultMetadataString += projectData.metadata;
+        defaultMetadataString += item?.task?.projects_id?.metadata || '';
         try {
-          const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, userId: item.user_id, startsAt, endsAt: DateTime.now()});
+          const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, email: item.user_id.email, startsAt, endsAt: DateTime.now()});
           if(totalCost != undefined) {
             const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId: item.id, totalDuration, totalDurationInHours, totalCost });
             if(mutationResponse.error != undefined) {
@@ -104,31 +104,31 @@ const calculateTotalDurationRegularly = async (req, res, next) => {
             }
           }
           else {
-            res.log.debug(totalCost);
+            res.log.debug(`Total cost is undefined for timer ID: ${item.id}`);
           }
         }
         catch(e) {
           res.log.error(e);
         }
-      }
-      else {
-        res.log.debug(projectData);
-      }
-    });
-    res.json({ok: true});
+      });
+      res.json({ok: true});
+    }
+    else {
+      res.status(404).send({error: `No running timers were found. Exiting.`});
+    }
   }
   else {
     res.log.debug(req.body);
-    res.status(403).send({error: `Requested data and metadata are missing. Exiting.`});
+    res.status(403).send({error: `Metadata is missing. Exiting.`});
   }
 }
 
 const calculateTotalCost = (params) => {
-  const { userId, totalDurationInHours, totalDuration, startsAt, endsAt, metadata: defaultMetadataString } = params;
+  const { email, totalDurationInHours, totalDuration, startsAt, endsAt, metadata: defaultMetadataString } = params;
   const metadata = YAML.parse(defaultMetadataString);
   const matchedGroup = metadata?.groups?.filter(group => {
     const { members } = group[Object.keys(group)[0]];
-    return members.some(member => member === userId);
+    return members.some(member => member === email);
   });
   let matchedGroupName, totalCost = 0;
   if(matchedGroup?.length > 0) {
@@ -147,18 +147,6 @@ const calculateTotalCost = (params) => {
     }
   }
   return totalCost;
-}
-
-const fetchProjectByTaskId = async (projectTaskId) => {
-  // TODO: May be moved to graphql-entities within packages
-  const queryResponse = await GraphQLClient.query(ProjectMetadataQuery, { projectTaskId });
-  if(queryResponse?.data?.projects_tasks_by_id.projects_id != undefined && typeof queryResponse.data.projects_tasks_by_id.projects_id == 'object') {
-    return { status: true, data: queryResponse.data.projects_tasks_by_id.projects_id }
-  }
-  else {
-    throw new Error(queryResponse.error);
-  }
-  return { status: false }
 }
 
 const initSlackClient = () => {
@@ -273,11 +261,19 @@ const notifyUsersWithProlongedTimers = async (req, res, next) => {
   }
 }
 
-const ProjectMetadataQuery = `
-  query projects_tasks_by_id($projectTaskId: ID!) {
-    projects_tasks_by_id(id: $projectTaskId) {
-      projects_id {
-        metadata
+const TimersWithNoEndDateQuery = `
+  query Timers {
+    timers(filter: {ends_at: {_null: null}}) {
+      id
+      user_id {
+        email
+      }
+      duration
+      starts_at
+      task {
+        projects_id {
+          metadata
+        }
       }
     }
   }
