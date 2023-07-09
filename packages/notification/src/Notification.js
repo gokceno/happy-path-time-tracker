@@ -8,17 +8,15 @@ const Notification = () => {
 	let _emailRecipients = [];
 
 	const _slack = async ({ slackId, message }) => {
-		if(slackId == undefined) return false;
 		try {
 			if(await slackClientApp.client.chat.postMessage({ channel: slackId, text: message })) {
 				return true;
 			}
-			return false
 		}
 		catch(e) {
 			_log(e);
-			return false;
 		}
+		return false
 	}
 	const _email = async ({ email, message })  => {
 		_log({ email, message });
