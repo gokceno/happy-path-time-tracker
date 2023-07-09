@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import YAML from 'yaml';
 import { DateTime } from 'luxon';
 import { GraphQLClient } from '@happy-path/graphql-client';
 import { Notification } from '@happy-path/notification';
