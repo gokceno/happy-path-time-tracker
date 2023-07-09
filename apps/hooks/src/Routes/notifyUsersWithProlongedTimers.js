@@ -15,6 +15,7 @@ const notifyUsersWithProlongedTimers = async (req, res, next) => {
   if(queryResponse?.data?.timers != undefined && queryResponse?.data?.timers.length > 0) {
     queryResponse.data.timers.forEach(async (item) => {
       res.log.debug(item);
+      let message;
       const startsAt = DateTime.fromISO(item.starts_at);
       const { minutes: durationInMinutes } = DateTime.now().diff(startsAt, 'minutes').toObject();
       if(durationInMinutes >= (process.env.PROLONGED_TIMER_SHUTDOWN_TRESHOLD || 480)) {
@@ -23,20 +24,14 @@ const notifyUsersWithProlongedTimers = async (req, res, next) => {
           endsAt: DateTime.now().toISO() 
         });
         if(mutation.error == undefined) {
-          Notification()
-            .addRecipent(item.user_id.slack_user_id, 'slack')
-            .addRecipent(item.user_id.email, 'email')
-            .send({ body: `Ok, let's stop your timer now 🏁, you've done great. Go ahead and start a new timer ⏱️ if you're still here.` });
+          message = `Ok, let's stop your timer now 🏁, you've done great. Go ahead and start a new timer ⏱️ if you're still here.`;
         }
         else {
           res.log.error(mutation.error);
         }
       }
       else if(durationInMinutes >= (process.env.PROLONGED_TIMER_TRESHOLD_2 || 420)) {
-          Notification()
-            .addRecipent(item.user_id.slack_user_id, 'slack')
-            .addRecipent(item.user_id.email, 'email')
-            .send({ body: `You're marvellous 👑, but I start to worry. Are you still there? 👀 I'll shut down your timer within the next hour.` });
+        message = `You're marvellous 👑, but I start to worry. Are you still there? 👀 I'll shut down your timer within the next hour.`;
       }
       else if(durationInMinutes >= (process.env.PROLONGED_TIMER_TRESHOLD_1 || 240)) {
         const messages = [
@@ -45,12 +40,13 @@ const notifyUsersWithProlongedTimers = async (req, res, next) => {
           `Are you still there? It's been hours ⏱️, keep up the good work. 👍`,
           `You're unstoppable 🚀, keep it going. 👍`
         ];
-        Notification()
-          .addRecipent(item.user_id.slack_user_id, 'slack')
-          .addRecipent(item.user_id.email, 'email')
-          .send({ body: messages.random() });
+        message = messages.random();
       }
       else {}
+      Notification()
+        .addRecipent(item.user_id.slack_user_id, 'slack')
+        .addRecipent(item.user_id.email, 'email')
+        .send({ body: message });
     });
     res.json({ok: true}); 
   }
