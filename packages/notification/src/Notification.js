@@ -3,10 +3,10 @@ import { SlackClient as slackClientApp } from '@happy-path/slack-client';
 
 dotenv.config();
 
-const Notification = ({ slackId, email }) => {
+const Notification = () => {
 	let _slackRecipients = [];
 	let _emailRecipients = [];
-	const channels = ['slack', 'email'];
+
 	const _slack = async ({ slackId, message }) => {
 		if(slackId == undefined) return false;
 		try {
@@ -27,19 +27,27 @@ const Notification = ({ slackId, email }) => {
 		console.log(JSON.stringify(m));
 	}
 
-	const send = async({ body, subject }) => {
-		_slackRecipients.forEach(slackId => {
-			_slack({ slackId, message: body });
+	function addRecipent(recipent, channel = 'slack') {
+		if (recipent !== undefined && channel == 'slack') _slackRecipients.push(recipent);
+		if (recipent !== undefined && channel == 'email') _emailRecipients.push(recipent);
+		return this;
+	}
+	function addRecipents(recipents) {
+		recipents.forEach(({ recipent, channel }) => addRecipent(recipent, channel));
+		return this;
+	}
+
+	async function send({ body, subject }) {
+		_slackRecipients.forEach(async (slackId) => {
+			await _slack({ slackId, message: body });
 		});
 		_emailRecipients.forEach(email => {
 			_log({ email });
 		});
+		return true;
 	}
 
-	if(slackId != undefined) _slackRecipients.push(slackId);
-	if(email != undefined) _emailRecipients.push(email);
-
-	return { send, channels }
+	return { send, addRecipents, addRecipent }
 }
 
 export { Notification }
