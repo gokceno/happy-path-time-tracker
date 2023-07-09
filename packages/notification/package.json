@@ -1,0 +1,10 @@
+{
+  "name": "@happy-path/notification",
+  "version": "0.0.0",
+  "main": "./src/Notification.js",
+  "type": "module",
+  "dependencies": {
+    "@happy-path/slack-client": "*",
+    "dotenv": "^16.0.3"
+  }
+}
