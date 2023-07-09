@@ -28,8 +28,8 @@ const Notification = () => {
 	}
 
 	function addRecipent(recipent, channel = 'slack') {
-		if (recipent !== undefined && channel == 'slack') _slackRecipients.push(recipent);
-		if (recipent !== undefined && channel == 'email') _emailRecipients.push(recipent);
+		if ((recipent != undefined || recipent != null) && channel == 'slack') _slackRecipients.push(recipent);
+		if ((recipent != undefined || recipent != null) && channel == 'email') _emailRecipients.push(recipent);
 		return this;
 	}
 	function addRecipents(recipents) {
