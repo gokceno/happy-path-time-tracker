@@ -34,7 +34,7 @@ const notifyUsersWithProlongedTimers = async (req, res, next) => {
         message = `You're marvellous 👑, but I start to worry. Are you still there? 👀 I'll shut down your timer within the next hour.`;
       }
       else if(durationInMinutes >= (process.env.PROLONGED_TIMER_TRESHOLD_1 || 240)) {
-        const message = [
+        message = [
           `You're such a hard worker 💪. It's been hours ⏱️ and you're still going. Keep it up. 👍`,
           `It's been quite some time since you started 👀, care to give some break?`,
           `Are you still there? It's been hours ⏱️, keep up the good work. 👍`,
