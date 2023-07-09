@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import { DateTime } from 'luxon';
 import { GraphQLClient } from '@happy-path/graphql-client';
-import { SlackClient as slackClientApp } from '@happy-path/slack-client';
 import { Notification } from '@happy-path/notification';
 
 dotenv.config();
