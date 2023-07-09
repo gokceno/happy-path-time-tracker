@@ -24,7 +24,7 @@ const notifyUsersWithProlongedTimers = async (req, res, next) => {
           endsAt: DateTime.now().toISO() 
         });
         if(mutation.error == undefined) {
-          Notification({ user: item.user_id.slack_user_id })
+          Notification({ slackId: item.user_id.slack_user_id, email: item.user_id.email })
             .send({ body: `Ok, let's stop your timer now 🏁, you've done great. Go ahead and start a new timer ⏱️ if you're still here.` });
         }
         else {
@@ -32,7 +32,7 @@ const notifyUsersWithProlongedTimers = async (req, res, next) => {
         }
       }
       else if(durationInMinutes >= (process.env.PROLONGED_TIMER_TRESHOLD_2 || 420)) {
-        Notification({ user: item.user_id.slack_user_id })
+        Notification({ slackId: item.user_id.slack_user_id, email: item.user_id.email })
           .send({ body: `You're marvellous 👑, but I start to worry. Are you still there? 👀 I'll shut down your timer within the next hour.` });
       }
       else if(durationInMinutes >= (process.env.PROLONGED_TIMER_TRESHOLD_1 || 240)) {
@@ -42,7 +42,7 @@ const notifyUsersWithProlongedTimers = async (req, res, next) => {
           `Are you still there? It's been hours ⏱️, keep up the good work. 👍`,
           `You're unstoppable 🚀, keep it going. 👍`
         ];
-        Notification({ user: item.user_id.slack_user_id }).send({ body: messages.random() });
+        Notification({ slackId: item.user_id.slack_user_id, email: item.user_id.email }).send({ body: messages.random() });
       }
       else {}
     });
