@@ -34,7 +34,7 @@ const notifyUsersWithAbsentTimers = async (req, res, next) => {
     res.json({ok: true, numOfUsersWithNoTimers: usersWithNoTimers.length, numOfUsersWithLowTimers: usersWithLowTimers.length});
   }
   else {
-    res.sendStatus(412);
+    res.status(404).send({error: `No absent timers were found. Exiting.`});
   }
 }
 
