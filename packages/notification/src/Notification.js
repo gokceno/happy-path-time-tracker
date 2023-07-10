@@ -1,11 +1,27 @@
 import dotenv from 'dotenv';
 import { SlackClient as slackClientApp } from '@happy-path/slack-client';
+import { createRequire } from "module";
 
 dotenv.config();
+
+const require = createRequire(import.meta.url);
+
+const MailJet = require('node-mailjet');
+
+const mailjet = MailJet.apiConnect(
+    process.env.MJ_APIKEY_PUBLIC,
+    process.env.MJ_APIKEY_PRIVATE,
+);
 
 const Notification = () => {
 	let _slackRecipients = [];
 	let _emailRecipients = [];
+	const _emailFrom = {
+		From: {
+			Email: process.env.MJ_FROM_EMAIL,
+			Name: process.env.MJ_FROM_NAME
+		}
+	};
 
 	const _slack = async ({ slackId, message }) => {
 		try {
@@ -18,8 +34,28 @@ const Notification = () => {
 		}
 		return false
 	}
-	const _email = async ({ email, message })  => {
-		_log({ email, message });
+	const _email = async ({ email, message, subject = 'Happy Path Notification' })  => {
+		const request = mailjet
+			.post('send', { version: 'v3.1' })
+			.request({
+				Messages: [
+					{
+						..._emailFrom,
+						To: [
+							{
+								Email: email,
+							}
+						],
+						Subject: subject,
+						TextPart: message,
+						HTMLPart: message
+					}
+				]
+			}).then((result) => {
+				_log(result.body)
+			}).catch((err) => {
+				_log(err.statusCode);
+			});
 	}
 	const _log = (m) => {
 		console.log(JSON.stringify(m));
@@ -31,16 +67,15 @@ const Notification = () => {
 		return this;
 	}
 	function addRecipents(recipents) {
-		recipents.forEach(({ recipent, channel }) => addRecipent(recipent, channel));
-		return this;
+		return recipents.forEach(({ recipent, channel }) => addRecipent(recipent, channel));
 	}
 
-	async function send({ body, subject }) {
+	async function send({ message, subject }) {
 		_slackRecipients.forEach(async (slackId) => {
-			await _slack({ slackId, message: body });
+			await _slack({ slackId, message });
 		});
-		_emailRecipients.forEach(email => {
-			_log({ email });
+		_emailRecipients.forEach(async (email) => {
+			await _email({ email, message, subject });
 		});
 		return true;
 	}

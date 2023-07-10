@@ -23,13 +23,13 @@ const notifyUsersWithAbsentTimers = async (req, res, next) => {
       Notification()
       .addRecipent(item.slack_user_id, 'slack')
       .addRecipent(item.email, 'email')
-      .send({ body: `You haven't started any timers ⏳ today. Care to log some time? 🙏` });
+      .send({ message: `You haven't started any timers ⏳ today. Care to log some time? 🙏` });
     });
     usersWithLowTimers.forEach(item => {
       Notification()
       .addRecipent(item.slack_user_id, 'slack')
       .addRecipent(item.email, 'email')
-      .send({ body: `How is your day going? I see that you haven't logged much time ⏳ today. Care to log more time? 🙏` });
+      .send({ message: `How is your day going? I see that you haven't logged much time ⏳ today. Care to log more time? 🙏` });
     });
     res.json({ok: true, numOfUsersWithNoTimers: usersWithNoTimers.length, numOfUsersWithLowTimers: usersWithLowTimers.length});
   }

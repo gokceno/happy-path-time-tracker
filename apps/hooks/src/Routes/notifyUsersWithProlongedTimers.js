@@ -45,7 +45,7 @@ const notifyUsersWithProlongedTimers = async (req, res, next) => {
       Notification()
         .addRecipent(item.user_id.slack_user_id, 'slack')
         .addRecipent(item.user_id.email, 'email')
-        .send({ body: message });
+        .send({ message });
     });
     res.json({ok: true}); 
   }
