@@ -67,7 +67,8 @@ const Notification = () => {
 		return this;
 	}
 	function addRecipents(recipents) {
-		return recipents.forEach(({ recipent, channel }) => addRecipent(recipent, channel));
+		recipents.forEach(({ recipent, channel }) => addRecipent(recipent, channel));
+		return this;
 	}
 
 	async function send({ message, subject }) {
