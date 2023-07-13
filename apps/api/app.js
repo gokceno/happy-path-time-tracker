@@ -24,7 +24,7 @@ app.view('view__edit_timer_details', editTimerItemView);
 
 app.command('/happy', async({ command, respond, ack, body, client, logger }) => {
   const [commandName] = (command.text ? command.text : '').split(' '); // Values: start|log|stop|show|list|sync
-  if (commandName != undefined) {
+  if (commandName !== undefined) {
     switch(commandName) {
       case 'stop':
         stop({ command, respond, ack, body, client, logger });
@@ -45,14 +45,24 @@ app.command('/happy', async({ command, respond, ack, body, client, logger }) => 
         await start({ command, respond, ack, body, client, logger }, 'log__action__select_project_id');
         break;
       default:
+        const message = `
+        💡💡💡 Happy Path is a data suite where we track our time entries ⏱️, analyze them and ultimately make financial decisions. It's expected to replace the "Before Sunset" project in Fall 2023.
+        Happy Path MacOS app and web client is underway, meanwhile you can use it via Slack.
+        
+        Below are valid Slack commands for Happy Path:
+
+        /happy sync → Sync your user info to Happy Path, required only once.
+        /happy start → Start a new timer.
+        /happy stop → Stop the running timer.
+        /happy show → Show your current timer.
+        /happy list → List time entries for today
+        /happy list yesterday → List time entries for yesterday.
+        /happy list 2023-12-29 2023-12-31 → List time entries between specific dates.
+        `;
         await ack();
-        await respond(`🚨🚨🚨 Command not found. Available sub-commands are start, log, stop, show, list, sync. Good luck 🍀`);
+        await respond(message);
+      }
     }
-  }
-  else {
-    await ack();
-    await respond(`Please type a valid command. Available sub-commands are start, log, stop, show, list, sync. Good luck 🍀`);
-  }
 });
 
 (async () => {
