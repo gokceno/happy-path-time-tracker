@@ -46,9 +46,12 @@ const Notification = () => {
 								Email: email,
 							}
 						],
+						TemplateID: process.env.MJ_TEMPLATE_ID,
+				    TemplateLanguage: true,
 						Subject: subject,
-						TextPart: message,
-						HTMLPart: message
+						Variables: {
+    					message
+    				}
 					}
 				]
 			}).then((result) => {
