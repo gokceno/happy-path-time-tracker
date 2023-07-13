@@ -8,6 +8,7 @@ import { notifyUsersWithProlongedTimers } from './src/Routes/notifyUsersWithProl
 import { calculateTotalDuration } from './src/Routes/calculateTotalDuration.js';
 import { calculateTotalDurationRegularly } from './src/Routes/calculateTotalDurationRegularly.js';
 import { notifyUsersWithAbsentTimers } from './src/Routes/notifyUsersWithAbsentTimers.js';
+import { create as createProjectsReport } from './src/Routes/createProjectsReport.js';
 import { schema } from './src/Routes/schema.js';
 
 // Apply some hacks & init Magic
@@ -59,6 +60,8 @@ app.post('/timers/update/total-duration', authenticateAPI, calculateTotalDuratio
 app.post('/timers/update/regularly/total-duration', authenticateAPI, calculateTotalDurationRegularly);
 app.post('/notify/users/with/absent/timers', authenticateAPI, notifyUsersWithAbsentTimers);
 app.post('/notify/users/with/prolonged/timers', authenticateAPI, notifyUsersWithProlongedTimers);
+app.post('/reports/projects/create', authenticateAPI, createProjectsReport);
+
 app.all('/graphql', authenticateUser, createHandler({ 
   schema, 
   context: async (req) => await magic.users.getMetadataByToken(req.headers['authorization'].split(' ')[1]) 

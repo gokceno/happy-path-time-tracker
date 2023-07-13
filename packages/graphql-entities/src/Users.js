@@ -107,7 +107,7 @@ const Users = ({ graphqlClient }) => {
       const queryResponse = await graphqlClient.query(UserQuery, { externalUserId });
       if(queryResponse?.data?.users != undefined && typeof queryResponse?.data?.users == 'object') {
         if(queryResponse.data.users.length == 0) return null;
-        return queryResponse.data.users[0].id;
+        return +queryResponse.data.users[0].id;
       }
       else {
         throw new Error(queryResponse.error);

@@ -253,7 +253,40 @@ const Timers = ({ graphqlClient }) => {
     }
     return { status: false };
   }
-  return { start, stop, log, status, list, remove, get, update }
+  const findTimersByUserId = async(params) => {}
+  const findTimersByProjectId = async(params) => {
+    const { projectId, startsAt, endsAt } = params;
+    if(projectId == undefined || startsAt == undefined || endsAt == undefined) throw new Error('Missing arguments');
+    const TimersByProjectIdQuery = `
+      query timers {
+        timers(filter: {task: {projects_id: {id: {_eq: ${projectId}}}}, starts_at: {_between: ["${startsAt}", "${endsAt}"]}} sort: "starts_at") {
+          id
+          user_id {
+            first_name
+            last_name
+            email
+          }
+          total_duration
+          total_cost
+          starts_at
+          ends_at
+          task {
+            projects_id {
+              id
+              project_name
+            }
+            tasks_id {
+              id
+              task_name
+            }
+          }
+        }
+      }
+    `;
+    const response = await graphqlClient.query(TimersByProjectIdQuery, {projectId});
+    return response?.data?.timers || [];
+  }
+  return { start, stop, log, status, list, remove, get, update, findTimersByProjectId }
 }
 
 export { Timers }

@@ -35,7 +35,7 @@ const Notification = () => {
 		return false
 	}
 	const _email = async ({ email, message, subject = 'Happy Path Notification' })  => {
-		const request = await mailjet
+		const request = mailjet
 			.post('send', { version: 'v3.1' })
 			.request({
 				Messages: [
