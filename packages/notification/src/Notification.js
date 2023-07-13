@@ -35,7 +35,7 @@ const Notification = () => {
 		return false
 	}
 	const _email = async ({ email, message, subject = 'Happy Path Notification' })  => {
-		const request = mailjet
+		const request = await mailjet
 			.post('send', { version: 'v3.1' })
 			.request({
 				Messages: [
@@ -46,7 +46,7 @@ const Notification = () => {
 								Email: email,
 							}
 						],
-						TemplateID: process.env.MJ_TEMPLATE_ID,
+						TemplateID: +process.env.MJ_TEMPLATE_ID,
 				    TemplateLanguage: true,
 						Subject: subject,
 						Variables: {
@@ -57,11 +57,11 @@ const Notification = () => {
 			}).then((result) => {
 				_log(result.body)
 			}).catch((err) => {
-				_log(err.statusCode);
+				_log(err);
 			});
 	}
 	const _log = (m) => {
-		console.log(JSON.stringify(m));
+		console.log(m);
 	}
 
 	function addRecipent(recipent, channel = 'slack') {
