@@ -7,7 +7,7 @@ dotenv.config();
 const Notification = () => {
 	let _slackRecipients = [];
 	let _emailRecipients = [];
-	const _emailClient = EmailClient();
+	let _emailClient = EmailClient();
 	const _slack = async ({ slackId, message }) => {
 		try {
 			if(await slackClientApp.client.chat.postMessage({ channel: slackId, text: message })) {
