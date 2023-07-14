@@ -8,12 +8,7 @@ const Document = () => {
   let _breakdownByTaskItems = [];
   let _breakdownByTeamMembers = [];
   let _workItems = [];
-  let _header = [
-    {label: 'Created At', value: '12 Aug, 2023'},
-    {label: 'Client', value: 'Event Master'}, 
-    {label: 'Project', value: 'Mobilet Maintenance'}, 
-    {label: 'Valid For', value: 'Aug 2023'}
-  ];
+  let _header = [];
   let _notes = [
     {
       text: 'APPLIED PRICE MODIFIERS',
@@ -186,7 +181,7 @@ const Document = () => {
     const header = [
       [
         {
-          text: 'Task',
+          text: 'Member',
           ... _tableHeaderColProps
         },
         {
@@ -302,7 +297,7 @@ const Document = () => {
                 color: '#aaaaab',
                 color: '',
                 alignment: 'right',
-                width: 120,
+                width: 90,
               },
             ]
           };
@@ -445,6 +440,10 @@ const Document = () => {
     _breakdownByTeamMembers = items || [];
     return true;
   }
+  const setHeader = (items) => { 
+    _header = items || [];
+    return true;
+  }
   const setTotals = (params) => {
     const { totalHours, totalBillableAmount } = params;
     _totalHours = totalHours;
@@ -457,7 +456,8 @@ const Document = () => {
     setWorkItems,
     setTotals,
     setBreakdownByTeamMembers,
-    setBreakdownByTaskItems
+    setBreakdownByTaskItems,
+    setHeader
   };
 }
 

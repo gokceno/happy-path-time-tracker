@@ -3,8 +3,10 @@ import dotenv from 'dotenv';
 import pdfMake from 'pdfmake';
 import { DateTime, Duration } from 'luxon';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
-import { Timers } from '@happy-path/graphql-entities';
+import { Timers, Projects } from '@happy-path/graphql-entities';
 import { Document as DefaultDocument } from './Documents/Default.js';
+
+import { Client as EmailClient } from '@happy-path/mailjet-client';
 
 dotenv.config();
 
@@ -20,6 +22,7 @@ const create =  async (req, res, next) => {
     });
     if(timers.length) {
       const dd = DefaultDocument();
+      const { project_name: projectName } = await Projects({ graphqlClient }).findProjectById({ projectId });
       const totalHours = Duration.fromObject({ 
         minutes: timers.reduce((acc, item) => acc + item.total_duration, 0)
       }).toFormat('hh:mm');
@@ -55,6 +58,11 @@ const create =  async (req, res, next) => {
         }
         return people;
       }, []);
+      dd.setHeader([
+        { label: 'Project', value: projectName },
+        { label: 'Created At', value: DateTime.now().toLocaleString(DateTime.DATE_MED) },
+        { label: 'Valid For', value: DateTime.now().toFormat('MMMM yyyy') },
+      ]);
       dd.setTotals({ totalHours, totalBillableAmount });
       dd.setBreakdownByTaskItems(tasks.map(task => { return { totalHours: Duration.fromObject({ minutes: task.totalMinutes}).toFormat('hh:mm'), ...task }}));
       dd.setBreakdownByTeamMembers(people.map(person => { return { totalHours: Duration.fromObject({ minutes: person.totalMinutes}).toFormat('hh:mm'), ...person }}));
@@ -83,7 +91,15 @@ const create =  async (req, res, next) => {
       );
       pdfDoc.end();
       numberOfDocsProcessed++;
-  }
+    }
+
+    const client = EmailClient();
+    client.setSubject('Deneme sybject');
+    client.setBody({ html: 'Deneme Body' });
+    client.addRecipent({ email: 'gokcen@brewww.com' });
+    client.send();
+
+
   });
   res.json({ok: true, numberOfDocsProcessed});
 }
