@@ -283,7 +283,7 @@ const Timers = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.query(TimersByProjectIdQuery, {projectId});
+    const response = await graphqlClient.query(TimersByProjectIdQuery, { projectId });
     return response?.data?.timers || [];
   }
   return { start, stop, log, status, list, remove, get, update, findTimersByProjectId }
