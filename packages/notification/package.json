@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@happy-path/slack-client": "*",
+    "@happy-path/mailjet-client": "*",
     "dotenv": "^16.0.3",
     "node-mailjet": "^6.0.2"
   }

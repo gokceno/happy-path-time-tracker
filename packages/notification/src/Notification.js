@@ -1,28 +1,13 @@
 import dotenv from 'dotenv';
 import { SlackClient as slackClientApp } from '@happy-path/slack-client';
-import { createRequire } from "module";
+import { Client as EmailClient } from '@happy-path/mailjet-client';
 
 dotenv.config();
-
-const require = createRequire(import.meta.url);
-
-const MailJet = require('node-mailjet');
-
-const mailjet = MailJet.apiConnect(
-    process.env.MJ_APIKEY_PUBLIC,
-    process.env.MJ_APIKEY_PRIVATE,
-);
 
 const Notification = () => {
 	let _slackRecipients = [];
 	let _emailRecipients = [];
-	const _emailFrom = {
-		From: {
-			Email: process.env.MJ_FROM_EMAIL,
-			Name: process.env.MJ_FROM_NAME
-		}
-	};
-
+	const _emailClient = EmailClient();
 	const _slack = async ({ slackId, message }) => {
 		try {
 			if(await slackClientApp.client.chat.postMessage({ channel: slackId, text: message })) {
@@ -35,30 +20,15 @@ const Notification = () => {
 		return false
 	}
 	const _email = async ({ email, message, subject = 'Happy Path Notification' })  => {
-		const request = mailjet
-			.post('send', { version: 'v3.1' })
-			.request({
-				Messages: [
-					{
-						..._emailFrom,
-						To: [
-							{
-								Email: email,
-							}
-						],
-						TemplateID: +process.env.MJ_TEMPLATE_ID,
-				    TemplateLanguage: true,
-						Subject: subject,
-						Variables: {
-    					message
-    				}
-					}
-				]
-			}).then((result) => {
-				_log(result.body)
-			}).catch((err) => {
-				_log(err);
-			});
+    _emailClient.setSubject(subject);
+    _emailClient.setTemplate({
+      templateId: +process.env.MJ_TEMPLATE_ID,
+      vars: {
+        message
+      }
+    });
+    _emailClient.addRecipent({ email });
+    _emailClient.send();
 	}
 	const _log = (m) => {
 		console.log(m);
