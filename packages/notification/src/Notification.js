@@ -19,7 +19,7 @@ const Notification = () => {
 		}
 		return false
 	}
-	const _email = async ({ email, message, subject = 'Happy Path Notification' })  => {
+	const _email = async ({ email, message, subject = '[HP] Notification' })  => {
     _emailClient.setSubject(subject);
     _emailClient.setTemplate({
       templateId: +process.env.MJ_TEMPLATE_ID,

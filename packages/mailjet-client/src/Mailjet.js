@@ -28,7 +28,7 @@ const Client = () => {
 	 	process.env.MJ_APIKEY_PUBLIC,
 	 	process.env.MJ_APIKEY_PRIVATE,
 	);
-	
+
 	const _log = (m) => {
 		console.log(m);
 	}
@@ -46,6 +46,13 @@ const Client = () => {
 		}
 		if(_htmlBody != undefined) message.HTMLPart = _htmlBody;
 		if(_textBody != undefined) message.TextPart = _textBody;
+		if(_attachments) {
+			message.Attachments = _attachments.map(attachment => { return {
+				ContentType: attachment.contentType,
+				Filename: attachment.filename,
+				Base64Content: attachment.base64File
+			}});
+		}
 		return message;
 	}
 	const setTemplate = (params) => {
@@ -71,7 +78,7 @@ const Client = () => {
 		if (email == undefined) throw new Error('Required parameters missing.');
 		_recipents.push({ email, nameSurname });
 	}
-	const addAttachment = (params) => {
+	const addAttachment = async (params) => {
 		const { base64File, filename, contentType = 'application/octet-stream', charset = 'UTF-8' } = params;
 		if (base64File == undefined || filename == undefined) throw new Error('Required parameters missing.');
 		_attachments.push({
@@ -87,7 +94,7 @@ const Client = () => {
 		return await _mailjetClient
 			.post('send', _mjApiProps)
 			.request({ Messages: [_getMessage()] })
-			.then(result => _log(result))
+			//.then(result => _log(result))
 			.catch(err => {
 				_log(err);
 				throw new Error(err);
