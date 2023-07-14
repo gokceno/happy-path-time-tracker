@@ -19,7 +19,25 @@ const Projects = ({ graphqlClient }) => {
     return projects;
     
   }
-  return { list }
+  const findProjectById = async (params) => {
+    const { projectId } = params;
+    if(projectId == undefined) throw new Error('Missing arguments');
+    const ProjectByIdQuery = `
+      query project {
+        projects_by_id(id: "${projectId}") {
+          created_at
+          updated_at
+          status
+          project_name
+          metadata
+          id
+        }
+      }
+    `;
+    const response = await graphqlClient.query(ProjectByIdQuery, { projectId });
+    return response?.data?.projects_by_id || {};
+  }
+  return { list, findProjectById }
 }
 
 export { Projects }
