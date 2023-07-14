@@ -1,0 +1,6 @@
+{
+  "name": "@happy-path/mailjet-client",
+  "version": "0.0.0",
+  "main": "./src/Mailjet.js",
+  "type": "module"
+}
