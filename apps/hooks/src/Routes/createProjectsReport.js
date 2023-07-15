@@ -75,16 +75,16 @@ const create =  async (req, res, next) => {
           { label: 'Valid For', value: DateTime.now().toFormat('MMMM yyyy') },
         ]);
         dd.setTotals({ totalHours, totalBillableAmount });
-        dd.setBreakdownByTaskItems(tasks.map(task => { return { totalHours: Duration.fromObject({ minutes: task.totalMinutes}).toFormat('hh:mm'), ...task }}));
-        dd.setBreakdownByTeamMembers(people.map(person => { return { totalHours: Duration.fromObject({ minutes: person.totalMinutes}).toFormat('hh:mm'), ...person }}));
+        dd.setBreakdownByTaskItems(tasks.map(task => ({ totalHours: Duration.fromObject({ minutes: task.totalMinutes}).toFormat('hh:mm'), ...task })));
+        dd.setBreakdownByTeamMembers(people.map(person => ({ totalHours: Duration.fromObject({ minutes: person.totalMinutes}).toFormat('hh:mm'), ...person })));
         dd.setWorkItems(
-          timers.map(timer => { return {
+          timers.map(timer => ({
             date: DateTime.fromISO(timer.starts_at).toLocaleString(DateTime.DATE_MED), 
             nameSurname: `${timer.user_id.first_name} ${timer.user_id.last_name[0] || ''}`, 
             task: timer.task.tasks_id.task_name, 
             hours: Duration.fromObject({ minutes: timer.total_duration}).toFormat('hh:mm'), 
             billableAmount: timer.total_cost
-          }})
+          }))
         );
         await dd.setLogo({ logoFilePath: process.env.REPORTS_LOGO_URI });
         const printer = new pdfMake(fonts);
@@ -105,7 +105,7 @@ const create =  async (req, res, next) => {
   if(emailRecipents.length > 0) {
     emailRecipents.forEach(email => emailClient.addRecipent({ email }));
     emailClient.setSubject('[HP] Reports');
-    emailClient.setBody({ html: 'Please find your reports attached.' });
+    emailClient.setBody({ html: '<p>Please find your reports attached.</p>' });
     emailClient.send();
   }
   res.json({ok: true, numberOfDocsProcessed});

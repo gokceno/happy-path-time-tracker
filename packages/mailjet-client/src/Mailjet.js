@@ -39,7 +39,7 @@ const Client = () => {
 			Subject: _subject,
 			TemplateLanguage: _isTemplate,
 		};
-		message.To = _recipents.map(recipent => { return { Email: recipent.email, Name: recipent.nameSurname } });
+		message.To = _recipents.map(recipent => ({ Email: recipent.email, Name: recipent.nameSurname }));
 		if(_isTemplate) {
 			message.Variables = _templateVariables || {};
 			message.TemplateID = _templateId;
@@ -47,11 +47,11 @@ const Client = () => {
 		if(_htmlBody != undefined) message.HTMLPart = _htmlBody;
 		if(_textBody != undefined) message.TextPart = _textBody;
 		if(_attachments) {
-			message.Attachments = _attachments.map(attachment => { return {
+			message.Attachments = _attachments.map(attachment => ({
 				ContentType: attachment.contentType,
 				Filename: attachment.filename,
 				Base64Content: attachment.base64File
-			}});
+			}));
 		}
 		return message;
 	}
