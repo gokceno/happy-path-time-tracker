@@ -3,10 +3,9 @@ import dotenv from 'dotenv';
 import pdfMake from 'pdfmake';
 import { DateTime, Duration } from 'luxon';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
+import { Client as EmailClient } from '@happy-path/mailjet-client';
 import { Timers, Projects } from '@happy-path/graphql-entities';
 import { Document as DefaultDocument } from './Documents/Default.js';
-
-import { Client as EmailClient } from '@happy-path/mailjet-client';
 
 dotenv.config();
 
@@ -105,7 +104,7 @@ const create =  async (req, res, next) => {
   if(emailRecipents.length > 0) {
     emailRecipents.forEach(email => emailClient.addRecipent({ email }));
     emailClient.setSubject('[HP] Reports');
-    emailClient.setBody({ html: '<p>Please find your reports attached.</p>' });
+    emailClient.setBody({ html: '<p>Please find your monthly reports attached.</p>' });
     emailClient.send();
   }
   res.json({ok: true, numberOfDocsProcessed});
