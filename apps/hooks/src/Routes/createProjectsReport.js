@@ -74,14 +74,10 @@ const create =  async (req, res, next) => {
           }
           return people;
         }, []);
-
-        if(priceModifiers.length > 0) {
-          dd.setNotes({
+        if(priceModifiers.length > 0) dd.setNotes({
             title: 'Applied Price Modifiers',
             text: priceModifiers.map(priceModifier => ( '- ' + priceModifiersDescriptions[priceModifier]) ).join('\n')
           });
-        }
-
         dd.setHeader([
           { label: 'Project', value: projectName },
           { label: 'Created At', value: DateTime.now().toLocaleString(DateTime.DATE_MED) },
@@ -117,7 +113,7 @@ const create =  async (req, res, next) => {
   );
   if(emailRecipents.length > 0) {
     emailRecipents.forEach(email => emailClient.addRecipent({ email }));
-    emailClient.setSubject('Reports');
+    emailClient.setSubject('Monthly Reports');
     emailClient.setBody({ html: '<p>Please find your monthly reports attached.</p>' });
     emailClient.send();
   }
