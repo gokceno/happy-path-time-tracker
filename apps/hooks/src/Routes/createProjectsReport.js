@@ -25,7 +25,7 @@ const create =  async (req, res, next) => {
       bolditalics: './fonts/Roboto/Roboto-MediumItalic.ttf'
     }
   };
-  const emailRecipents = process.env.REPORTS_EMAIL_RECIPENTS.split(',') || [];
+  const emailRecipents = (process.env.REPORTS_EMAIL_RECIPENTS || '').split(',');
   let numberOfDocsProcessed = 0;
   let emailClient = EmailClient();
   await Promise.all(
