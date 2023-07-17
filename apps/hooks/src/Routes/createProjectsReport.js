@@ -13,10 +13,9 @@ dotenv.config();
 const create =  async (req, res, next) => {
   const { collection, keys: projectIds } = req.body.data.body;
   const [ { metadata: metadataTemplate } ] = req.body.metadata;
-
+  if(projectIds.length > (process.env.REPORTS_MAX_NUMBER_OF_PROJECTS_TO_PROCESS || 12)) throw new Error(`Max number of projects exceeded.`);
   if(metadataTemplate == undefined) res.status(403).send({error: `Metadata is missing. Exiting.`});
   if(collection != 'projects') res.status(403).send({error: `Can process only for type "projects". Exiting.`});
-  
   const fonts = {
     Roboto: {
       normal: './fonts/Roboto/Roboto-Regular.ttf',
@@ -26,8 +25,11 @@ const create =  async (req, res, next) => {
     }
   };
   const emailRecipents = (process.env.REPORTS_EMAIL_RECIPENTS || '').split(',');
+  if(emailRecipents.length == 0) res.status(403).send({error: `Email recipents not found. Exiting.`});
   let numberOfDocsProcessed = 0;
-  let emailClient = EmailClient();
+  let emailClient = EmailClient()
+    .setSubject('Monthly Reports')
+    .setBody({ html: '<p>Please find your monthly reports attached.</p>' });
   await Promise.all(
     projectIds.map(async (projectId) => {
       const timers = await Timers({ graphqlClient }).findTimersByProjectId({ 
@@ -111,10 +113,8 @@ const create =  async (req, res, next) => {
       }
     })
   );
-  if(emailRecipents.length > 0) {
+  if(numberOfDocsProcessed > 0) {
     emailRecipents.forEach(email => emailClient.addRecipent({ email }));
-    emailClient.setSubject('Monthly Reports');
-    emailClient.setBody({ html: '<p>Please find your monthly reports attached.</p>' });
     emailClient.send();
   }
   res.json({ok: true, numberOfDocsProcessed});
