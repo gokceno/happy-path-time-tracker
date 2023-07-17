@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import YAML from 'yaml';
 import dotenv from 'dotenv';
 import pdfMake from 'pdfmake';
 import { DateTime, Duration } from 'luxon';
@@ -11,6 +12,11 @@ dotenv.config();
 
 const create =  async (req, res, next) => {
   const { collection, keys: projectIds } = req.body.data.body;
+  const [ { metadata: metadataTemplate } ] = req.body.metadata;
+
+  if(metadataTemplate == undefined) res.status(403).send({error: `Metadata is missing. Exiting.`});
+  if(collection != 'projects') res.status(403).send({error: `Can process only for type "projects". Exiting.`});
+  
   const fonts = {
     Roboto: {
       normal: './fonts/Roboto/Roboto-Regular.ttf',
@@ -20,7 +26,6 @@ const create =  async (req, res, next) => {
     }
   };
   const emailRecipents = process.env.REPORTS_EMAIL_RECIPENTS.split(',') || [];
-  if (collection != 'projects') res.status(403).send({error: `Can process only for type "projects". Exiting.`});
   let numberOfDocsProcessed = 0;
   let emailClient = EmailClient();
   await Promise.all(
@@ -32,7 +37,8 @@ const create =  async (req, res, next) => {
       });
       if(timers.length) {
         const dd = DefaultDocument();
-        const { project_name: projectName } = await Projects({ graphqlClient }).findProjectById({ projectId });
+        const { project_name: projectName, metadata: projectMetadata } = await Projects({ graphqlClient }).findProjectById({ projectId });
+        const { price_modifiers: priceModifiers } = YAML.parse(metadataTemplate.trim() + '\n' + projectMetadata.trim());
         const totalHours = Duration.fromObject({ 
           minutes: timers.reduce((acc, item) => acc + item.total_duration, 0)
         }).toFormat('hh:mm');
@@ -68,6 +74,14 @@ const create =  async (req, res, next) => {
           }
           return people;
         }, []);
+
+        if(priceModifiers.length > 0) {
+          dd.setNotes({
+            title: 'Applied Price Modifiers',
+            text: priceModifiers.map(priceModifier => ( '- ' + priceModifiersDescriptions[priceModifier]) ).join('\n')
+          });
+        }
+
         dd.setHeader([
           { label: 'Project', value: projectName },
           { label: 'Created At', value: DateTime.now().toLocaleString(DateTime.DATE_MED) },
@@ -109,5 +123,11 @@ const create =  async (req, res, next) => {
   }
   res.json({ok: true, numberOfDocsProcessed});
 }
+
+const priceModifiersDescriptions = {
+  noLessThanOneHour: `We rounded the fees to one hour for works which took less than 60 minutes.`,
+  weekends: `We charged x1,5 of the regular fee for the works we've done during the weekends.`,
+  overtime: `We charged x1,5 of the regular fee for the works we've done out of the office hours.`,
+};
 
 export { create }

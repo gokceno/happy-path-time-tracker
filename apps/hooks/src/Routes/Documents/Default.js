@@ -9,19 +9,7 @@ const Document = () => {
   let _breakdownByTeamMembers = [];
   let _workItems = [];
   let _header = [];
-  let _notes = [
-    {
-      text: 'APPLIED PRICE MODIFIERS',
-      style: 'notesTitle',
-    },
-    {
-      text: [
-        `- We charged an additional fee (x1,5 of the regular fee) for the works we've done out of the office hours.`,
-        '- We rounded the fees to one hour for works which took less than 60 minutes.'
-      ].join('\n'),
-      style: 'notesText',
-    }
-  ];
+  let _notes = [];
   const _tableHeaderColProps = { 
     fillColor: '#eaf2f5',
     border: [false, false, false, true],
@@ -450,6 +438,12 @@ const Document = () => {
     _totalBillableAmount = totalBillableAmount;
     return true;
   }
+  const setNotes = (params) => {
+    const { title, text } = params;
+    if(title != undefined) _notes.push({ text: title.toUpperCase(), style: 'notesTitle'});
+    if(text != undefined) _notes.push({ text, style: 'notesText'});
+    return true;
+  }
   return {
     get,
     setLogo,
@@ -457,7 +451,8 @@ const Document = () => {
     setTotals,
     setBreakdownByTeamMembers,
     setBreakdownByTaskItems,
-    setHeader
+    setHeader,
+    setNotes
   };
 }
 
