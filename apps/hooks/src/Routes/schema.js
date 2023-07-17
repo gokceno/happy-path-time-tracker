@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLInputObjectType } from 'graphql';
 import { Projects, Tasks, Timers } from '@happy-path/graphql-entities';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
@@ -96,6 +97,47 @@ const schema = new GraphQLSchema({
         resolve: async (_, { projectId }, context) => {
           const tasks = Tasks({ graphqlClient, queryParams: { projectId } });
           return (await tasks.list()).map(item => ({ id: item.id, taskName: item.tasks_id.task_name }));
+        },
+      },
+      stats: {
+        type: new GraphQLObjectType({
+          name: 'Stats',
+          fields: {
+            byDate: { type: new GraphQLList(new GraphQLObjectType({
+              name: 'ByDate',
+              fields: {
+                date: { type: GraphQLString },
+                totalDuration: { type: GraphQLInt }
+              }
+            }))},
+            byInterval: { type: new GraphQLList(new GraphQLObjectType({
+              name: 'ByInterval',
+              fields: {
+                type: { type: GraphQLString },
+                startsAt: { type: GraphQLString },
+                endsAt: { type: GraphQLString },
+                totalDuration: { type: GraphQLInt }
+              }
+            }))}
+          }
+        }),
+        args: {
+          date: { type: new GraphQLNonNull(GraphQLString) }
+        },
+        resolve: async (_, { projectId }, context) => {
+          return {
+            byDate: [
+              { date: DateTime.now().toISODate(), totalDuration: 100 },
+            ],
+            byInterval: [
+              {
+                type: 'month',
+                startsAt: DateTime.now().startOf('month').toISO(),
+                endsAt: DateTime.now().endOf('month').toISO(),
+                totalDuration: 100
+              }
+            ]
+          };
         },
       },
     },
