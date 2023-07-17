@@ -35,44 +35,11 @@ const Timers = ({ graphqlClient }) => {
     };
   }
   const list = async (params, formatter) => { 
-    const { startsAt, endsAt, externalUserId, email, did } = params;
-    if(startsAt == undefined || endsAt == undefined || (externalUserId == undefined && did == undefined && email == undefined)) {
-      throw new Error('Required parameters not set.');
+    const timers = findTimersByProjectId(params);
+    if(formatter !== undefined) {
+      return timers.map(item => formatter({ item }));
     }
-    const userId = await Users({ graphqlClient }).findUserId({ externalUserId, email, did });
-    // FIXME: Diğer sorgularda graphql param'ları ayrı veriyoruz ama between date tipinde kabul etmediği için içine gömdük.
-    const TimersQuery = `
-      query Timers {
-        timers(
-        filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}, user_id: { id: {_eq: "${userId}"}}}
-        ) {
-          id
-          duration
-          total_duration
-          starts_at
-          ends_at
-          task {
-            id
-            tasks_id {
-              task_name
-            }
-            projects_id {
-              id
-              project_name
-            }
-          }
-          notes
-        }
-      }
-    `;
-    const response = await graphqlClient.query(TimersQuery);
-    if(response.data != undefined) {
-      if(formatter !== undefined) {
-        return response.data.timers.map(item => formatter({item}));
-      }
-      return response.data.timers;
-    }
-    return [];
+    return timers;
   }
   const log = async (params) => {
     const { projectTaskId, externalUserId, email, did, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = DateTime.now().toString() } = params;
@@ -253,7 +220,39 @@ const Timers = ({ graphqlClient }) => {
     }
     return { status: false };
   }
-  const findTimersByUserId = async(params) => {}
+  const findTimersByUserId = async(params) => {
+    const { startsAt, endsAt, externalUserId, email, did } = params;
+    if(startsAt == undefined || endsAt == undefined || (externalUserId == undefined && did == undefined && email == undefined)) {
+      throw new Error('Required parameters not set.');
+    }
+    const userId = await Users({ graphqlClient }).findUserId({ externalUserId, email, did });
+    const TimersQuery = `
+      query Timers {
+        timers(
+          filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}, user_id: { id: {_eq: "${userId}"}}}
+        ) {
+          id
+          duration
+          total_duration
+          starts_at
+          ends_at
+          task {
+            id
+            tasks_id {
+              task_name
+            }
+            projects_id {
+              id
+              project_name
+            }
+          }
+          notes
+        }
+      }
+    `;
+    const response = await graphqlClient.query(TimersQuery);
+    return response?.data?.timers || [];
+  }
   const findTimersByProjectId = async(params) => {
     const { projectId, startsAt, endsAt } = params;
     if(projectId == undefined || startsAt == undefined || endsAt == undefined) throw new Error('Missing arguments');
@@ -286,7 +285,18 @@ const Timers = ({ graphqlClient }) => {
     const response = await graphqlClient.query(TimersByProjectIdQuery, { projectId });
     return response?.data?.timers || [];
   }
-  return { start, stop, log, status, list, remove, get, update, findTimersByProjectId }
+  return { 
+    start, 
+    stop, 
+    log, 
+    status, 
+    list, 
+    remove, 
+    get, 
+    update, 
+    findTimersByProjectId, 
+    findTimersByUserId 
+  }
 }
 
 export { Timers }
