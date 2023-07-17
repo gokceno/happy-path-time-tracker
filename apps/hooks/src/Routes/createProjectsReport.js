@@ -44,7 +44,7 @@ const create =  async (req, res, next) => {
         const totalHours = Duration.fromObject({ 
           minutes: timers.reduce((acc, item) => acc + item.total_duration, 0)
         }).toFormat('hh:mm');
-        const totalBillableAmount = timers.reduce((acc, item) => acc + item.total_cost, 0).toFixed(2);
+        const totalBillableAmount = timers.reduce((acc, item) => acc + item.total_cost, 0).toCurrency();
         const tasks = timers.reduce((tasks, timer) => {
           const task = tasks.find(task => task.taskTitle == timer.task.tasks_id.task_name);
           if (task == undefined) {

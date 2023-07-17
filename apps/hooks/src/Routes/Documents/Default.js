@@ -2,7 +2,6 @@ import * as fs from 'fs';
 
 const Document = () => {
   let _logoFile;
-  let _currency = 'TRL';
   let _totalHours = 0;
   let _totalBillableAmount = 0;
   let _breakdownByTaskItems = [];
@@ -156,7 +155,7 @@ const Document = () => {
         },
         {
           border: [false, false, false, true],
-          text: `${_currency} ${item.totalBillableAmount.toFixed(2)}`,
+          text: item.totalBillableAmount.toCurrency(),
           fillColor: '#f5f5f5',
           alignment: 'right',
           margin: [0, 5, 0, 5],
@@ -199,7 +198,7 @@ const Document = () => {
         },
         {
           border: [false, false, false, true],
-          text: `${_currency} ${item.totalBillableAmount.toFixed(2)}`,
+          text: item.totalBillableAmount.toCurrency(),
           fillColor: '#f5f5f5',
           alignment: 'right',
           margin: [0, 5, 0, 5],
@@ -256,7 +255,7 @@ const Document = () => {
           ... _tableBodyColProps2
         },
         {
-          text: `${_currency} ${item.billableAmount.toFixed(2)}`,
+          text: item.billableAmount.toCurrency(),
           fillColor: '#f5f5f5',
           alignment: 'right',
           ... _tableBodyColProps2
@@ -366,7 +365,7 @@ const Document = () => {
             widths: ['*', 'auto'],
             body: [
               _getTotalLine('Total Hours', _totalHours),
-              _getTotalLine('Total Billable Amount', _currency + ' ' + _totalBillableAmount),
+              _getTotalLine('Total Billable Amount', _totalBillableAmount),
             ],
           },
         },
