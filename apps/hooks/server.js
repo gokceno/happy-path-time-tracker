@@ -11,6 +11,14 @@ import { notifyUsersWithAbsentTimers } from './src/Routes/notifyUsersWithAbsentT
 import { create as createProjectsReport } from './src/Routes/createProjectsReport.js';
 import { schema } from './src/Routes/schema.js';
 
+Number.prototype.toCurrency = function () {
+  return new Intl.NumberFormat((process.env.LOCALE_CULTURE || 'en-US'), { style: 'currency', currency: (process.env.LOCALE_CURRENCY || 'USD') }).format(this);
+}
+
+Array.prototype.random = function () {
+  return this[Math.floor((Math.random()*this.length))];
+}
+
 // Apply some hacks & init Magic
 const require = createRequire(import.meta.url);
 const { Magic } = require('@magic-sdk/admin');
@@ -66,7 +74,6 @@ app.all('/graphql', authenticateUser, createHandler({
   schema, 
   context: async (req) => await magic.users.getMetadataByToken(req.headers['authorization'].split(' ')[1]) 
 }));
-
 
 (async () => {
   app.listen(process.env.PORT || 4000);

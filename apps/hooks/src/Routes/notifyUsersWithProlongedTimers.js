@@ -5,10 +5,6 @@ import { Notification } from '@happy-path/notification';
 
 dotenv.config();
 
-Array.prototype.random = function () {
-  return this[Math.floor((Math.random()*this.length))];
-}
-
 const notifyUsersWithProlongedTimers = async (req, res, next) => {
   const startAt = DateTime.now().minus({ minutes: process.env.PROLONGED_TIMER_TRESHOLD_1 || 240 }).toISO();
   const queryResponse = await GraphQLClient.query(TimersWithNoEndDateQuery,{ startAt });
