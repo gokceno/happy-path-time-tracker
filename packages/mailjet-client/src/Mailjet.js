@@ -56,30 +56,35 @@ const Client = () => {
 		}
 		return message;
 	}
-	const setTemplate = (params) => {
+
+	function setTemplate(params) {
 		const { templateId, vars } = params;
 		if (templateId == undefined) throw new Error('Required parameters missing.');
 		_templateId = templateId;
 		_templateVariables = vars;
 		_isTemplate = true;
+		return this;
 	}
-	const setBody = (params) => {
+	function setBody(params) {
 		const { html, plaintext, isTemplate } = params;
 		if (html == undefined && plaintext == undefined) throw new Error('Required parameters missing.');
 		_htmlBody = html || '';
 		_textBody = plaintext || '';
 		_isTemplate = isTemplate || false;
+		return this;
 	}
-	const setSubject = (subject) => {
+	function setSubject(subject) {
 		if (subject == undefined) throw new Error('Required parameters missing.');
 		_subject = [_emailSubjectPrefix, subject].join(' ');
+		return this;
 	}
-	const addRecipent = (params) => {
+	function addRecipent(params) {
 		const { email, nameSurname } = params;
 		if (email == undefined) throw new Error('Required parameters missing.');
 		_recipents.push({ email, nameSurname });
+		return this;
 	}
-	const addAttachment = async (params) => {
+	async function addAttachment (params) {
 		const { base64File, filename, contentType = 'application/octet-stream', charset = 'UTF-8' } = params;
 		if (base64File == undefined || filename == undefined) throw new Error('Required parameters missing.');
 		_attachments.push({
@@ -88,14 +93,16 @@ const Client = () => {
 			contentType,
 			charset
 		});
+		return this;
 	}
+	
 	const send = async () => {
+		if(_recipents == undefined || _recipents.length == 0) throw new Error('Recipents not set.');
 		if(_templateId == undefined && (_htmlBody == undefined || _textBody == undefined)) throw new Error('Required parameters missing.');
 		if(_templateId != undefined && (_htmlBody != undefined || _textBody != undefined)) throw new Error('Template ID and body cannot be set at the same time.');
 		return await _mailjetClient
 			.post('send', _mjApiProps)
 			.request({ Messages: [_getMessage()] })
-			//.then(result => _log(result))
 			.catch(err => {
 				_log(err);
 				throw new Error(err);
