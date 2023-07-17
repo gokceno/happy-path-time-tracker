@@ -18,6 +18,7 @@ const Client = () => {
 	let _isTemplate = false;
 
 	const _mjApiProps = { version: 'v3.1' };
+	const _emailSubjectPrefix = '[Happy Path]';
 	const _emailFrom = {
 		From: {
 			Email: process.env.MJ_FROM_EMAIL,
@@ -71,7 +72,7 @@ const Client = () => {
 	}
 	const setSubject = (subject) => {
 		if (subject == undefined) throw new Error('Required parameters missing.');
-		_subject = subject;
+		_subject = [_emailSubjectPrefix, subject].join(' ');
 	}
 	const addRecipent = (params) => {
 		const { email, nameSurname } = params;

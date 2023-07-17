@@ -103,7 +103,7 @@ const create =  async (req, res, next) => {
   );
   if(emailRecipents.length > 0) {
     emailRecipents.forEach(email => emailClient.addRecipent({ email }));
-    emailClient.setSubject('[HP] Reports');
+    emailClient.setSubject('Reports');
     emailClient.setBody({ html: '<p>Please find your monthly reports attached.</p>' });
     emailClient.send();
   }
