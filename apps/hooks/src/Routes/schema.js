@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime, Interval, Duration } from 'luxon';
 import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLInputObjectType } from 'graphql';
 import { Projects, Tasks, Timers } from '@happy-path/graphql-entities';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
@@ -52,7 +52,7 @@ const schema = new GraphQLSchema({
         })),
         resolve: async (_, { startsAt, endsAt }, context) => {
           const timers = Timers({ graphqlClient });
-          return (await timers.list({ startsAt, endsAt, email: context.email })).map(item => ({ 
+          return (await timers.findTimersByUserId({ startsAt, endsAt, email: context.email })).map(item => ({ 
             id: item.id, 
             startsAt: item.starts_at,
             endsAt: item.ends_at,
@@ -124,17 +124,29 @@ const schema = new GraphQLSchema({
         args: {
           date: { type: new GraphQLNonNull(GraphQLString) }
         },
-        resolve: async (_, { projectId }, context) => {
+        resolve: async (_, { date }, context) => {
+          const timers = await Timers({ graphqlClient }).findTimersByUserId({ 
+            startsAt: DateTime.fromISO(date).startOf('month'),
+            endsAt: DateTime.fromISO(date).endOf('month'), 
+            email: context.email 
+          });
+          if(timers.length == 0) return {};
+          const weeklyInterval = Interval.fromDateTimes(
+            DateTime.fromISO(date).startOf('week'),
+            DateTime.fromISO(date).endOf('week')
+          );
+          const byDate = weeklyInterval.splitBy(Duration.fromObject({ day: 1 })).map(weekday => ({
+            totalDuration: timers.filter(timer => DateTime.fromISO(timer.starts_at).toISODate() ==  weekday.start.toISODate()).reduce((acc, timer) => acc + timer.total_duration, 0),
+            date: weekday.start.toISODate()
+          }));
           return {
-            byDate: [
-              { date: DateTime.now().toISODate(), totalDuration: 100 },
-            ],
+            byDate,
             byInterval: [
               {
                 type: 'month',
                 startsAt: DateTime.now().startOf('month').toISO(),
                 endsAt: DateTime.now().endOf('month').toISO(),
-                totalDuration: 100
+                totalDuration: timers.reduce((acc, timer) => acc + timer.total_duration, 0)
               }
             ]
           };
