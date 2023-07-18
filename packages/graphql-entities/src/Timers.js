@@ -35,7 +35,7 @@ const Timers = ({ graphqlClient }) => {
     };
   }
   const list = async (params, formatter) => { 
-    const timers = await findTimersByProjectId(params);
+    const timers = await findTimersByUserId(params);
     if(formatter !== undefined) {
       return timers.map(item => formatter({ item }));
     }
