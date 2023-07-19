@@ -9,7 +9,7 @@ import { calculateTotalCost } from '../calculateTotalCost.js';
 // TODO: proje datasının hook'dan gelmesi
 // FIXME: arada #totalCost not null hatası veriyor
 
-const calculateTotalDuration = async (req, res, next) => {
+const calculate = async (req, res, next) => {
   // Find timerId
   let timerId = undefined;
   if(req.body.data.event == 'timers.items.create') { timerId = req.body.data.key; }
@@ -110,4 +110,4 @@ const TimersMutation = `
   }
 `;
 
-export { calculateTotalDuration }
+export { calculate }

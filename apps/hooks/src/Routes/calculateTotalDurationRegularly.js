@@ -4,7 +4,7 @@ import { GraphQLClient } from '@happy-path/graphql-client';
 import * as priceModifiers from '../Price/Modifiers.js';
 import { calculateTotalCost } from '../calculateTotalCost.js';
 
-const calculateTotalDurationRegularly = async (req, res, next) => {
+const calculate = async (req, res, next) => {
   // TODO: Should update only if there are changed values
   if(req.body.metadata != undefined) {
     const queryResponse = await GraphQLClient.query(TimersWithNoEndDateQuery);
@@ -75,4 +75,4 @@ const TimersMutation = `
   }
 `;
 
-export { calculateTotalDurationRegularly }
+export { calculate }

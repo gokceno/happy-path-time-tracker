@@ -4,13 +4,15 @@ import pino from 'pino';
 import pinoHttp from 'pino-http';
 import { createRequire } from "module";
 import { createHandler } from 'graphql-http/lib/use/express';
-import { notifyUsersWithProlongedTimers } from './src/Routes/notifyUsersWithProlongedTimers.js';
-import { calculateTotalDuration } from './src/Routes/calculateTotalDuration.js';
-import { calculateTotalDurationRegularly } from './src/Routes/calculateTotalDurationRegularly.js';
-import { notifyUsersWithAbsentTimers } from './src/Routes/notifyUsersWithAbsentTimers.js';
-import { create as createProjectsReport } from './src/Routes/createProjectsReport.js';
-import { calculate as calculateProjectTimers } from './src/Routes/calculateProjectTimers.js';
-import { schema } from './src/Routes/schema.js';
+import { 
+  calculateTotalDuration,
+  calculateTotalDurationRegularly,
+  calculateProjectTimers,
+  notifyUsersWithProlongedTimers,
+  notifyUsersWithAbsentTimers,
+  createProjectsReport,
+  schema
+} from './src/Routes/index.js';
 
 Number.prototype.toCurrency = function () {
   return new Intl.NumberFormat((process.env.LOCALE_CULTURE || 'en-US'), { style: 'currency', currency: (process.env.LOCALE_CURRENCY || 'USD') }).format(this);
@@ -65,6 +67,7 @@ app.use(pinoHttpLogger);
 app.use(bodyParser.json());
 app.use(express.json());
 
+// TODO: Must follow the same URL format either verb-noun or noun-verb
 app.post('/timers/update/total-duration', authenticateAPI, calculateTotalDuration);
 app.post('/timers/update/regularly/total-duration', authenticateAPI, calculateTotalDurationRegularly);
 app.post('/notify/users/with/absent/timers', authenticateAPI, notifyUsersWithAbsentTimers);

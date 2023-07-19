@@ -5,7 +5,7 @@ import { Notification } from '@happy-path/notification';
 
 dotenv.config();
 
-const notifyUsersWithProlongedTimers = async (req, res, next) => {
+const notify = async (req, res, next) => {
   const startAt = DateTime.now().minus({ minutes: process.env.PROLONGED_TIMER_TRESHOLD_1 || 240 }).toISO();
   const queryResponse = await GraphQLClient.query(TimersWithNoEndDateQuery,{ startAt });
   if(queryResponse?.data?.timers != undefined && queryResponse?.data?.timers.length > 0) {
@@ -75,4 +75,4 @@ const StopTimerMutation = `
   }
 `;
 
-export { notifyUsersWithProlongedTimers }
+export { notify }

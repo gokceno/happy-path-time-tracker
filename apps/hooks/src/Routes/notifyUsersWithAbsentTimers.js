@@ -5,7 +5,7 @@ import { Notification } from '@happy-path/notification';
 
 dotenv.config();
 
-const notifyUsersWithAbsentTimers = async (req, res, next) => {
+const notify = async (req, res, next) => {
   const queryResponse = await GraphQLClient.query(UserTimersQuery, { 
     startsAt: DateTime.now().toFormat("yyyy-MM-dd'T00:00:00'"), 
     endsAt: DateTime.now().toFormat("yyyy-MM-dd'T23:59:59'")
@@ -54,4 +54,4 @@ const UserTimersQuery = `
   }
 `;
 
-export { notifyUsersWithAbsentTimers }
+export { notify }
