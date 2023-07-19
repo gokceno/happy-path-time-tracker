@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import YAML from 'yaml';
 import dotenv from 'dotenv';
 import pdfMake from 'pdfmake';
 import { DateTime, Duration } from 'luxon';
@@ -7,6 +6,7 @@ import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
 import { Client as EmailClient } from '@happy-path/mailjet-client';
 import { Timers, Projects } from '@happy-path/graphql-entities';
 import { Document as DefaultDocument } from './Documents/Default.js';
+import { metadata as parseMetadata } from '../calculate.js';
 
 dotenv.config();
 
@@ -40,7 +40,7 @@ const create =  async (req, res, next) => {
       if(timers.length) {
         const dd = DefaultDocument();
         const { project_name: projectName, metadata: projectMetadata } = await Projects({ graphqlClient }).findProjectById({ projectId });
-        const { price_modifiers: priceModifiers } = YAML.parse(metadataTemplate.trim() + '\n' + projectMetadata.trim());
+        const { price_modifiers: priceModifiers } = parseMetadata([metadataTemplate, projectMetadata]);
         const totalHours = Duration.fromObject({ 
           minutes: timers.reduce((acc, item) => acc + item.total_duration, 0)
         }).toFormat('hh:mm');
