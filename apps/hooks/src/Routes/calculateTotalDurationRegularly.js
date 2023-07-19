@@ -15,7 +15,14 @@ const calculate = async (req, res, next) => {
         defaultMetadataString += item?.task?.projects_id?.metadata || '';
         const { totalDuration, totalDurationInHours } = calculateDuration({ startsAt: item.starts_at, duration: item.duration});        
         try {
-          const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, email: item.user_id.email, startsAt, endsAt: DateTime.now()});
+          const totalCost = calculateTotalCost({
+            metadata: defaultMetadataString, 
+            totalDurationInHours, 
+            totalDuration, 
+            email: item.user_id.email, 
+            startsAt: item.starts_at, 
+            endsAt: DateTime.now()
+          });
           if(totalCost != undefined) {
             const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId: item.id, totalDuration, totalDurationInHours, totalCost });
             if(mutationResponse.error != undefined) {
