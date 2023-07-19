@@ -1,7 +1,6 @@
 import YAML from 'yaml';
 import { DateTime } from 'luxon';
 import { GraphQLClient } from '@happy-path/graphql-client';
-import * as priceModifiers from '../Price/Modifiers.js';
 import { calculateTotalCost } from '../calculateTotalCost.js';
 
 const calculate = async (req, res, next) => {

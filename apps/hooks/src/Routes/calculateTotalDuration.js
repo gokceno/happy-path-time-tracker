@@ -1,13 +1,12 @@
 import YAML from 'yaml';
 import { DateTime } from 'luxon';
 import { GraphQLClient } from '@happy-path/graphql-client';
-import * as priceModifiers from '../Price/Modifiers.js';
 import { calculateTotalCost } from '../calculateTotalCost.js';
 
 // TODO: Billable olmayan task tipleri?
-// TODO: import statements
-// TODO: proje datasının hook'dan gelmesi
 // FIXME: arada #totalCost not null hatası veriyor
+// TODO: metadata parsing should be in single place for all methods
+// TODO: totalDuration calculation should be centralized
 
 const calculate = async (req, res, next) => {
   // Find timerId
