@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import pino from 'pino';
+import jwt from 'jsonwebtoken';
 import pinoHttp from 'pino-http';
 import { createRequire } from "module";
 import { createHandler } from 'graphql-http/lib/use/express';
@@ -11,7 +12,8 @@ import {
   notifyUsersWithProlongedTimers,
   notifyUsersWithAbsentTimers,
   createProjectsReport,
-  schema
+  schema,
+  token
 } from './src/Routes/index.js';
 
 Number.prototype.toCurrency = function () {
@@ -26,6 +28,9 @@ Array.prototype.random = function () {
 const require = createRequire(import.meta.url);
 const { Magic } = require('@magic-sdk/admin');
 const magic = new Magic(process.env.MAGIC_SECRET_KEY);
+
+// Init JWT
+const { verify } = jwt;
 
 // Init Express
 const app = express();
@@ -52,14 +57,22 @@ const authenticateAPI = async (req, res, next) => {
   next();
 }
 
-const authenticateUser = async (req, res, next) => {
+const authenticateUserByMagic = async (req, res, next) => {
   try {
-    magic.token.validate(req.headers['authorization'].split(' ')[1]);
+    const [type, token] = req.headers['authorization'].split(' ');
+    magic.token.validate(token);
   }
   catch(e) {
-    res.log.debug(e);
     return res.sendStatus(403);
   }
+  next();
+}
+
+const authenticateUserByJWT = async (req, res, next) => {
+  const [type, token] = req.headers['authorization'].split(' ');
+  jwt.verify(token, process.env.JWT_SECRET || '', (err, decoded) => {
+    if(decoded == undefined) return res.sendStatus(403);
+  });
   next();
 }
 
@@ -74,10 +87,16 @@ app.post('/notify/users/with/absent/timers', authenticateAPI, notifyUsersWithAbs
 app.post('/notify/users/with/prolonged/timers', authenticateAPI, notifyUsersWithProlongedTimers);
 app.post('/reports/projects/create', authenticateAPI, createProjectsReport);
 app.post('/calculate/project/timers', authenticateAPI, calculateProjectTimers);
+app.post('/token', authenticateUserByMagic, token);
 
-app.all('/graphql', authenticateUser, createHandler({ 
+app.all('/graphql', authenticateUserByJWT, createHandler({ 
   schema, 
-  context: async (req) => await magic.users.getMetadataByToken(req.headers['authorization'].split(' ')[1]) 
+  context: async (req) => {
+    const [type, token] = req.headers['authorization'].split(' ');
+    return jwt.verify(token, process.env.JWT_SECRET, (e, decoded) => {
+      return decoded;
+    });
+  } 
 }));
 
 (async () => {

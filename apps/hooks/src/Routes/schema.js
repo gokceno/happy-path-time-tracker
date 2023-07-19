@@ -11,13 +11,14 @@ const schema = new GraphQLSchema({
         type: new GraphQLObjectType({
           name: 'Me',
           fields: {
-            did: { type: GraphQLString },
             email: { type: GraphQLString }
           }
         }),
         resolve: async (_, { name }, context) => {
+
+          console.log(context);
+
           return {
-            did: context.issuer,
             email: context.email,
           }
         },
