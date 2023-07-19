@@ -32,15 +32,23 @@ const calculateTotalCost = (params) => {
 }
 
 const calculateDuration = (params) => {
-  let { startsAt, endsAt = DateTime.now(), duration } = params;
+  let { startsAt, endsAt, duration } = params;
   if(startsAt == undefined || duration == undefined) throw new Error('Required parameters missing.');
   if(typeof startsAt == 'string') startsAt = DateTime.fromISO(startsAt);
   if(typeof endsAt == 'string') endsAt = DateTime.fromISO(endsAt);
+  if(endsAt == undefined) endsAt = DateTime.now();
   const { minutes: durationInMinutes } = endsAt.diff(startsAt, 'minutes').toObject();
   const totalDuration = Math.floor(durationInMinutes + duration);
   const totalDurationInHours = +((totalDuration / 60).toFixed(2));
   return { totalDuration, totalDurationInHours };
 }
 
+const metadata = (params) => {
+  if(typeof params != 'object' || params.length == 0) throw new Error('Required parameters missing.');
+  return YAML.parse(
+    params.map(param => param.trim()).join('\n')
+  );
+}
 
-export { calculateTotalCost, calculateDuration }
+
+export { calculateTotalCost, calculateDuration, metadata }
