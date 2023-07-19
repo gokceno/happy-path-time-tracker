@@ -5,8 +5,6 @@ import { calculateTotalCost, calculateDuration, metadata as parseMetadata } from
 
 // TODO: Billable olmayan task tipleri?
 // FIXME: arada #totalCost not null hatası veriyor
-// TODO: metadata parsing should be in single place for all methods
-// TODO: totalDuration calculation should be centralized
 
 const calculate = async (req, res, next) => {
   // Find timerId
