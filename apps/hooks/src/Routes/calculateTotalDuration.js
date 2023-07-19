@@ -37,7 +37,7 @@ const calculate = async (req, res, next) => {
             totalDurationInHours, 
             totalDuration, 
             email: queryResponse.data.timers_by_id.user_id.email, 
-            startsAt: queryResponse.data.timers_by_id.starts_at 
+            startsAt: queryResponse.data.timers_by_id.starts_at, 
             endsAt: queryResponse.data.timers_by_id.ends_at || DateTime.now()
           });
           if(queryResponse.data.timers_by_id.total_duration !== totalDuration && totalCost != undefined) {
