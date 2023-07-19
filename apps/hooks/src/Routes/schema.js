@@ -282,6 +282,20 @@ const schema = new GraphQLSchema({
           }
         },
       },
+      restart: {
+        type: new GraphQLObjectType({
+          name: 'Restart',
+          fields: {
+            id: { type: GraphQLString }
+          }
+        }),
+        args: {
+          timerId: { type: new GraphQLNonNull(GraphQLInt) }
+        },
+        resolve: async (_, { timerId }, context) => {
+          return { id: 1 };
+        },
+      },
     },
   }),
 });
