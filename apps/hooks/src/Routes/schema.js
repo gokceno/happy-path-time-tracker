@@ -15,9 +15,6 @@ const schema = new GraphQLSchema({
           }
         }),
         resolve: async (_, { name }, context) => {
-
-          console.log(context);
-
           return {
             email: context.email,
           }
