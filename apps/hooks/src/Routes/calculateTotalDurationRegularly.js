@@ -1,7 +1,7 @@
 import YAML from 'yaml';
 import { DateTime } from 'luxon';
 import { GraphQLClient } from '@happy-path/graphql-client';
-import { calculateTotalCost, calculateDuration } from '../calculate.js';
+import { calculateTotalCost, calculateDuration, metadata as parseMetadata } from '../calculate.js';
 
 const calculate = async (req, res, next) => {
   // TODO: Should update only if there are changed values
@@ -9,14 +9,11 @@ const calculate = async (req, res, next) => {
     const queryResponse = await GraphQLClient.query(TimersWithNoEndDateQuery);
     if(queryResponse?.data?.timers != undefined && queryResponse?.data?.timers.length > 0) {
       queryResponse.data.timers.forEach(async (item) => {
-        let defaultMetadataString = '';
-        defaultMetadataString += req.body.metadata[0].metadata.trim();
-        defaultMetadataString += '\n';
-        defaultMetadataString += item?.task?.projects_id?.metadata || '';
+        const metadata = parseMetadata([req.body.metadata[0].metadata, item?.task?.projects_id?.metadata]);
         const { totalDuration, totalDurationInHours } = calculateDuration({ startsAt: item.starts_at, duration: item.duration});        
         try {
           const totalCost = calculateTotalCost({
-            metadata: defaultMetadataString, 
+            metadata, 
             totalDurationInHours, 
             totalDuration, 
             email: item.user_id.email, 

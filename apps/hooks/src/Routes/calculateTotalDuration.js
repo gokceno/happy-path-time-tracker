@@ -28,12 +28,10 @@ const calculate = async (req, res, next) => {
       });
       let totalCost = 0, defaultMetadataString = '';
       if(queryResponse.data.timers_by_id.task?.projects_id?.metadata != undefined && req.body?.metadata[0]?.metadata != undefined) {
-        defaultMetadataString += req.body.metadata[0].metadata.trim();
-        defaultMetadataString += '\n';
-        defaultMetadataString += queryResponse.data.timers_by_id.task.projects_id.metadata;
+        const metadata = parseMetadata([req.body.metadata[0].metadata, queryResponse.data.timers_by_id.task.projects_id.metadata]);
         try {
           const totalCost = calculateTotalCost({
-            metadata: defaultMetadataString, 
+            metadata, 
             totalDurationInHours, 
             totalDuration, 
             email: queryResponse.data.timers_by_id.user_id.email, 

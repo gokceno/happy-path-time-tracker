@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { DateTime, Duration } from 'luxon';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
 import { Timers, Projects } from '@happy-path/graphql-entities';
-import { calculateTotalCost } from '../calculate.js';
+import { calculateTotalCost, metadata as parseMetadata } from '../calculate.js';
 
 dotenv.config();
 
@@ -15,7 +15,7 @@ const calculate =  async (req, res, next) => {
   if(collection != 'projects') throw new Error(`Can process only for "projects".`);
   projectIds.forEach(async (projectId) => {
     const { metadata: projectMetadata, created_at: projectCreatedAt } = await Projects({ graphqlClient }).findProjectById({ projectId });
-    const metadata = metadataTemplate.trim() + '\n' + projectMetadata.trim();
+    const metadata = parseMetadata([metadataTemplate, projectMetadata]);
     const timers = await Timers({ graphqlClient }).findTimersByProjectId({ 
       projectId,
       startsAt: projectCreatedAt,

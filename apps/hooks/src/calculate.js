@@ -3,11 +3,10 @@ import { DateTime } from 'luxon';
 import * as priceModifiers from './Price/Modifiers.js';
 
 const calculateTotalCost = (params) => {
-  const { email, totalDurationInHours, totalDuration, metadata: defaultMetadataString } = params;
+  const { email, totalDurationInHours, totalDuration, metadata } = params;
   let { startsAt, endsAt } = params;
   if(typeof startsAt == 'string') startsAt = DateTime.fromISO(startsAt);
   if(typeof endsAt == 'string') endsAt = DateTime.fromISO(endsAt);
-  const metadata = YAML.parse(defaultMetadataString);
   const matchedGroup = metadata?.groups?.filter(group => {
     const { members } = group[Object.keys(group)[0]];
     return members.some(member => member === email);
@@ -46,7 +45,7 @@ const calculateDuration = (params) => {
 const metadata = (params) => {
   if(typeof params != 'object' || params.length == 0) throw new Error('Required parameters missing.');
   return YAML.parse(
-    params.map(param => param.trim()).join('\n')
+    params.map(param => (param || '').trim()).join('\n')
   );
 }
 
