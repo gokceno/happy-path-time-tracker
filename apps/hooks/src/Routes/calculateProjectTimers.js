@@ -22,43 +22,43 @@ const calculate =  async (req, res, next) => {
       endsAt: DateTime.now().toISO(),
     });
     timers.forEach(async (item) => {
-        try {
-          const totalCost = calculateTotalCost({
-            metadata, 
-            totalDurationInHours: item.total_duration_in_hours,
-            totalDuration: item.total_duration, 
-            email: item.user_id.email, 
-            startsAt: DateTime.fromISO(item.starts_at), 
-            endsAt: DateTime.fromISO(item.ends_at)
-          });
-          if(totalCost != undefined && totalCost != null && totalCost != item.total_cost) {
-            setTimeout(async () => {
-              const mutation = await graphqlClient.mutation(TimersMutation, { 
-                timerId: item.id, 
-                totalCost 
-              });
-              if(mutation.error != undefined) res.log.error(mutation.error);
-            }, (process.env.DEBOUNCE_CONCURRENT_REQUESTS || 500));
-          }
-          else {
-            res.log.debug(`Total cost is undefined or no need to update for timer ID: ${item.id}`);
-          }
+      try {
+        const totalCost = calculateTotalCost({
+          metadata, 
+          totalDurationInHours: item.total_duration_in_hours,
+          totalDuration: item.total_duration, 
+          email: item.user_id.email, 
+          startsAt: DateTime.fromISO(item.starts_at), 
+          endsAt: DateTime.fromISO(item.ends_at)
+        });
+        if(totalCost != undefined && totalCost != null && totalCost != item.total_cost) {
+          setTimeout(async () => {
+            const mutation = await graphqlClient.mutation(TimersMutation, { 
+              timerId: item.id, 
+              totalCost 
+            });
+            if(mutation.error != undefined) res.log.error(mutation.error);
+          }, (process.env.DEBOUNCE_CONCURRENT_REQUESTS || 500));
         }
-        catch(e) {
-          res.log.error(e);
+        else {
+          res.log.debug(`Total cost is undefined or no need to update for timer ID: ${item.id}`);
         }
+      }
+      catch(e) {
+        res.log.error(e);
+      }
     });
   })
   res.json({ ok: true });
 }
 
 const TimersMutation = `
-  mutation update_timers_item($timerId: ID!, $totalCost: Float!) {
-    update_timers_item(id: $timerId, data: {total_cost: $totalCost}) {
-      id
-      total_cost
-    }
+mutation update_timers_item($timerId: ID!, $totalCost: Float!) {
+  update_timers_item(id: $timerId, data: {total_cost: $totalCost}) {
+    id
+    total_cost
   }
+}
 `;
 
 export { calculate }
