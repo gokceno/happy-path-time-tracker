@@ -1,7 +1,7 @@
 import YAML from 'yaml';
 import { DateTime } from 'luxon';
 import { GraphQLClient } from '@happy-path/graphql-client';
-import { calculateTotalCost } from '../calculateTotalCost.js';
+import { calculateTotalCost, calculateDuration } from '../calculate.js';
 
 // TODO: Billable olmayan task tipleri?
 // FIXME: arada #totalCost not null hatası veriyor
@@ -21,29 +21,27 @@ const calculate = async (req, res, next) => {
     // TODO: should use timers.get
     const queryResponse = await GraphQLClient.query(TimersQuery, { timerId });
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
-      // Calculate totalDuration
-      let startsAt, endsAt;
-      let totalDuration = queryResponse?.data?.timers_by_id?.total_duration || 0;
-      if(queryResponse.data.timers_by_id.starts_at && queryResponse.data.timers_by_id.ends_at) {
-        startsAt = DateTime.fromISO(queryResponse.data.timers_by_id.starts_at);
-        endsAt = DateTime.fromISO(queryResponse.data.timers_by_id.ends_at);
-        const duration = endsAt.diff(startsAt, 'minutes');
-        const { minutes: durationInMinutes } = duration.toObject();
-        totalDuration = Math.floor(durationInMinutes + queryResponse.data.timers_by_id.duration);
-      }
-      const totalDurationInHours = +((totalDuration / 60).toFixed(2));
-      // Calculate totalCost
+      const { totalDuration, totalDurationInHours } = calculateDuration({ 
+        startsAt: queryResponse.data.timers_by_id.starts_at, 
+        endsAt: queryResponse.data.timers_by_id.ends_at,
+        duration: queryResponse.data.timers_by_id.duration
+      });
       let totalCost = 0, defaultMetadataString = '';
       if(queryResponse.data.timers_by_id.task?.projects_id?.metadata != undefined && req.body?.metadata[0]?.metadata != undefined) {
         defaultMetadataString += req.body.metadata[0].metadata.trim();
         defaultMetadataString += '\n';
         defaultMetadataString += queryResponse.data.timers_by_id.task.projects_id.metadata;
         try {
-          const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, email: queryResponse.data.timers_by_id.user_id.email, startsAt, endsAt: DateTime.now()});
-          // Update totalDuration+totalCost
+          const totalCost = calculateTotalCost({
+            metadata: defaultMetadataString, 
+            totalDurationInHours, 
+            totalDuration, 
+            email: queryResponse.data.timers_by_id.user_id.email, 
+            startsAt: queryResponse.data.timers_by_id.starts_at 
+            endsAt: queryResponse.data.timers_by_id.ends_at || DateTime.now()
+          });
           if(queryResponse.data.timers_by_id.total_duration !== totalDuration && totalCost != undefined) {
             const mutationResponse = await GraphQLClient.mutation(TimersMutation, { timerId, totalDuration, totalDurationInHours, totalCost });
-            // Return payload
             if(mutationResponse.error == undefined) {
               res.json({ok: true, data: mutationResponse.data.update_timers_item});
             }

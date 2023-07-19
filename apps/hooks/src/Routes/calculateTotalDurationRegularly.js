@@ -1,7 +1,7 @@
 import YAML from 'yaml';
 import { DateTime } from 'luxon';
 import { GraphQLClient } from '@happy-path/graphql-client';
-import { calculateTotalCost } from '../calculateTotalCost.js';
+import { calculateTotalCost, calculateDuration } from '../calculate.js';
 
 const calculate = async (req, res, next) => {
   // TODO: Should update only if there are changed values
@@ -10,13 +10,10 @@ const calculate = async (req, res, next) => {
     if(queryResponse?.data?.timers != undefined && queryResponse?.data?.timers.length > 0) {
       queryResponse.data.timers.forEach(async (item) => {
         let defaultMetadataString = '';
-        const startsAt = DateTime.fromISO(item.starts_at);
-        const { minutes: durationInMinutes } = DateTime.now().diff(startsAt, 'minutes').toObject();
-        const totalDuration = Math.floor(durationInMinutes + item.duration);
-        const totalDurationInHours = +((totalDuration / 60).toFixed(2));
         defaultMetadataString += req.body.metadata[0].metadata.trim();
         defaultMetadataString += '\n';
         defaultMetadataString += item?.task?.projects_id?.metadata || '';
+        const { totalDuration, totalDurationInHours } = calculateDuration({ startsAt: item.starts_at, duration: item.duration});        
         try {
           const totalCost = calculateTotalCost({metadata: defaultMetadataString, totalDurationInHours, totalDuration, email: item.user_id.email, startsAt, endsAt: DateTime.now()});
           if(totalCost != undefined) {

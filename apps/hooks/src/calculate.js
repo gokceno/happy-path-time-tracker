@@ -19,8 +19,8 @@ const calculateTotalCost = (params) => {
     if(matchedPrice != undefined && matchedPrice?.length > 0) {
       const priceModifiersToApply = (metadata.price_modifiers !== undefined && typeof metadata.price_modifiers === 'object') ? Object.values(metadata.price_modifiers) : [];
       const availablePriceModifiersToApply = Object.entries(priceModifiers)
-        .filter(([methodName, method]) => typeof method === 'function' && priceModifiersToApply.includes(methodName))
-        .map(([methodName, method]) => method);
+      .filter(([methodName, method]) => typeof method === 'function' && priceModifiersToApply.includes(methodName))
+      .map(([methodName, method]) => method);
       const price = availablePriceModifiersToApply.reduce((acc, func) => func(acc, totalDuration, startsAt, endsAt), matchedPrice[0]?.price);
       totalCost = +((price * totalDurationInHours).toFixed(2));
     }
@@ -28,4 +28,16 @@ const calculateTotalCost = (params) => {
   return totalCost;
 }
 
-export { calculateTotalCost }
+const calculateDuration = (params) => {
+  let { startsAt, endsAt = DateTime.now(), duration } = params;
+  if(startsAt == undefined || duration == undefined) throw new Error('Required parameters missing.');
+  if(typeof startsAt == 'string') startsAt = DateTime.fromISO(startsAt);
+  if(typeof endsAt == 'string') endsAt = DateTime.fromISO(endsAt);
+  const { minutes: durationInMinutes } = endsAt.diff(startsAt, 'minutes').toObject();
+  const totalDuration = Math.floor(durationInMinutes + duration);
+  const totalDurationInHours = +((totalDuration / 60).toFixed(2));
+  return { totalDuration, totalDurationInHours };
+}
+
+
+export { calculateTotalCost, calculateDuration }
