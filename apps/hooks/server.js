@@ -9,6 +9,7 @@ import { calculateTotalDuration } from './src/Routes/calculateTotalDuration.js';
 import { calculateTotalDurationRegularly } from './src/Routes/calculateTotalDurationRegularly.js';
 import { notifyUsersWithAbsentTimers } from './src/Routes/notifyUsersWithAbsentTimers.js';
 import { create as createProjectsReport } from './src/Routes/createProjectsReport.js';
+import { calculate as calculateProjectTimers } from './src/Routes/calculateProjectTimers.js';
 import { schema } from './src/Routes/schema.js';
 
 Number.prototype.toCurrency = function () {
@@ -69,6 +70,7 @@ app.post('/timers/update/regularly/total-duration', authenticateAPI, calculateTo
 app.post('/notify/users/with/absent/timers', authenticateAPI, notifyUsersWithAbsentTimers);
 app.post('/notify/users/with/prolonged/timers', authenticateAPI, notifyUsersWithProlongedTimers);
 app.post('/reports/projects/create', authenticateAPI, createProjectsReport);
+app.post('/calculate/project/timers', authenticateAPI, calculateProjectTimers);
 
 app.all('/graphql', authenticateUser, createHandler({ 
   schema, 

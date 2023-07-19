@@ -266,6 +266,7 @@ const Timers = ({ graphqlClient }) => {
             email
           }
           total_duration
+          total_duration_in_hours
           total_cost
           starts_at
           ends_at
