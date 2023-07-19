@@ -18,6 +18,7 @@ const calculate = async (req, res, next) => {
     res.status(403).send({error: `Requested hook type doesn't exist. Exiting.`});
   }
   if(timerId != undefined) {
+    // TODO: should use timers.get
     const queryResponse = await GraphQLClient.query(TimersQuery, { timerId });
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
       // Calculate totalDuration
