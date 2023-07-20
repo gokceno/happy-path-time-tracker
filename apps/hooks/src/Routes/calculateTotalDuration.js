@@ -21,7 +21,7 @@ const calculate = async (req, res, next) => {
         endsAt: queryResponse.data.timers_by_id.ends_at,
         duration: queryResponse.data.timers_by_id.duration
       });
-      let totalCost = 0, defaultMetadataString = '';
+      let totalCost = 0;
       if(queryResponse.data.timers_by_id.task?.projects_id?.metadata != undefined && req.body?.metadata[0]?.metadata != undefined) {
         const metadata = parseMetadata([req.body.metadata[0].metadata, queryResponse.data.timers_by_id.task.projects_id.metadata]);
         try {
