@@ -6,7 +6,7 @@ import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
 import { Client as EmailClient } from '@happy-path/mailjet-client';
 import { Timers, Projects } from '@happy-path/graphql-entities';
 import { Document as DefaultDocument } from './Documents/Default.js';
-import { metadata as parseMetadata } from '../calculate.js';
+import { metadata as parseMetadata } from '@happy-path/calculator';
 
 dotenv.config();
 

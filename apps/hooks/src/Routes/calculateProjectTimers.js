@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { DateTime, Duration } from 'luxon';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
 import { Timers, Projects } from '@happy-path/graphql-entities';
-import { calculateTotalCost, metadata as parseMetadata } from '../calculate.js';
+import { calculateTotalCost, metadata as parseMetadata } from '@happy-path/calculator';
 
 dotenv.config();
 

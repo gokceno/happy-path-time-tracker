@@ -1,0 +1,6 @@
+{
+  "name": "@happy-path/calculator",
+  "version": "0.0.0",
+  "main": "./src/Calculator.js",
+  "type": "module"
+}

@@ -15,6 +15,7 @@
     "@happy-path/mailjet-client": "*",
     "@happy-path/notification": "*",
     "@happy-path/slack-client": "*",
+    "@happy-path/calculator": "*",
     "@magic-sdk/admin": "^1.10.0",
     "@slack/bolt": "^3.13.0",
     "@urql/core": "^4.0.4",

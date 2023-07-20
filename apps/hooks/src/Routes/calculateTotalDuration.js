@@ -1,10 +1,7 @@
 import YAML from 'yaml';
 import { DateTime } from 'luxon';
 import { GraphQLClient } from '@happy-path/graphql-client';
-import { calculateTotalCost, calculateDuration, metadata as parseMetadata } from '../calculate.js';
-
-// TODO: Billable olmayan task tipleri?
-// FIXME: arada #totalCost not null hatası veriyor
+import { calculateTotalCost, calculateDuration, metadata as parseMetadata } from '@happy-path/calculator';
 
 const calculate = async (req, res, next) => {
   // Find timerId

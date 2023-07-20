@@ -1,7 +1,7 @@
 import YAML from 'yaml';
 import { DateTime } from 'luxon';
 import { GraphQLClient } from '@happy-path/graphql-client';
-import { calculateTotalCost, calculateDuration, metadata as parseMetadata } from '../calculate.js';
+import { calculateTotalCost, calculateDuration, metadata as parseMetadata } from '@happy-path/calculator';
 
 const calculate = async (req, res, next) => {
   // TODO: Should update only if there are changed values
