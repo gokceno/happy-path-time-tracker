@@ -284,14 +284,22 @@ const schema = new GraphQLSchema({
         type: new GraphQLObjectType({
           name: 'Restart',
           fields: {
-            id: { type: GraphQLString }
+            id: { type: GraphQLInt }
           }
         }),
         args: {
           timerId: { type: new GraphQLNonNull(GraphQLInt) }
         },
         resolve: async (_, { timerId }, context) => {
-          return { id: 1 };
+          const timers = Timers({ graphqlClient });
+          const timer = await timers.restart({
+            timerId,
+            email: context.email,
+          });
+          if(timer.status == true) {
+            return { id: +timer.data.id };
+          }
+          return {};
         },
       },
     },
