@@ -38,7 +38,7 @@ const notify = async (req, res, next) => {
       }
       else {}
       if(message != undefined) {
-        Notification()
+        await Notification()
           .addRecipent(item.user_id.slack_user_id, 'slack')
           .addRecipent(item.user_id.email, 'email')
           .send({ message });

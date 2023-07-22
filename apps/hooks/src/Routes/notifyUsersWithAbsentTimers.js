@@ -20,14 +20,14 @@ const notify = async (req, res, next) => {
       }
       return false;
     });
-    usersWithNoTimers.forEach(item => {
-      Notification()
+    usersWithNoTimers.forEach(async (item) => {
+      await Notification()
       .addRecipent(item.slack_user_id, 'slack')
       .addRecipent(item.email, 'email')
       .send({ message: `You haven't started any timers ⏳ today. Care to log some time? 🙏` });
     });
-    usersWithLowTimers.forEach(item => {
-      Notification()
+    usersWithLowTimers.forEach(async (item) => {
+      await Notification()
       .addRecipent(item.slack_user_id, 'slack')
       .addRecipent(item.email, 'email')
       .send({ message: `How is your day going? I see that you haven't logged much time ⏳ today. Care to log more time? 🙏` });
