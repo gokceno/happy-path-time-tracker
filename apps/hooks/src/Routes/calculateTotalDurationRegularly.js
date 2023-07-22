@@ -8,29 +8,31 @@ const calculate = async (req, res, next) => {
   // TODO: Should update only if there are changed values
   const timers = await Timers({ graphqlClient }).findTimersByNoEndDate({ startsBefore: DateTime.now().toISO() }); 
   if(timers.length > 0) {
-    timers.forEach(async (item) => {
-      const metadata = parseMetadata([req.body.metadata[0].metadata, item?.task?.projects_id?.metadata]);
-      const { totalDuration, totalDurationInHours } = calculateDuration({ startsAt: item.starts_at, duration: item.duration });        
-      try {
-        const totalCost = calculateTotalCost({
-          metadata, 
-          totalDurationInHours, 
-          totalDuration, 
-          email: item.user_id.email, 
-          startsAt: item.starts_at, 
-          endsAt: DateTime.now()
-        });
-        if(totalCost != undefined) {
-          await Timers({ graphqlClient }).update({timerId: item.id, data: { duration: item.duration, totalDuration, totalDurationInHours, totalCost }});
+    await Promise.all(
+      timers.map(async (item) => {
+        const metadata = parseMetadata([req.body.metadata[0].metadata, item?.task?.projects_id?.metadata]);
+        const { totalDuration, totalDurationInHours } = calculateDuration({ startsAt: item.starts_at, duration: item.duration });        
+        try {
+          const totalCost = calculateTotalCost({
+            metadata, 
+            totalDurationInHours, 
+            totalDuration, 
+            email: item.user_id.email, 
+            startsAt: item.starts_at, 
+            endsAt: DateTime.now()
+          });
+          if(totalCost != undefined) {
+            await Timers({ graphqlClient }).update({timerId: item.id, data: { duration: item.duration, totalDuration, totalDurationInHours, totalCost }});
+          }
+          else {
+            res.log.debug(`Total cost is undefined for timer ID: ${item.id}`);
+          }
         }
-        else {
-          res.log.debug(`Total cost is undefined for timer ID: ${item.id}`);
+        catch(e) {
+          res.log.error(e);
         }
-      }
-      catch(e) {
-        res.log.error(e);
-      }
-    });
+      })
+    );
     res.json({ok: true});
   }
   else {
