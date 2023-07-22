@@ -269,7 +269,7 @@ const Timers = ({ graphqlClient }) => {
   }
   const findTimersByUserId = async(params) => {
     const { startsAt, endsAt, externalUserId, email, did, userId } = params;
-    if(startsAt == undefined || endsAt == undefined || (userId == undefined || externalUserId == undefined && did == undefined && email == undefined)) {
+    if(startsAt == undefined || endsAt == undefined || (userId == undefined && externalUserId == undefined && did == undefined && email == undefined)) {
       throw new Error('Required parameters not set.');
     }
     const actualUserId = await Users({ graphqlClient }).findUserId({ externalUserId, email, did, userId });
