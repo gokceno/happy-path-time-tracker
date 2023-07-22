@@ -13,39 +13,43 @@ const calculate =  async (req, res, next) => {
   if(projectIds.length > (process.env.REPORTS_MAX_NUMBER_OF_PROJECTS_TO_PROCESS || 12)) throw new Error(`Max number of projects exceeded.`);
   if(metadataTemplate == undefined) throw new Error(`Metadata is missing.`);
   if(collection != 'projects') throw new Error(`Can process only for "projects".`);
-  projectIds.forEach(async (projectId) => {
-    const { metadata: projectMetadata, created_at: projectCreatedAt } = await Projects({ graphqlClient }).findProjectById({ projectId });
-    const metadata = parseMetadata([metadataTemplate, projectMetadata]);
-    const timers = await Timers({ graphqlClient }).findTimersByProjectId({ 
-      projectId,
-      startsAt: projectCreatedAt,
-      endsAt: DateTime.now().toISO(),
-    });
-    timers.forEach(async (item) => {
-      try {
-        const totalCost = calculateTotalCost({
-          metadata, 
-          totalDurationInHours: item.total_duration_in_hours,
-          totalDuration: item.total_duration, 
-          email: item.user_id.email, 
-          startsAt: DateTime.fromISO(item.starts_at), 
-          endsAt: DateTime.fromISO(item.ends_at)
-        });
-        if(totalCost != undefined && totalCost != null && totalCost != item.total_cost) {
-          setTimeout(
-            async () => await Timers({ graphqlClient }).update({ timerId: item.id, data: { totalCost } }), 
-            process.env.DEBOUNCE_CONCURRENT_REQUESTS || 500
-          );
-        }
-        else {
-          res.log.debug(`Total cost is undefined or no need to update for timer ID: ${item.id}`);
-        }
-      }
-      catch(e) {
-        res.log.error(e);
-      }
-    });
-  })
+  await Promise.all(
+    projectIds.map(async (projectId) => {
+      const { metadata: projectMetadata, created_at: projectCreatedAt } = await Projects({ graphqlClient }).findProjectById({ projectId });
+      const metadata = parseMetadata([metadataTemplate, projectMetadata]);
+      const timers = await Timers({ graphqlClient }).findTimersByProjectId({ 
+        projectId,
+        startsAt: projectCreatedAt,
+        endsAt: DateTime.now().toISO(),
+      });
+      await Promise.all(
+        timers.map(async (item) => {
+          try {
+            const totalCost = calculateTotalCost({
+              metadata, 
+              totalDurationInHours: item.total_duration_in_hours,
+              totalDuration: item.total_duration, 
+              email: item.user_id.email, 
+              startsAt: DateTime.fromISO(item.starts_at), 
+              endsAt: DateTime.fromISO(item.ends_at)
+            });
+            if(totalCost != undefined && totalCost != null && totalCost != item.total_cost) {
+              setTimeout(
+                async () => await Timers({ graphqlClient }).update({ timerId: item.id, data: { totalCost } }), 
+                process.env.DEBOUNCE_CONCURRENT_REQUESTS || 500
+                );
+            }
+            else {
+              res.log.debug(`Total cost is undefined or no need to update for timer ID: ${item.id}`);
+            }
+          }
+          catch(e) {
+            res.log.error(e);
+          }
+        })
+      );
+    })
+  );
   res.json({ ok: true });
 }
 
