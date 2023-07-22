@@ -145,7 +145,27 @@ const Users = ({ graphqlClient }) => {
       return { status: false }
     }
   }
-  return { syncByExternalUserId, syncByEmail, findUserId }
+  const findUsersByTimerDate = async(params) => {
+    const { startsAt, endsAt } = params;
+    if(startsAt == undefined && endsAt == undefined) throw new Error('Missing arguments');
+    const UserTimersQuery = `
+      query users($startsAt: String!, $endsAt: String!) {
+        users {
+          timers(
+          filter: {starts_at: {_gte: $startsAt}, ends_at: {_lte: $endsAt}}
+          ) {
+            duration
+            total_duration
+          }
+          slack_user_id
+          email
+        }
+      }
+    `;
+    const response = await graphqlClient.query(UserTimersQuery);
+    return response?.data?.users || [];
+  }
+  return { syncByExternalUserId, syncByEmail, findUserId, findUsersByTimerDate }
 }
 
 export { Users }

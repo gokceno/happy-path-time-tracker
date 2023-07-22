@@ -1,30 +1,28 @@
 import dotenv from 'dotenv';
 import { DateTime } from 'luxon';
-import { GraphQLClient } from '@happy-path/graphql-client';
+import { GraphQLClient as graphqlClient} from '@happy-path/graphql-client';
 import { Notification } from '@happy-path/notification';
+import { Timers } from '@happy-path/graphql-entities';
 
 dotenv.config();
 
 const notify = async (req, res, next) => {
-  // TODO: Must use timer.stop instead of a mutation
-  const startAt = DateTime.now().minus({ minutes: process.env.PROLONGED_TIMER_TRESHOLD_1 || 240 }).toISO();
-  const queryResponse = await GraphQLClient.query(TimersWithNoEndDateQuery,{ startAt });
-  if(queryResponse?.data?.timers != undefined && queryResponse?.data?.timers.length > 0) {
-    queryResponse.data.timers.forEach(async (item) => {
-      res.log.debug(item);
+  const startsBefore = DateTime.now().minus({ minutes: process.env.PROLONGED_TIMER_TRESHOLD_1 || 240 }).toISO();
+  const timers = await Timers({ graphqlClient }).findTimersByNoEndDate({ startsBefore }); 
+  if(timers.length > 0) {
+    timers.forEach(async (item) => {
       let message;
       const startsAt = DateTime.fromISO(item.starts_at);
       const { minutes: durationInMinutes } = DateTime.now().diff(startsAt, 'minutes').toObject();
       if(durationInMinutes >= (process.env.PROLONGED_TIMER_SHUTDOWN_TRESHOLD || 480)) {
-        const mutation = await GraphQLClient.mutation(StopTimerMutation, { 
-          timerId: item.id, 
-          endsAt: DateTime.now().toISO() 
-        });
-        if(mutation.error == undefined) {
-          message = `Ok, let's stop your timer now 🏁, you've done great. Go ahead and start a new timer ⏱️ if you're still here.`;
+        try {
+          const mutation = await Timers({ graphqlClient }).stop({ timerId: item.id, userId: item.user_id.id });
+          if(mutation.status === true) {
+            message = `Ok, let's stop your timer now 🏁, you've done great. Go ahead and start a new timer ⏱️ if you're still here.`;
+          }
         }
-        else {
-          res.log.error(mutation.error);
+        catch(e) {
+          res.log.error(e);
         }
       }
       else if(durationInMinutes >= (process.env.PROLONGED_TIMER_TRESHOLD_2 || 420)) {
@@ -51,29 +49,5 @@ const notify = async (req, res, next) => {
     res.status(404).send({error: `No running timers were found. Exiting.`});
   }
 }
-
-const TimersWithNoEndDateQuery = `
-  query Timers($startAt: String!) {
-    timers(filter: {ends_at: {_null: null}, starts_at: {_lte: $startAt}}) {
-      id
-      user_id {
-        email
-        slack_user_id
-      }
-      starts_at
-    }
-  }
-`;
-
-const StopTimerMutation = `
-  mutation update_timers_item($timerId: ID!, $endsAt: Date!) {
-    update_timers_item(id: $timerId, data: {ends_at: $endsAt}) {
-      id
-      total_duration
-      starts_at
-      ends_at
-    }
-  }
-`;
 
 export { notify }

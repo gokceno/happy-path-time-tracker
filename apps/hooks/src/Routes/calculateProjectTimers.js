@@ -32,13 +32,10 @@ const calculate =  async (req, res, next) => {
           endsAt: DateTime.fromISO(item.ends_at)
         });
         if(totalCost != undefined && totalCost != null && totalCost != item.total_cost) {
-          setTimeout(async () => {
-            const mutation = await graphqlClient.mutation(TimersMutation, { 
-              timerId: item.id, 
-              totalCost 
-            });
-            if(mutation.error != undefined) res.log.error(mutation.error);
-          }, (process.env.DEBOUNCE_CONCURRENT_REQUESTS || 500));
+          setTimeout(
+            async () => await Timers({ graphqlClient }).update({ timerId: item.id, data: { totalCost } }), 
+            process.env.DEBOUNCE_CONCURRENT_REQUESTS || 500
+          );
         }
         else {
           res.log.debug(`Total cost is undefined or no need to update for timer ID: ${item.id}`);
@@ -51,14 +48,5 @@ const calculate =  async (req, res, next) => {
   })
   res.json({ ok: true });
 }
-
-const TimersMutation = `
-mutation update_timers_item($timerId: ID!, $totalCost: Float!) {
-  update_timers_item(id: $timerId, data: {total_cost: $totalCost}) {
-    id
-    total_cost
-  }
-}
-`;
 
 export { calculate }
