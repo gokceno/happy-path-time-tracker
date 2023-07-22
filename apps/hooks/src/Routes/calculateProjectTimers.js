@@ -35,7 +35,12 @@ const calculate =  async (req, res, next) => {
             });
             if(totalCost != undefined && totalCost != null && totalCost != item.total_cost) {
               setTimeout(
-                async () => await Timers({ graphqlClient }).update({ timerId: item.id, data: { totalCost } }), 
+                async () => await Timers({ graphqlClient }).update({ timerId: item.id, data: { 
+                  totalCost,
+                  totalDurationInHours: item.total_duration_in_hours,
+                  totalDuration: item.total_duration,  
+                  duration: item.duration
+                }}), 
                 process.env.DEBOUNCE_CONCURRENT_REQUESTS || 500
                 );
             }
