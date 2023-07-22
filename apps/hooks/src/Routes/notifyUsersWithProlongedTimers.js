@@ -37,10 +37,12 @@ const notify = async (req, res, next) => {
         ].random();
       }
       else {}
-      Notification()
-        .addRecipent(item.user_id.slack_user_id, 'slack')
-        .addRecipent(item.user_id.email, 'email')
-        .send({ message });
+      if(message != undefined) {
+        Notification()
+          .addRecipent(item.user_id.slack_user_id, 'slack')
+          .addRecipent(item.user_id.email, 'email')
+          .send({ message });
+      }
     });
     res.json({ok: true}); 
   }
