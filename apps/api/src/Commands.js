@@ -124,9 +124,8 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
     if(startsAt === undefined || endsAt === undefined) {
       throw new Error('Missing start date or end date parameter.');
     }
-    const timers = Timers({ graphqlClient });
-    const timersList = await timers.list({ externalUserId: body['user_id'], startsAt, endsAt }, timeEntriesListFormatter);
-    if(timersList.length > 0) {
+    const timers = await Timers({ graphqlClient }).list({ externalUserId: body['user_id'], startsAt, endsAt }, timeEntriesListFormatter);
+    if(timers.length > 0) {
       const result = await client.views.open({
         trigger_id: body.trigger_id,
         view: {
@@ -137,7 +136,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
             "emoji": true
           },
           "title": titleElement({ title: 'Time Entries' }),
-          "blocks": timeEntriesList({ blocks: timersList })
+          "blocks": timeEntriesList({ blocks: timers })
         }
       });
       logger.debug(result);
