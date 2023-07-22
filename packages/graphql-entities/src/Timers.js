@@ -312,6 +312,7 @@ const Timers = ({ graphqlClient }) => {
           last_name
           email
         }
+        duration
         total_duration
         total_duration_in_hours
         total_cost
