@@ -276,7 +276,10 @@ const schema = new GraphQLSchema({
         type: new GraphQLObjectType({
           name: 'Update',
           fields: {
-            id: { type: GraphQLInt }
+            id: { type: GraphQLInt },
+            startsAt: { type: GraphQLString },
+            endsAt: { type: GraphQLString },
+            totalDuration: { type: GraphQLInt },
           }
         }),
         args: {
@@ -300,7 +303,12 @@ const schema = new GraphQLSchema({
             taskComment: input?.notes
           }});
           if(timer.status == true) {
-            return { id: timer.data.id };
+            return { 
+              id: timer.data.id,
+              startsAt: timer.data.starts_at,
+              endsAt: timer.data.ends_at,
+              totalDuration: timer.data.total_duration,
+            };
           }
         },
       },
@@ -308,7 +316,10 @@ const schema = new GraphQLSchema({
         type: new GraphQLObjectType({
           name: 'Restart',
           fields: {
-            id: { type: GraphQLInt }
+            id: { type: GraphQLInt },
+            startsAt: { type: GraphQLString },
+            endsAt: { type: GraphQLString },
+            totalDuration: { type: GraphQLInt },
           }
         }),
         args: {
@@ -321,7 +332,12 @@ const schema = new GraphQLSchema({
             email: context.email,
           });
           if(timer.status == true) {
-            return { id: +timer.data.id };
+            return { 
+              id: timer.data.id,
+              startsAt: timer.data.starts_at,
+              endsAt: timer.data.ends_at,
+              totalDuration: timer.data.total_duration,
+            };
           }
           return {};
         },
