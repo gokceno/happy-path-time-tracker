@@ -56,6 +56,7 @@ const Timers = ({ graphqlClient }) => {
         starts_at
         ends_at
         duration
+        total_duration
         task {
           tasks_id {
             task_name
@@ -89,6 +90,8 @@ const Timers = ({ graphqlClient }) => {
       const StopTimerMutation = `
       mutation Update_timers_item($timerId: ID!, $endsAt: Date!) {
         update_timers_item(id: $timerId, data: {ends_at: $endsAt}) {
+          starts_at
+          ends_at
           duration
           total_duration
           task {

@@ -159,7 +159,10 @@ const schema = new GraphQLSchema({
         type: new GraphQLObjectType({
           name: 'Start',
           fields: {
-            id: { type: GraphQLString }
+            id: { type: GraphQLString },
+            startsAt: { type: GraphQLString },
+            endsAt: { type: GraphQLString },
+            totalDuration: { type: GraphQLInt },
           }
         }),
         args: {
@@ -176,7 +179,12 @@ const schema = new GraphQLSchema({
             taskComment: notes
           });
           if(timer.status == true) {
-            return { id: timer.data.id };
+            return { 
+              id: timer.data.id,
+              startsAt: timer.data.starts_at,
+              endsAt: timer.data.ends_at,
+              totalDuration: timer.data.total_duration,
+            };
           }
         },
       },
@@ -184,7 +192,10 @@ const schema = new GraphQLSchema({
         type: new GraphQLObjectType({
           name: 'Stop',
           fields: {
-            totalDuration: { type: GraphQLInt }
+            id: { type: GraphQLString },
+            startsAt: { type: GraphQLString },
+            endsAt: { type: GraphQLString },
+            totalDuration: { type: GraphQLInt },
           }
         }),
         args: {
@@ -194,7 +205,12 @@ const schema = new GraphQLSchema({
           const timers = Timers({ graphqlClient });
           const timer = await timers.stop({ timerId, email: context.email });          
           if(timer.status == true) {
-            return { totalDuration: timer.data.total_duration };
+            return { 
+              id: timer.data.id,
+              startsAt: timer.data.starts_at,
+              endsAt: timer.data.ends_at,
+              totalDuration: timer.data.total_duration,
+            };
           }
           else {
             throw new Error('Running timer not found.');
@@ -205,7 +221,10 @@ const schema = new GraphQLSchema({
         type: new GraphQLObjectType({
           name: 'Log',
           fields: {
-            id: { type: GraphQLString }
+            id: { type: GraphQLString },
+            startsAt: { type: GraphQLString },
+            endsAt: { type: GraphQLString },
+            totalDuration: { type: GraphQLInt },
           }
         }),
         args: {
@@ -226,7 +245,12 @@ const schema = new GraphQLSchema({
             endsAt
           });
           if(timer.status == true) {
-            return { id: timer.data.id };
+            return { 
+              id: timer.data.id,
+              startsAt: timer.data.starts_at,
+              endsAt: timer.data.ends_at,
+              totalDuration: timer.data.total_duration,
+            };
           }
         },
       },
