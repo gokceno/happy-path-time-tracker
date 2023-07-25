@@ -67,7 +67,7 @@ app.command('/happy', async({ command, respond, ack, body, client, logger }) => 
 });
 
 (async () => {
-  await app.start(process.env.PORT || 3000);
+  await app.start(3000);
   console.log('⚡️ Bolt app is running!');
 })();
 

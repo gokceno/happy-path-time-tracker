@@ -100,6 +100,6 @@ app.all('/graphql', authenticateUserByJWT, createHandler({
 }));
 
 (async () => {
-  app.listen(process.env.PORT || 4000);
+  app.listen(4000);
   logger.info('Happy Path hooks are running 👊');
 })();

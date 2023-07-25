@@ -3,11 +3,10 @@
   "private": true,
   "license": "UNLICENSED",
   "workspaces": [
-    "apps/api",
     "apps/hooks",
-    "packages/*",
-    "packages/graphql-client/*",
-    "packages/graphql-entities/*"
+    "apps/api",
+    "apps/dashboard",
+    "packages/*"
   ],
   "packageManager": "yarn@1.22.19",
   "scripts": {

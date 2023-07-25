@@ -1,5 +1,6 @@
 {
   "private": true,
+  "name": "Happy-Path-Time-Tracker-Directus",
   "version": "0.1.0",
   "license": "UNLICENSED",
   "engines": {

@@ -35,5 +35,16 @@ services:
       - directus
     env_file:
       - ./apps/hooks/.env
+  dashboard:
+    container_name: dashboard
+    build:
+      context: ./
+      dockerfile: Dockerfile.dashboard
+    ports:
+      - 4001:4001
+    networks:
+      - directus
+    env_file:
+      - ./apps/dashboard/.env
 networks:
   directus:
