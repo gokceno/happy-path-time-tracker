@@ -198,6 +198,8 @@ const Timers = ({ graphqlClient }) => {
           total_duration
           total_duration_in_hours
           total_cost
+          starts_at
+          ends_at
           task {
             tasks_id {
               task_name
