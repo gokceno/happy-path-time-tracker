@@ -1,5 +1,9 @@
 import { Duration} from 'luxon';
 
+String.prototype.ellipsis = function(n) {
+  return this.substr(0, n-1) + (this.length > n ? '...' : '');
+}
+
 const TimeEntry = ({
   taskName,
   timeEntryDescription,
@@ -15,7 +19,7 @@ const TimeEntry = ({
         </div>
         <button className="cursor-pointer [border:none] py-1 px-2 bg-[transparent] rounded-9xl h-8 flex flex-row box-border items-center justify-center relative gap-[8px]">
           <div className="relative text-sm leading-[133%] font-medium font-primary-small-body-h5-medium text-shades-of-cadet-gray-cadet-gray-400 text-left z-[1]">
-            {timeEntryDescription}
+            {timeEntryDescription.ellipsis(48)}
           </div>
         </button>
       </div>
@@ -26,7 +30,7 @@ const TimeEntry = ({
         <div className="rounded-81xl bg-shades-of-dark-04 w-8 h-8 flex flex-row py-[7px] pr-[7px] pl-2.5 box-border items-center justify-center">
           <img
             className="relative rounded-12xs w-[12.09px] h-[14.42px]"
-            alt=""
+            alt="Start"
             src="/play.svg"
           />
         </div>
