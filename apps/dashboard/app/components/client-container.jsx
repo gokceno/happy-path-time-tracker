@@ -1,7 +1,7 @@
 import TimeEntry from "./time-entry";
 
 const ClientContainer = ({ clientName, timers }) => {
-  return (
+  return (timers.length > 0) ? (
     <div className="self-stretch rounded-2xl bg-shades-of-cadet-gray-cadet-gray-50 flex flex-col py-4 px-0 items-start justify-start text-left text-lgi text-primary-dark-night font-primary-small-body-h5-medium">
       <div className="self-stretch rounded-29xl h-12 flex flex-row py-2 px-6 box-border items-center justify-start">
         <div className="relative leading-[133%]">{clientName}</div>
@@ -17,7 +17,7 @@ const ClientContainer = ({ clientName, timers }) => {
         ))}
       </div>
     </div>
-  );
+  ) : ''
 };
 
 export default ClientContainer;

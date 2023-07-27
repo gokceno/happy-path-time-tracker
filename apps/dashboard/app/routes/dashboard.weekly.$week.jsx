@@ -4,6 +4,7 @@ import { Client, fetchExchange, cacheExchange } from '@urql/core';
 import { DateTime } from 'luxon';
 import ClientContainer from "../components/client-container";
 import SectionHeader from "../components/section-header";
+import DayHeader from "../components/day-header";
 
 const TimersQuery = `
   query Timers($startsAt: String!, $endsAt: String!) {
@@ -65,11 +66,12 @@ export default function DashboardWeeklyWeekRoute() {
   }, []);
   return (
     <div className="self-stretch flex flex-col items-start justify-start gap-[16px] text-left text-lgi text-primary-dark-night font-primary-small-body-h5-medium">
+    <SectionHeader sectionTitle={`${DateTime.fromISO(onDate).toFormat('dd')} - ${DateTime.fromISO(onDate).plus({ days: 7 }).setLocale(culture).toFormat('dd LLLL')}`} totalDuration={totalDuration}/>
       {days.map((day) => (
-        <div>
-          <SectionHeader key={day} sectionTitle={DateTime.fromISO(day).setLocale(culture).toLocaleString(DateTime.DATE_MED)} totalDuration={totalDuration}/>
+        <div className="flex flex-col gap-[16px]">
+          <DayHeader key={day} title={DateTime.fromISO(day).setLocale(culture).toFormat('EEEE, dd LLLL')}/>
           {projects.map((project) => (
-            <ClientContainer key={project} clientName={project} timers={timers}/>
+            <ClientContainer key={project} clientName={project} timers={timers.filter(timer => (DateTime.fromISO(timer.startsAt).toISODate() == day && timer.project.name === project))}/>
           ))}
         </div>
       ))}

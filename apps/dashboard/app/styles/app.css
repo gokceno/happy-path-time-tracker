@@ -118,20 +118,12 @@
   left: 0px;
 }
 
-.left-\[30px\]{
-  left: 30px;
-}
-
 .right-\[0px\]{
   right: 0px;
 }
 
 .top-\[0px\]{
   top: 0px;
-}
-
-.top-\[30px\]{
-  top: 30px;
 }
 
 .z-\[0\]{
@@ -188,10 +180,6 @@
   height: 3.5rem;
 }
 
-.h-2{
-  height: 0.5rem;
-}
-
 .h-6{
   height: 1.5rem;
 }
@@ -222,10 +210,6 @@
 
 .w-14{
   width: 3.5rem;
-}
-
-.w-2{
-  width: 0.5rem;
 }
 
 .w-6{
@@ -402,11 +386,6 @@
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.bg-secondary-coral{
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 138 91 / var(--tw-bg-opacity));
-}
-
 .bg-shades-of-cadet-gray-cadet-gray-50{
   --tw-bg-opacity: 1;
   background-color: rgb(243 246 247 / var(--tw-bg-opacity));
@@ -423,10 +402,6 @@
 
 .bg-shades-of-dark-08{
   background-color: rgba(17, 23, 24, 0.08);
-}
-
-.bg-shades-of-dark-16{
-  background-color: rgba(17, 23, 24, 0.16);
 }
 
 .bg-shades-of-light-white-04{
@@ -641,6 +616,10 @@
 
 .no-underline{
   text-decoration-line: none;
+}
+
+.filter{
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .\[border\:none\]{

@@ -12,11 +12,7 @@ const WeekPicker = ({ selectedDate }) => {
   return (
     <div className="self-stretch rounded-2xl bg-primary-light-baby-powder flex flex-row pt-6 px-6 pb-4 items-center justify-between text-center text-sm text-shades-of-teal-teal-400 font-primary-body-h4-p-medium">
       <Link to={`/dashboard/weekly/${DateTime.fromISO(selectedDate).minus({months: 1}).startOf('month').toISODate()}`} className="cursor-pointer [border:none] p-1 bg-[transparent] rounded-80xl flex flex-row items-center justify-center">
-        <img
-          className="relative w-6 h-6 overflow-hidden shrink-0"
-          alt="Previous month"
-          src="/chevronleft1.svg"
-        />
+        <img className="relative w-6 h-6 overflow-hidden shrink-0" alt="Previous month" src="/chevronleft1.svg" />
       </Link>
       <div className="flex flex-row items-start justify-start gap-[20px]">
       {weeks.map(week => 
@@ -24,11 +20,7 @@ const WeekPicker = ({ selectedDate }) => {
       )}
       </div>
       <Link to={`/dashboard/weekly/${DateTime.fromISO(selectedDate).plus({months: 1}).startOf('month').toISODate()}`} className="cursor-pointer [border:none] p-1 bg-[transparent] rounded-80xl flex flex-row items-center justify-center">
-        <img
-          className="relative w-6 h-6 overflow-hidden shrink-0"
-          alt="Next month"
-          src="/chevronright1.svg"
-        />
+        <img className="relative w-6 h-6 overflow-hidden shrink-0" alt="Next month" src="/chevronright1.svg" />
       </Link>
     </div>
   );
