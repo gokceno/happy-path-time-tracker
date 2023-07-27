@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap");
 
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap");
 
@@ -204,6 +204,10 @@
   height: 14.42px;
 }
 
+.h-\[72px\]{
+  height: 72px;
+}
+
 .h-\[944px\]{
   height: 944px;
 }
@@ -322,6 +326,10 @@
 
 .gap-\[16px\]{
   gap: 16px;
+}
+
+.gap-\[20px\]{
+  gap: 20px;
 }
 
 .gap-\[32px\]{
@@ -446,6 +454,10 @@
 
 .p-1{
   padding: 0.25rem;
+}
+
+.p-2{
+  padding: 0.5rem;
 }
 
 .p-3{
@@ -582,6 +594,10 @@
   font-weight: 500;
 }
 
+.font-semibold{
+  font-weight: 600;
+}
+
 .leading-\[133\%\]{
   line-height: 133%;
 }
@@ -644,4 +660,8 @@ body{
 ::before,
 ::after {
   border-width: 0;
+}
+
+.hover\:bg-shades-of-dark-04:hover{
+  background-color: rgba(17, 23, 24, 0.04);
 }

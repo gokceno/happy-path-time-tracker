@@ -7,7 +7,7 @@ const Day = ({ date, duration }) => {
   return (
     <div className={`flex flex-col items-center justify-start gap-[8px]`}>
       <Link to={'/dashboard/daily/' + date.toISODate() } className={`no-underline ${isCurrentDay ? 'text-center text-lgi text-primary-real-white font-primary-small-body-h5-medium' : 'text-shades-of-teal-teal-400'}`}>
-        <div className={`rounded-81xl ${isCurrentDay ? 'bg-shades-of-teal-teal-400 p-4' : 'bg-shades-of-light-white-88 p-25'} w-14 h-14 flex flex-col box-border items-center justify-center`}>
+        <div className={`hover:bg-shades-of-dark-04 rounded-81xl ${isCurrentDay ? 'bg-shades-of-teal-teal-400 p-4' : 'bg-shades-of-light-white-88 p-25'} w-14 h-14 flex flex-col box-border items-center justify-center`}>
           <b className="relative leading-[133%]">{date.toFormat('dd')}</b>
           <div className={ `relative text-xs leading-[133%] ${isCurrentDay ? 'text-shades-of-light-white-64' : 'text-shades-of-cadet-gray-cadet-gray-500'}`}>
             {date.toFormat('LLL')}
