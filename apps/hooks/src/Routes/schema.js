@@ -183,7 +183,7 @@ const schema = new GraphQLSchema({
               id: timer.data.id,
               startsAt: timer.data.starts_at,
               endsAt: timer.data.ends_at,
-              totalDuration: timer.data.total_duration,
+              totalDuration: +timer.data.total_duration,
             };
           }
         },
@@ -209,7 +209,7 @@ const schema = new GraphQLSchema({
               id: timer.data.id,
               startsAt: timer.data.starts_at,
               endsAt: timer.data.ends_at,
-              totalDuration: timer.data.total_duration,
+              totalDuration: +timer.data.total_duration,
             };
           }
           else {
@@ -249,7 +249,7 @@ const schema = new GraphQLSchema({
               id: timer.data.id,
               startsAt: timer.data.starts_at,
               endsAt: timer.data.ends_at,
-              totalDuration: timer.data.total_duration,
+              totalDuration: +timer.data.total_duration,
             };
           }
         },
@@ -307,7 +307,7 @@ const schema = new GraphQLSchema({
               id: timer.data.id,
               startsAt: timer.data.starts_at,
               endsAt: timer.data.ends_at,
-              totalDuration: timer.data.total_duration,
+              totalDuration: +timer.data.total_duration,
             };
           }
         },
@@ -336,7 +336,7 @@ const schema = new GraphQLSchema({
               id: timer.data.id,
               startsAt: timer.data.starts_at,
               endsAt: timer.data.ends_at,
-              totalDuration: timer.data.total_duration,
+              totalDuration: +timer.data.total_duration,
             };
           }
           return {};
