@@ -4,6 +4,7 @@ import { Client, fetchExchange, cacheExchange } from '@urql/core';
 import { DateTime } from 'luxon';
 import ClientContainer from "../components/client-container";
 import SectionHeader from "../components/section-header";
+import NoTimeEntry from "../components/no-time-entry";
 
 const TimersQuery = `
   query Timers($startsAt: String!, $endsAt: String!) {
@@ -63,6 +64,10 @@ export default function DashboardDailyDayRoute() {
       {projects.map((project) => (
         <ClientContainer key={project} clientName={project} timers={timers}/>
       ))}
+      {!timers.length > 0 ? 
+        <NoTimeEntry/>
+        : ''
+      }
     </div>
   );
 }

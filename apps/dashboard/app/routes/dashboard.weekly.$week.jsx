@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import ClientContainer from "../components/client-container";
 import SectionHeader from "../components/section-header";
 import DayHeader from "../components/day-header";
+import NoTimeEntry from "../components/no-time-entry";
 
 const TimersQuery = `
   query Timers($startsAt: String!, $endsAt: String!) {
@@ -75,6 +76,10 @@ export default function DashboardWeeklyWeekRoute() {
           ))}
         </div>
       ))}
+      {!timers.length > 0 ? 
+        <NoTimeEntry/>
+        : ''
+      }
     </div>
   );
 }

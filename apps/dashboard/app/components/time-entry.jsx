@@ -4,11 +4,7 @@ String.prototype.ellipsis = function(n) {
   return this.substr(0, n-1) + (this.length > n ? '...' : '');
 }
 
-const TimeEntry = ({
-  taskName,
-  timeEntryDescription,
-  taskDuration,
-}) => {
+const TimeEntry = ({ taskName, timeEntryDescription, taskDuration, }) => {
   return (
     <div className="w-[670px] flex flex-row py-0 px-6 box-border items-center justify-between text-left text-sm text-primary-dark-night font-primary-small-body-h5-medium">
       <div className="rounded-lg flex flex-row py-2 px-0 items-center justify-start gap-[4px]">
