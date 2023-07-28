@@ -6,8 +6,8 @@ import ClientContainer from "../components/client-container";
 import SectionHeader from "../components/section-header";
 
 const TimersQuery = `
-  query Timers($onDate: String!) {
-    timers(startsAt: $onDate, endsAt: $onDate) {
+  query Timers($startsAt: String!, $endsAt: String!) {
+    timers(startsAt: $startsAt, endsAt: $endsAt) {
       id
       startsAt
       endsAt
@@ -37,7 +37,10 @@ export const loader = async ({ params }) => {
       };
     },
   });
-  const response = await GraphQLClient.query(TimersQuery, { onDate });
+  const response = await GraphQLClient.query(TimersQuery, {
+    startsAt: DateTime.fromISO(onDate).startOf('day').toISO(),
+    endsAt: DateTime.fromISO(onDate).endOf('day').toISO(),
+  });
   return json({
     timers: response?.data?.timers || [],
     culture: process.env.LOCALE_CULTURE || 'en-US'
