@@ -44,13 +44,14 @@ export const loader = async ({ params }) => {
   });
   return json({
     timers: response?.data?.timers || [],
-    culture: process.env.LOCALE_CULTURE || 'en-US'
+    culture: process.env.LOCALE_CULTURE || 'en-US',
+    tinezone: process.env.TIMEZONE || 'UTC'
   });
 };
 
 export default function DashboardDailyDayRoute() {
   const params = useParams();
-  const { timers, culture } = useLoaderData();
+  const { timers, culture, timezone } = useLoaderData();
   const totalDuration = timers.reduce((acc, timer) => (acc + timer.totalDuration), 0);
   const projects = timers.reduce((acc, timer) => {
     if (!acc.includes(timer.project.name)) {
@@ -62,7 +63,7 @@ export default function DashboardDailyDayRoute() {
     <div className="self-stretch flex flex-col items-start justify-start gap-[16px] text-left text-lgi text-primary-dark-night font-primary-small-body-h5-medium">
       <SectionHeader sectionTitle={DateTime.fromISO(params.day).isValid ? DateTime.fromISO(params.day).setLocale(culture).toLocaleString(DateTime.DATE_MED) : 'Logs'} totalDuration={totalDuration}/>
       {projects.map((project) => (
-        <ClientContainer key={project} clientName={project} timers={timers}/>
+        <ClientContainer key={project} clientName={project} timers={timers} timezone={timezone}/>
       ))}
       {!timers.length > 0 ? 
         <NoTimeEntry/>

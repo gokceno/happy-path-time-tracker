@@ -45,13 +45,14 @@ export const loader = async ({ params }) => {
   });
   return json({
     timers: response?.data?.timers || [],
-    culture: process.env.LOCALE_CULTURE || 'en-US'
+    culture: process.env.LOCALE_CULTURE || 'en-US',
+    tinezone: process.env.TIMEZONE || 'UTC'
   });
 };
 
 export default function DashboardWeeklyWeekRoute() {
   const { week: onDate } = useParams();
-  const { timers, culture } = useLoaderData();
+  const { timers, culture, timezone } = useLoaderData();
   const totalDuration = timers.reduce((acc, timer) => (acc + timer.totalDuration), 0);
   const projects = timers.reduce((acc, timer) => {
     if (!acc.includes(timer.project.name)) {
@@ -72,7 +73,7 @@ export default function DashboardWeeklyWeekRoute() {
         <div key={day} className="flex flex-col gap-[16px]">
           <DayHeader key={day} title={DateTime.fromISO(day).setLocale(culture).toFormat('EEEE, dd LLLL')}/>
           {projects.map((project) => (
-            <ClientContainer key={project} clientName={project} timers={timers.filter(timer => (DateTime.fromISO(timer.startsAt).toISODate() == day && timer.project.name === project))}/>
+            <ClientContainer timezone={timezone} key={project} clientName={project} timers={timers.filter(timer => (DateTime.fromISO(timer.startsAt).toISODate() == day && timer.project.name === project))}/>
           ))}
         </div>
       ))}
