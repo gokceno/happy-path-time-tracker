@@ -31,6 +31,7 @@ export const loader = async ({ params }) => {
   });
   const response = await GraphQLClient.query(StatsQuery, { onDate });
   return json({ 
+    currentTimeEntriesInterval: 'daily',
     stats: response?.data?.stats, 
     timezone: process.env.TIMEZONE || 'UTC'
   });

@@ -1,9 +1,16 @@
 import { Outlet, useParams } from "@remix-run/react";
+import { json } from '@remix-run/node';
 import WeekPicker from "../components/week-picker";
 
 export const meta = () => ([
   { title: 'Weekly Dashboard - Happy Path' }
 ]);
+
+export const loader = async ({ params }) => {
+  return json({ 
+    currentTimeEntriesInterval: 'weekly',
+  });
+};
 
 export default function DashboardWeeklyRoute() {
   const { week } = useParams();
