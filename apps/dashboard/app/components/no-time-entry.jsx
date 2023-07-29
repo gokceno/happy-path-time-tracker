@@ -3,7 +3,7 @@ const NoTimeEntry = () => {
     <div className="self-stretch rounded-2xl bg-shades-of-cadet-gray-cadet-gray-50 flex flex-col p-8 items-start justify-center gap-[32px] text-left text-base text-primary-dark-night font-primary-body-h4-p-reguar">
       <img
         className="relative w-40 h-40 overflow-hidden shrink-0"
-        alt=""
+        alt="No time entries"
         src="/no-time-entry.svg"
       />
       <div className="flex flex-col items-start justify-center gap-[32px]">

@@ -14,6 +14,10 @@ const StatsQuery = `
   }
 `;
 
+export const meta = () => ([
+  { title: 'Daily Dashboard - Happy Path' }
+]);
+
 export const loader = async ({ params }) => {
   const { day: onDate } = params;
   const GraphQLClient = new Client({

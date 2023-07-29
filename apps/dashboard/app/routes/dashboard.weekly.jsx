@@ -1,6 +1,10 @@
 import { Outlet, useParams } from "@remix-run/react";
 import WeekPicker from "../components/week-picker";
 
+export const meta = () => ([
+  { title: 'Weekly Dashboard - Happy Path' }
+]);
+
 export default function DashboardWeeklyRoute() {
   const { week } = useParams();
   return (
