@@ -235,6 +235,7 @@ const Timers = ({ graphqlClient }) => {
       const { timerId } = params;
       const timer = await findTimerById({ timerId });
       if(timer == undefined) throw new Error('Timer not found.');
+      if(DateTime.fromISO(timer.starts_at).toISODate() != DateTime.now().toISODate()) throw new Error('Can restart only todays timers. Timer expired.');
       return await update({ timerId, data: { duration: (timer.total_duration || 0), startsAt: DateTime.now(), endsAt: null }});
     }
     else {
