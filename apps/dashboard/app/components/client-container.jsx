@@ -13,6 +13,7 @@ const ClientContainer = ({ clientName, timers }) => {
             taskName={timer.task.name}
             timeEntryDescription={timer.notes}
             taskDuration={timer.totalDuration}
+            isRunning={(timer.endsAt == undefined)}
           /> : null
         ))}
       </div>
