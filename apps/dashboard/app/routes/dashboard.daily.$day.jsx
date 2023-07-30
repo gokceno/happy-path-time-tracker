@@ -1,4 +1,5 @@
-import { Outlet, useLoaderData, useParams } from "@remix-run/react";
+import { Outlet, useLoaderData, useParams, useRevalidator } from '@remix-run/react';
+import { useEffect } from 'react';
 import { json } from '@remix-run/node';
 import { Client, fetchExchange, cacheExchange } from '@urql/core';
 import { DateTime } from 'luxon';
@@ -45,13 +46,15 @@ export const loader = async ({ params }) => {
   return json({
     timers: response?.data?.timers || [],
     culture: process.env.LOCALE_CULTURE || 'en-US',
-    tinezone: process.env.TIMEZONE || 'UTC'
+    tinezone: process.env.TIMEZONE || 'UTC',
+    revalidateDateEvery: process.env.REVALIDATE_DATA_EVERY || 60
   });
 };
 
 export default function DashboardDailyDayRoute() {
   const params = useParams();
-  const { timers, culture, timezone } = useLoaderData();
+  const { revalidate } = useRevalidator();
+  const { timers, culture, timezone, revalidateDateEvery } = useLoaderData();
   const totalDuration = timers.reduce((acc, timer) => (acc + timer.totalDuration), 0);
   const projects = timers.reduce((acc, timer) => {
     if (!acc.includes(timer.project.name)) {
@@ -59,6 +62,15 @@ export default function DashboardDailyDayRoute() {
     }
     return acc;
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+     revalidate();
+    }, revalidateDateEvery * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+
   return (
     <div className="self-stretch flex flex-col items-start justify-start gap-[16px] text-left text-lgi text-primary-dark-night font-primary-small-body-h5-medium">
       <SectionHeader sectionTitle={DateTime.fromISO(params.day).isValid ? DateTime.fromISO(params.day).setLocale(culture).toLocaleString(DateTime.DATE_MED) : 'Logs'} totalDuration={totalDuration}/>
