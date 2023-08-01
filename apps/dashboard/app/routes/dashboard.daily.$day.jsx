@@ -46,7 +46,6 @@ export const loader = async ({ request, params }) => {
     endsAt: DateTime.fromISO(onDate).endOf('day').toISO(),
   });
   // TODO: not all errors are 403
-  console.log('response.error', response.error);
   if(response.error != undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   return json({
     url: process.env.API_GRAPHQL_URL,
