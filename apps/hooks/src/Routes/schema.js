@@ -49,7 +49,6 @@ const schema = new GraphQLSchema({
           }
         })),
         resolve: async (_, { startsAt, endsAt }, context) => {
-          if(context?.email == undefined) return [];
           const timers = Timers({ graphqlClient });
           return (await timers.findTimersByUserId({ startsAt, endsAt, email: context.email })).map(item => ({ 
             id: item.id, 
@@ -78,7 +77,6 @@ const schema = new GraphQLSchema({
           }
         })),
         resolve: async (_, { name }, context) => {
-          if(context?.email == undefined) return [];
           const projects = Projects({ graphqlClient });
           return (await projects.list()).map(item => ({ id: item.id, projectName: item.project_name }));
         },
@@ -95,7 +93,6 @@ const schema = new GraphQLSchema({
           projectId: { type: new GraphQLNonNull(GraphQLInt) }
         },
         resolve: async (_, { projectId }, context) => {
-          if(context?.email == undefined) return [];
           const tasks = Tasks({ graphqlClient, queryParams: { projectId } });
           return (await tasks.list()).map(item => ({ id: item.id, taskName: item.tasks_id.task_name }));
         },
@@ -126,7 +123,6 @@ const schema = new GraphQLSchema({
           date: { type: new GraphQLNonNull(GraphQLString) }
         },
         resolve: async (_, { date }, context) => {
-          if(context?.email == undefined) return {};
           const timers = await Timers({ graphqlClient }).findTimersByUserId({ 
             startsAt: DateTime.fromISO(date).startOf('month'),
             endsAt: DateTime.fromISO(date).endOf('month'), 

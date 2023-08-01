@@ -61,11 +61,11 @@ const authenticateUserByMagic = async (req, res, next) => {
   try {
     const [type, token] = (req.headers['authorization'] || '').split(' ');
     magic.token.validate(token);
+    next();
   }
   catch(e) {
     return res.sendStatus(403);
   }
-  next();
 }
 
 const authenticateUserByJWT = async (req, res, next) => {
