@@ -6,6 +6,7 @@
     "apps/hooks",
     "apps/api",
     "apps/dashboard",
+    "apps/auth",
     "packages/*"
   ],
   "packageManager": "yarn@1.22.19",

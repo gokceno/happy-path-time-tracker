@@ -1,7 +1,6 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
+import { ExternalScripts } from "remix-utils";
 import styles from "./styles/app.css"
-import Header from "./components/header";
-
 import {
   Links,
   LiveReload,
@@ -27,13 +26,9 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <div className="relative bg-shades-of-cadet-gray-cadet-gray-900 w-[1440px] h-[944px]">
-          <div className="absolute top-[0px] left-[0px] bg-primary-real-white w-[1440px] flex flex-col py-0 px-8 box-border items-center justify-start h-full">
-            <Header />
-            <Outlet/>
-          </div>
-        </div>
+        <Outlet/>
         <ScrollRestoration />
+        <ExternalScripts />
         <Scripts />
         <LiveReload />
       </body>

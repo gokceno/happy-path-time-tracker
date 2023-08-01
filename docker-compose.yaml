@@ -46,5 +46,16 @@ services:
       - directus
     env_file:
       - ./apps/dashboard/.env
+  auth:
+    container_name: auth
+    build:
+      context: ./
+      dockerfile: Dockerfile.auth
+    ports:
+      - 8080:8080
+    networks:
+      - directus
+    env_file:
+      - ./apps/auth/.env
 networks:
   directus:

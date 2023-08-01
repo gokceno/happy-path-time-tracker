@@ -1,6 +1,6 @@
 import { Outlet, useLoaderData, useParams, useRevalidator } from '@remix-run/react';
 import { useEffect } from 'react';
-import { json } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { Client, fetchExchange, cacheExchange } from '@urql/core';
 import { DateTime } from 'luxon';
 import ClientContainer from "../components/client-container";
@@ -28,14 +28,15 @@ const TimersQuery = `
   }
 `;
 
-export const loader = async ({ params }) => {
+export const loader = async ({ request, params }) => {
+  const [authCookieName, authCookieValue] = request.headers.get('Cookie').split('=');
   const { day: onDate } = params;
   const GraphQLClient = new Client({
     url: process.env.API_GRAPHQL_URL,
     exchanges: [fetchExchange, cacheExchange],
     fetchOptions: () => {
       return {
-        headers: { authorization: 'Bearer ' + process.env.TEMP__TOKEN },
+        headers: { authorization: 'Bearer ' + authCookieValue },
       };
     },
   });
@@ -43,7 +44,10 @@ export const loader = async ({ params }) => {
     startsAt: DateTime.fromISO(onDate).startOf('day').toISO(),
     endsAt: DateTime.fromISO(onDate).endOf('day').toISO(),
   });
+  // TODO: not all errors are 403
+  if(response.error != undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   return json({
+    url: process.env.API_GRAPHQL_URL,
     timers: response?.data?.timers || [],
     culture: process.env.LOCALE_CULTURE || 'en-US',
     tinezone: process.env.TIMEZONE || 'UTC',
