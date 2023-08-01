@@ -72,8 +72,10 @@ const authenticateUserByJWT = async (req, res, next) => {
   const [type, token] = (req.headers['authorization'] || '').split(' ');
   jwt.verify(token, process.env.JWT_SECRET || '', (err, decoded) => {
     if(decoded == undefined) return res.sendStatus(403);
+    else {
+      next();
+    }
   });
-  next();
 }
 
 app.use(pinoHttpLogger);
