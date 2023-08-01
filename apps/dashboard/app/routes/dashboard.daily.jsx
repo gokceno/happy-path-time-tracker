@@ -18,14 +18,16 @@ export const meta = () => ([
   { title: 'Daily Dashboard - Happy Path' }
 ]);
 
-export const loader = async ({ params }) => {
+export const loader = async ({ request, params }) => {
+  const [authCookieName, authCookieValue] = (request.headers.get('Cookie') || '').split('=');
+  if(authCookieValue == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const { day: onDate } = params;
   const GraphQLClient = new Client({
     url: process.env.API_GRAPHQL_URL,
     exchanges: [fetchExchange, cacheExchange],
     fetchOptions: () => {
       return {
-        headers: { authorization: 'Bearer ' + process.env.TEMP__TOKEN },
+        headers: { authorization: 'Bearer ' + authCookieValue },
       };
     },
   });

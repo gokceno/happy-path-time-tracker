@@ -59,7 +59,7 @@ const authenticateAPI = async (req, res, next) => {
 
 const authenticateUserByMagic = async (req, res, next) => {
   try {
-    const [type, token] = req.headers['authorization'].split(' ');
+    const [type, token] = (req.headers['authorization'] || '').split(' ');
     magic.token.validate(token);
   }
   catch(e) {
@@ -69,7 +69,7 @@ const authenticateUserByMagic = async (req, res, next) => {
 }
 
 const authenticateUserByJWT = async (req, res, next) => {
-  const [type, token] = req.headers['authorization'].split(' ');
+  const [type, token] = (req.headers['authorization'] || '').split(' ');
   jwt.verify(token, process.env.JWT_SECRET || '', (err, decoded) => {
     if(decoded == undefined) return res.sendStatus(403);
   });
@@ -89,10 +89,11 @@ app.post('/reports/projects/create', authenticateAPI, createProjectsReport);
 app.post('/calculate/project/timers', authenticateAPI, calculateProjectTimers);
 app.post('/token', authenticateUserByMagic, token);
 
+// TODO: Crashes when no token is present
 app.all('/graphql', authenticateUserByJWT, createHandler({ 
   schema, 
   context: async (req) => {
-    const [type, token] = req.headers['authorization'].split(' ');
+    const [type, token] = (req.headers['authorization'] || '').split(' ');
     return jwt.verify(token, process.env.JWT_SECRET, (e, decoded) => {
       return decoded;
     });

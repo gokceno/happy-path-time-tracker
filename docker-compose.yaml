@@ -55,7 +55,5 @@ services:
       - 8080:8080
     networks:
       - directus
-    env_file:
-      - ./apps/auth/.env
 networks:
   directus:
