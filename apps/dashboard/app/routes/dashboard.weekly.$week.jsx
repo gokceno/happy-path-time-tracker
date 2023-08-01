@@ -31,6 +31,7 @@ const TimersQuery = `
 
 export const loader = async ({ request, params }) => {
   const [authCookieName, authCookieValue] = (request.headers.get('Cookie') || '').split('=');
+  if(authCookieValue == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const { week: onDate } = params;
   const GraphQLClient = new Client({
     url: process.env.API_GRAPHQL_URL,
