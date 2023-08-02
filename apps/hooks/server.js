@@ -87,7 +87,7 @@ app.post('/timers/update/total-duration', authenticateAPI, calculateTotalDuratio
 app.post('/timers/update/regularly/total-duration', authenticateAPI, calculateTotalDurationRegularly);
 app.post('/notify/users/with/absent/timers', authenticateAPI, notifyUsersWithAbsentTimers);
 app.post('/notify/users/with/prolonged/timers', authenticateAPI, notifyUsersWithProlongedTimers);
-app.post('/reports/projects/create', authenticateAPI, createProjectsReport);
+app.post('/reports/projects/create/:month/month', authenticateAPI, createProjectsReport);
 app.post('/calculate/project/timers', authenticateAPI, calculateProjectTimers);
 app.post('/token', authenticateUserByMagic, token);
 

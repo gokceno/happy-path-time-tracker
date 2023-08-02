@@ -30,12 +30,14 @@ const create =  async (req, res, next) => {
   let emailClient = EmailClient()
     .setSubject('Monthly Reports')
     .setBody({ html: '<p>Please find your monthly reports attached.</p>' });
+  const startsAt = req.params.month == 'last' ? DateTime.now().minus({ months: 1 }).startOf('month').toISO() : DateTime.now().startOf('month').toISO();
+  const endsAt = req.params.month == 'last' ? DateTime.now().minus({ months: 1 }).endOf('month').toISO() : DateTime.now().startOf('month').toISO();
   await Promise.all(
     projectIds.map(async (projectId) => {
       const timers = await Timers({ graphqlClient }).findTimersByProjectId({ 
         projectId,
-        startsAt: DateTime.now().startOf('month').toISO(),
-        endsAt: DateTime.now().endOf('month').toISO(),
+        startsAt,
+        endsAt,
       });
       if(timers.length) {
         const dd = DefaultDocument();
