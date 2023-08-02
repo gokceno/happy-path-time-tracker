@@ -85,7 +85,7 @@ const create =  async (req, res, next) => {
         dd.setHeader([
           { label: 'Project', value: projectName },
           { label: 'Created At', value: DateTime.now().toLocaleString(DateTime.DATE_MED) },
-          { label: 'Valid For', value: DateTime.now().toFormat('MMMM yyyy') },
+          { label: 'Valid For', value: (req.params.month == 'last' ? DateTime.now().minus({ months: 1 }).toFormat('MMMM yyyy') : DateTime.now().toFormat('MMMM yyyy')) },
         ]);
         dd.setTotals({ totalHours, totalBillableAmount });
         dd.setBreakdownByTaskItems(tasks.map(task => ({ totalHours: Duration.fromObject({ minutes: task.totalMinutes}).toFormat('hh:mm'), ...task })));
