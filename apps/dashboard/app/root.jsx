@@ -8,13 +8,13 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useMatches,
 } from "@remix-run/react";
 
 export const links = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   { rel: "stylesheet", href: styles },
 ];
-
 
 export default function App() {
   return (
