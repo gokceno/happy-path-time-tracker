@@ -1,5 +1,6 @@
 import { json } from '@remix-run/node';
 import { Client, fetchExchange, cacheExchange } from '@urql/core';
+import { auth as authCookie } from '~/utils/cookies.server';
 
 const TimersMutation = `
   mutation Stop($timerId: Int!) {
@@ -13,16 +14,16 @@ const TimersMutation = `
 `;
 
 export const action = async ({ request }) => {
+  const { token } = await authCookie.parse(request.headers.get('cookie'));
+  if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const formData = await request.formData();
   const timerId = formData.get('timerId');
-  const [authCookieName, authCookieValue] = (request.headers.get('Cookie') || '').split('=');
-  if(authCookieValue == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const GraphQLClient = new Client({
     url: process.env.API_GRAPHQL_URL,
     exchanges: [fetchExchange, cacheExchange],
     fetchOptions: () => {
       return {
-        headers: { authorization: 'Bearer ' + authCookieValue },
+        headers: { authorization: 'Bearer ' + token },
       };
     },
   });

@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { json, redirect } from '@remix-run/node';
 import { Client, fetchExchange, cacheExchange } from '@urql/core';
 import { DateTime } from 'luxon';
+import { auth as authCookie } from '~/utils/cookies.server';
 import ClientContainer from "../components/client-container";
 import SectionHeader from "../components/section-header";
 import NoTimeEntry from "../components/no-time-entry";
@@ -29,15 +30,15 @@ const TimersQuery = `
 `;
 
 export const loader = async ({ request, params }) => {
-  const [authCookieName, authCookieValue] = (request.headers.get('Cookie') || '').split('=');
-  if(authCookieValue == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
+  const { token } = await authCookie.parse(request.headers.get('cookie'));
+  if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const { day: onDate } = params;
   const GraphQLClient = new Client({
     url: process.env.API_GRAPHQL_URL,
     exchanges: [fetchExchange, cacheExchange],
     fetchOptions: () => {
       return {
-        headers: { authorization: 'Bearer ' + authCookieValue },
+        headers: { authorization: 'Bearer ' + token },
       };
     },
   });

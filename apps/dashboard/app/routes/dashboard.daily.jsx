@@ -1,6 +1,7 @@
 import { Outlet, useLoaderData, useParams } from "@remix-run/react";
 import { Client, fetchExchange, cacheExchange } from '@urql/core';
 import { json } from '@remix-run/node';
+import { auth as authCookie } from '~/utils/cookies.server';
 import DayPicker from "../components/day-picker";
 
 const StatsQuery = `
@@ -19,15 +20,15 @@ export const meta = () => ([
 ]);
 
 export const loader = async ({ request, params }) => {
-  const [authCookieName, authCookieValue] = (request.headers.get('Cookie') || '').split('=');
-  if(authCookieValue == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
+  const { token } = await authCookie.parse(request.headers.get('Cookie'));
+  if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const { day: onDate } = params;
   const GraphQLClient = new Client({
     url: process.env.API_GRAPHQL_URL,
     exchanges: [fetchExchange, cacheExchange],
     fetchOptions: () => {
       return {
-        headers: { authorization: 'Bearer ' + authCookieValue },
+        headers: { authorization: 'Bearer ' + token },
       };
     },
   });
