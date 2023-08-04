@@ -10,6 +10,7 @@ export const meta = () => ([
 
 export const loader = async ({ request }) => {
   const { token } = await authCookie.parse(request.headers.get('cookie')) || {};
+  if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const secret = new TextEncoder().encode(
     process.env.JWT_SECRET,
   );
@@ -22,7 +23,7 @@ export const loader = async ({ request }) => {
 export default function Dashboard() {
   const { email } = useLoaderData();
   return (
-    <div className="relative bg-shades-of-cadet-gray-cadet-gray-900 w-[1440px] h-[944px]">
+    <div className="relative bg-shades-of-cadet-gray-cadet-gray-900 w-[1440px] h-[944px] left-[50%] transform translate-x-[-50%]">
       <div className="absolute top-[0px] left-[0px] bg-primary-real-white w-[1440px] flex flex-col py-0 px-8 box-border items-center justify-start h-full">
         <Header email={email} />
         <Outlet/>
