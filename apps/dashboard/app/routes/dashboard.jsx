@@ -1,6 +1,6 @@
 import { Outlet, useLoaderData } from "@remix-run/react";
-import { json } from '@remix-run/node';
-import { verify } from 'jsonwebtoken';
+import { json, redirect } from '@remix-run/node';
+import * as jose from 'jose';
 import { auth as authCookie } from '~/utils/cookies.server';
 import Header from "../components/header";
 
@@ -9,8 +9,11 @@ export const meta = () => ([
 ]);
 
 export const loader = async ({ request }) => {
-  const { token } = await authCookie.parse(request.headers.get('cookie'));
-  const { email } = verify(token, process.env.JWT_SECRET);
+  const { token } = await authCookie.parse(request.headers.get('cookie')) || {};
+  const secret = new TextEncoder().encode(
+    process.env.JWT_SECRET,
+  );
+  const { payload: { email } } = await jose.jwtVerify(token, secret);
   return json({
     email
   });

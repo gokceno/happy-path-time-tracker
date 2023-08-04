@@ -1,6 +1,6 @@
 import { Outlet, useLoaderData, useParams } from "@remix-run/react";
 import { Client, fetchExchange, cacheExchange } from '@urql/core';
-import { json } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { auth as authCookie } from '~/utils/cookies.server';
 import DayPicker from "../components/day-picker";
 
@@ -20,7 +20,7 @@ export const meta = () => ([
 ]);
 
 export const loader = async ({ request, params }) => {
-  const { token } = await authCookie.parse(request.headers.get('cookie'));
+  const { token } = await authCookie.parse(request.headers.get('cookie')) || {};
   if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const { day: onDate } = params;
   const GraphQLClient = new Client({

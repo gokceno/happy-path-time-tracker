@@ -30,7 +30,7 @@ const TimersQuery = `
 `;
 
 export const loader = async ({ request, params }) => {
-  const { token } = await authCookie.parse(request.headers.get('cookie'));
+  const { token } = await authCookie.parse(request.headers.get('cookie')) || {};
   if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const { day: onDate } = params;
   const GraphQLClient = new Client({
