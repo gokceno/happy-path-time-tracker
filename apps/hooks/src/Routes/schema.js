@@ -280,6 +280,7 @@ const schema = new GraphQLSchema({
             id: { type: GraphQLInt },
             startsAt: { type: GraphQLString },
             endsAt: { type: GraphQLString },
+            duration: { type: GraphQLInt },
             totalDuration: { type: GraphQLInt },
           }
         }),
@@ -315,6 +316,7 @@ const schema = new GraphQLSchema({
               id: timer.data.id,
               startsAt: timer.data.starts_at,
               endsAt: timer.data.ends_at,
+              duration: +timer.data.duration,
               totalDuration: +timer.data.total_duration,
             };
           }
