@@ -2,6 +2,7 @@ import { DateTime, Interval, Duration } from 'luxon';
 import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLInputObjectType } from 'graphql';
 import { Projects, Tasks, Timers } from '@happy-path/graphql-entities';
 import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
+import { calculateDuration } from '@happy-path/calculator';
 
 const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -162,7 +163,7 @@ const schema = new GraphQLSchema({
             id: { type: GraphQLString },
             startsAt: { type: GraphQLString },
             endsAt: { type: GraphQLString },
-            totalDuration: { type: GraphQLInt },
+            duration: { type: GraphQLInt },
           }
         }),
         args: {
@@ -183,7 +184,7 @@ const schema = new GraphQLSchema({
               id: timer.data.id,
               startsAt: timer.data.starts_at,
               endsAt: timer.data.ends_at,
-              totalDuration: +timer.data.total_duration,
+              duration: +timer.data.duration,
             };
           }
         },
@@ -195,7 +196,7 @@ const schema = new GraphQLSchema({
             id: { type: GraphQLString },
             startsAt: { type: GraphQLString },
             endsAt: { type: GraphQLString },
-            totalDuration: { type: GraphQLInt },
+            duration: { type: GraphQLInt },
           }
         }),
         args: {
@@ -209,7 +210,7 @@ const schema = new GraphQLSchema({
               id: timer.data.id,
               startsAt: timer.data.starts_at,
               endsAt: timer.data.ends_at,
-              totalDuration: +timer.data.total_duration,
+              duration: +timer.data.duration,
             };
           }
           else {
@@ -224,7 +225,7 @@ const schema = new GraphQLSchema({
             id: { type: GraphQLString },
             startsAt: { type: GraphQLString },
             endsAt: { type: GraphQLString },
-            totalDuration: { type: GraphQLInt },
+            duration: { type: GraphQLInt },
           }
         }),
         args: {
@@ -249,7 +250,7 @@ const schema = new GraphQLSchema({
               id: timer.data.id,
               startsAt: timer.data.starts_at,
               endsAt: timer.data.ends_at,
-              totalDuration: +timer.data.total_duration,
+              duration: +timer.data.duration,
             };
           }
         },
@@ -296,11 +297,18 @@ const schema = new GraphQLSchema({
         },
         resolve: async (_, { timerId, input }, context) => {
           const timers = Timers({ graphqlClient });
+          const { totalDuration, totalDurationInHours } = calculateDuration({ 
+            startsAt: input?.startsAt, 
+            endsAt: input?.endsAt, 
+            duration: input?.duration, 
+          });  
           const timer = await timers.update({ timerId, data: {
             duration: input?.duration,
+            totalDuration, 
+            totalDurationInHours,
             startsAt: input?.startsAt,
             endsAt: input?.endsAt,
-            taskComment: input?.notes
+            taskComment: input?.notes,
           }});
           if(timer.status == true) {
             return { 
@@ -318,8 +326,7 @@ const schema = new GraphQLSchema({
           fields: {
             id: { type: GraphQLInt },
             startsAt: { type: GraphQLString },
-            endsAt: { type: GraphQLString },
-            totalDuration: { type: GraphQLInt },
+            duration: { type: GraphQLInt },
           }
         }),
         args: {
@@ -335,8 +342,7 @@ const schema = new GraphQLSchema({
             return { 
               id: timer.data.id,
               startsAt: timer.data.starts_at,
-              endsAt: timer.data.ends_at,
-              totalDuration: +timer.data.total_duration,
+              duration: timer.data.duration,
             };
           }
           return {};

@@ -195,6 +195,7 @@ const Timers = ({ graphqlClient }) => {
       mutation update_timers_item($timerId: ID!, $taskComment: String, $duration: Int, $totalDuration: Int, $startsAt: Date, $endsAt: Date, $totalCost: Float, $totalDurationInHours: Float) {
         update_timers_item(id: $timerId, data: {total_cost: $totalCost, notes: $taskComment, total_duration: $totalDuration, duration: $duration, total_duration_in_hours: $totalDurationInHours, starts_at: $startsAt, ends_at: $endsAt}) {
           id
+          duration
           total_duration
           total_duration_in_hours
           total_cost
