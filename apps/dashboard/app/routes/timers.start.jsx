@@ -6,9 +6,6 @@ const TimersMutation = `
   mutation Restart($timerId: Int!) {
     restart(timerId: $timerId) {
       id
-      startsAt
-      endsAt
-      totalDuration
     }
   }
 `;

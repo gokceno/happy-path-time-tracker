@@ -6,9 +6,6 @@ const TimersMutation = `
   mutation Stop($timerId: Int!) {
     stop(timerId: $timerId) {
       id
-      startsAt
-      endsAt
-      totalDuration
     }
   }
 `;
