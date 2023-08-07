@@ -1,13 +1,13 @@
 import dotenv from 'dotenv';
 import { DateTime } from 'luxon';
-import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
+import { Backend as GraphQLClient } from '@happy-path/graphql-client';
 import { Notification } from '@happy-path/notification';
 import { Timers } from '@happy-path/graphql-entities';
 
 dotenv.config();
 
 const notify = async (req, res, next) => {
-  const users = await Timers({ graphqlClient }).findUsersByTimerDate({
+  const users = await Timers({ graphqlClient: GraphQLClient() }).findUsersByTimerDate({
     startsAt: DateTime.now().toFormat("yyyy-MM-dd'T00:00:00'"), 
     endsAt: DateTime.now().toFormat("yyyy-MM-dd'T23:59:59'")
   });

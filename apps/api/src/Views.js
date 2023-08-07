@@ -1,12 +1,12 @@
 import { Client, fetchExchange } from '@urql/core';
 import { DateTime, Duration } from 'luxon';
 import { Timers } from '@happy-path/graphql-entities';
-import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
+import { Backend as GraphQLClient } from '@happy-path/graphql-client';
 
 // TODO: Catch errors should notify users
 const setTimerDetails = async ({ ack, body, view, client, logger }) => {
   await ack();
-  const timers = Timers({ graphqlClient });
+  const timers = Timers({ graphqlClient: GraphQLClient() });
   const duration = view['state']['values']['block__duration']['action__duration'].value;
   try {
     let responseText;
@@ -44,7 +44,7 @@ const editTimerItem = async ({ ack, body, view, client, logger }) => {
   try {
     let startsAt, endsAt;
     let responseText = `🚨 Failed to edit time entry.`;
-    const timers = Timers({ graphqlClient });
+    const timers = Timers({ graphqlClient: GraphQLClient() });
     if(view['state']['values']['block__on_date']) {
       const onDate = view['state']['values']['block__on_date']['action__on_date'].selected_date;
       startsAt = onDate + 'T00:00:00';

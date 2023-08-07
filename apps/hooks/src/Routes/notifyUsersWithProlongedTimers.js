@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { DateTime } from 'luxon';
-import { GraphQLClient as graphqlClient} from '@happy-path/graphql-client';
+import { Backend as GraphQLClient } from '@happy-path/graphql-client';
 import { Notification } from '@happy-path/notification';
 import { Timers } from '@happy-path/graphql-entities';
 
@@ -8,7 +8,7 @@ dotenv.config();
 
 const notify = async (req, res, next) => {
   const startsBefore = DateTime.now().minus({ minutes: process.env.PROLONGED_TIMER_TRESHOLD_1 || 240 }).toISO();
-  const timers = await Timers({ graphqlClient }).findTimersByNoEndDate({ startsBefore }); 
+  const timers = await Timers({ graphqlClient: GraphQLClient() }).findTimersByNoEndDate({ startsBefore }); 
   if(timers.length > 0) {
     timers.forEach(async (item) => {
       let message;
@@ -16,7 +16,7 @@ const notify = async (req, res, next) => {
       const { minutes: durationInMinutes } = DateTime.now().diff(startsAt, 'minutes').toObject();
       if(durationInMinutes >= (process.env.PROLONGED_TIMER_SHUTDOWN_TRESHOLD || 480)) {
         try {
-          const mutation = await Timers({ graphqlClient }).stop({ timerId: item.id, userId: item.user_id.id });
+          const mutation = await Timers({ graphqlClient: GraphQLClient() }).stop({ timerId: item.id, userId: item.user_id.id });
           if(mutation.status === true) {
             message = `Ok, let's stop your timer now 🏁, you've done great. Go ahead and start a new timer ⏱️ if you're still here.`;
           }

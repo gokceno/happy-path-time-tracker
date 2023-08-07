@@ -1,7 +1,7 @@
 import { DateTime, Interval, Duration } from 'luxon';
 import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLInputObjectType } from 'graphql';
 import { Projects, Tasks, Timers } from '@happy-path/graphql-entities';
-import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
+import { Backend as GraphQLClient } from '@happy-path/graphql-client';
 import { calculateDuration } from '@happy-path/calculator';
 
 const schema = new GraphQLSchema({
@@ -50,7 +50,7 @@ const schema = new GraphQLSchema({
           }
         })),
         resolve: async (_, { startsAt, endsAt }, context) => {
-          const timers = Timers({ graphqlClient });
+          const timers = Timers({ graphqlClient: GraphQLClient() });
           return (await timers.findTimersByUserId({ startsAt, endsAt, email: context.email })).map(item => ({ 
             id: item.id, 
             startsAt: item.starts_at,
@@ -78,7 +78,7 @@ const schema = new GraphQLSchema({
           }
         })),
         resolve: async (_, { name }, context) => {
-          const projects = Projects({ graphqlClient });
+          const projects = Projects({ graphqlClient: GraphQLClient() });
           return (await projects.list()).map(item => ({ id: item.id, projectName: item.project_name }));
         },
       },
@@ -94,7 +94,7 @@ const schema = new GraphQLSchema({
           projectId: { type: new GraphQLNonNull(GraphQLInt) }
         },
         resolve: async (_, { projectId }, context) => {
-          const tasks = Tasks({ graphqlClient, queryParams: { projectId } });
+          const tasks = Tasks({ graphqlClient: GraphQLClient(), queryParams: { projectId } });
           return (await tasks.list()).map(item => ({ id: item.id, taskName: item.tasks_id.task_name }));
         },
       },
@@ -124,7 +124,7 @@ const schema = new GraphQLSchema({
           date: { type: new GraphQLNonNull(GraphQLString) }
         },
         resolve: async (_, { date }, context) => {
-          const timers = await Timers({ graphqlClient }).findTimersByUserId({ 
+          const timers = await Timers({ graphqlClient: GraphQLClient() }).findTimersByUserId({ 
             startsAt: DateTime.fromISO(date).startOf('month'),
             endsAt: DateTime.fromISO(date).endOf('month'), 
             email: context.email 
@@ -172,7 +172,7 @@ const schema = new GraphQLSchema({
           notes: { type: GraphQLString }
         },
         resolve: async (_, { projectTaskId, startsAt, duration, notes }, context) => {
-          const timers = Timers({ graphqlClient });
+          const timers = Timers({ graphqlClient: GraphQLClient() });
           const timer = await timers.start({
             projectTaskId,
             email: context.email,
@@ -203,7 +203,7 @@ const schema = new GraphQLSchema({
           timerId: { type: new GraphQLNonNull(GraphQLInt) },
         },
         resolve: async (_, { timerId }, context) => {
-          const timers = Timers({ graphqlClient });
+          const timers = Timers({ graphqlClient: GraphQLClient() });
           const timer = await timers.stop({ timerId, email: context.email });          
           if(timer.status == true) {
             return { 
@@ -236,7 +236,7 @@ const schema = new GraphQLSchema({
           endsAt: { type: GraphQLString }
         },
         resolve: async (_, { projectTaskId, duration, notes, startsAt, endsAt }, context) => {
-          const timers = Timers({ graphqlClient });
+          const timers = Timers({ graphqlClient: GraphQLClient() });
           const timer = await timers.log({
             projectTaskId,
             email: context.email,
@@ -266,7 +266,7 @@ const schema = new GraphQLSchema({
           timerId: { type: new GraphQLNonNull(GraphQLInt) },
         },
         resolve: async (_, { timerId }, context) => {
-          const timers = Timers({ graphqlClient });
+          const timers = Timers({ graphqlClient: GraphQLClient() });
           const timer = await timers.remove({ timerId, email: context.email });
           if(timer.status == true) {
             return { id: timer.data.id };
@@ -297,7 +297,7 @@ const schema = new GraphQLSchema({
           })}
         },
         resolve: async (_, { timerId, input }, context) => {
-          const timers = Timers({ graphqlClient });
+          const timers = Timers({ graphqlClient: GraphQLClient() });
           const { totalDuration, totalDurationInHours } = calculateDuration({ 
             startsAt: input?.startsAt, 
             endsAt: input?.endsAt, 
@@ -335,7 +335,7 @@ const schema = new GraphQLSchema({
           timerId: { type: new GraphQLNonNull(GraphQLInt) }
         },
         resolve: async (_, { timerId }, context) => {
-          const timers = Timers({ graphqlClient });
+          const timers = Timers({ graphqlClient: GraphQLClient() });
           const timer = await timers.restart({
             timerId,
             email: context.email,

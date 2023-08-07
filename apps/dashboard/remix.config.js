@@ -15,4 +15,5 @@ module.exports = {
     v2_routeConvention: true,
   },
   tailwind: true,
+  serverDependenciesToBundle: ['@happy-path/graphql-client'],
 };

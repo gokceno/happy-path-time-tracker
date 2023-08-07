@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { DateTime, Duration } from 'luxon';
-import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
+import { Backend as GraphQLClient } from '@happy-path/graphql-client';
 import { Timers, Projects } from '@happy-path/graphql-entities';
 import { calculateTotalCost, metadata as parseMetadata } from '@happy-path/calculator';
 
@@ -15,9 +15,9 @@ const calculate =  async (req, res, next) => {
   if(collection != 'projects') throw new Error(`Can process only for "projects".`);
   await Promise.all(
     projectIds.map(async (projectId) => {
-      const { metadata: projectMetadata, created_at: projectCreatedAt } = await Projects({ graphqlClient }).findProjectById({ projectId });
+      const { metadata: projectMetadata, created_at: projectCreatedAt } = await Projects({ graphqlClient: GraphQLClient() }).findProjectById({ projectId });
       const metadata = parseMetadata([metadataTemplate, projectMetadata]);
-      const timers = await Timers({ graphqlClient }).findTimersByProjectId({ 
+      const timers = await Timers({ graphqlClient: GraphQLClient() }).findTimersByProjectId({ 
         projectId,
         startsAt: projectCreatedAt,
         endsAt: DateTime.now().toISO(),
@@ -35,7 +35,7 @@ const calculate =  async (req, res, next) => {
             });
             if(totalCost != undefined && totalCost != null && totalCost != item.total_cost) {
               setTimeout(
-                async () => await Timers({ graphqlClient }).update({ timerId: item.id, data: { 
+                async () => await Timers({ graphqlClient: GraphQLClient() }).update({ timerId: item.id, data: { 
                   totalCost,
                   totalDurationInHours: item.total_duration_in_hours,
                   totalDuration: item.total_duration,  

@@ -1,6 +1,6 @@
 import YAML from 'yaml';
 import { DateTime } from 'luxon';
-import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
+import { Backend as GraphQLClient } from '@happy-path/graphql-client';
 import { Timers } from '@happy-path/graphql-entities';
 import { calculateTotalCost, calculateDuration, metadata as parseMetadata } from '@happy-path/calculator';
 
@@ -13,7 +13,7 @@ const calculate = async (req, res, next) => {
     res.status(403).send({error: `Requested hook type doesn't exist. Exiting.`});
   }
   if(timerId != undefined) {
-    const timer = await Timers({ graphqlClient }).findTimerById({ timerId });
+    const timer = await Timers({ graphqlClient: GraphQLClient() }).findTimerById({ timerId });
     if(timer != undefined) {
       const { totalDuration, totalDurationInHours } = calculateDuration({ 
         startsAt: timer.starts_at, 
@@ -33,7 +33,7 @@ const calculate = async (req, res, next) => {
             endsAt: timer.ends_at || DateTime.now()
           });
           if(timer.total_duration != totalDuration && totalCost != undefined) {
-            const mutation = await Timers({ graphqlClient }).update({timerId, data: { duration: timer.duration, totalDuration, totalDurationInHours, totalCost }});
+            const mutation = await Timers({ graphqlClient: GraphQLClient() }).update({timerId, data: { duration: timer.duration, totalDuration, totalDurationInHours, totalCost }});
             res.json({ ok: true, data: mutation.data });
           }
           else {

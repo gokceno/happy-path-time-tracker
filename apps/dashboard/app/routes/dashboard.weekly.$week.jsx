@@ -1,7 +1,7 @@
 import { Outlet, useLoaderData, useParams, useRevalidator } from '@remix-run/react';
 import { useEffect } from 'react';
 import { json, redirect } from '@remix-run/node';
-import { Client, fetchExchange, cacheExchange } from '@urql/core';
+import { Frontend as Client } from '@happy-path/graphql-client';
 import { DateTime } from 'luxon';
 import { auth as authCookie } from '~/utils/cookies.server';
 import ClientContainer from '../components/client-container';
@@ -34,16 +34,7 @@ export const loader = async ({ request, params }) => {
   const { token } = await authCookie.parse(request.headers.get('cookie')) || {};
   if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const { week: onDate } = params;
-  const GraphQLClient = new Client({
-    url: process.env.API_GRAPHQL_URL,
-    exchanges: [fetchExchange, cacheExchange],
-    fetchOptions: () => {
-      return {
-        headers: { authorization: 'Bearer ' + token },
-      };
-    },
-  });
-  const response = await GraphQLClient.query(TimersQuery, {
+  const response = await Client({ token }).query(TimersQuery, {
     startsAt: DateTime.fromISO(onDate).startOf('day').toISO(),
     endsAt: DateTime.fromISO(onDate).plus({days: 7}).endOf('day').toISO(),
   });

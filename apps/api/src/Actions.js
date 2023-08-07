@@ -2,15 +2,14 @@ import { DateTime } from 'luxon';
 import { staticSelect, input, datePicker, timeEntriesList } from './UI/Blocks.js';
 import { title as titleElement, submit as submitElement } from'./UI/Elements.js';
 import { staticSelect as staticSelectFormatter, timeEntriesList as timeEntriesListFormatter } from './Formatters.js';
-import { Tasks } from '@happy-path/graphql-entities';
-import { Timers } from '@happy-path/graphql-entities';
-import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
+import { Tasks, Timers } from '@happy-path/graphql-entities';
+import { Backend as GraphQLClient } from '@happy-path/graphql-client';
 
 const selectProjectId = async ({ ack, body, client, logger }, previousActionId, callbackId) => {
   await ack();
   try {
     const tasks = Tasks({ 
-      graphqlClient, 
+      graphqlClient: GraphQLClient(), 
       queryParams: {
         projectId: body.view.state.values['block__project_list'][previousActionId].selected_option.value
       } 
@@ -46,7 +45,7 @@ const selectProjectId = async ({ ack, body, client, logger }, previousActionId, 
 const removeTimerItem = async ({ ack, body, client, logger }) => {
   await ack();
   try {
-    const timers = Timers({ graphqlClient });
+    const timers = Timers({ graphqlClient: GraphQLClient() });
     const { status } = await timers.remove({ timerId: body.actions[0].value });
     if(status == true) {
       const timersList = await timers.list({ 
@@ -83,7 +82,7 @@ const removeTimerItem = async ({ ack, body, client, logger }) => {
 const editTimerItem = async ({ ack, body, client, logger }) => {
   await ack();
   try {
-    const timers = Timers({ graphqlClient });
+    const timers = Timers({ graphqlClient: GraphQLClient() });
     const { data } = await timers.get({ timerId: body.actions[0].value });
     let blocks = [
       {

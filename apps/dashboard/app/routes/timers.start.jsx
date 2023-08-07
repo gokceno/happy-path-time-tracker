@@ -1,5 +1,5 @@
 import { json, redirect } from '@remix-run/node';
-import { Client, fetchExchange, cacheExchange } from '@urql/core';
+import { Frontend as Client } from '@happy-path/graphql-client';
 import { auth as authCookie } from '~/utils/cookies.server';
 
 const TimersMutation = `
@@ -15,16 +15,7 @@ export const action = async ({ request }) => {
   if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const formData = await request.formData();
   const timerId = formData.get('timerId');
-  const GraphQLClient = new Client({
-    url: process.env.API_GRAPHQL_URL,
-    exchanges: [fetchExchange, cacheExchange],
-    fetchOptions: () => {
-      return {
-        headers: { authorization: 'Bearer ' + token },
-      };
-    },
-  });
-  const response = await GraphQLClient.mutation(TimersMutation, { timerId: +timerId });
+  const response = await Client({ token }).mutation(TimersMutation, { timerId: +timerId });
   if(response.error != undefined) {
     return json({ ok: false, error: response.error });
   }

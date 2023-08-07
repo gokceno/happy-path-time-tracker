@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import dotenv from 'dotenv';
 import pdfMake from 'pdfmake';
 import { DateTime, Duration } from 'luxon';
-import { GraphQLClient as graphqlClient } from '@happy-path/graphql-client';
+import { Backend as GraphQLClient } from '@happy-path/graphql-client';
 import { Client as EmailClient } from '@happy-path/mailjet-client';
 import { Timers, Projects } from '@happy-path/graphql-entities';
 import { Document as DefaultDocument } from './Documents/Default.js';
@@ -34,14 +34,14 @@ const create =  async (req, res, next) => {
   const endsAt = req.params.month == 'last' ? DateTime.now().minus({ months: 1 }).endOf('month').toISO() : DateTime.now().startOf('month').toISO();
   await Promise.all(
     projectIds.map(async (projectId) => {
-      const timers = await Timers({ graphqlClient }).findTimersByProjectId({ 
+      const timers = await Timers({ graphqlClient: GraphQLClient() }).findTimersByProjectId({ 
         projectId,
         startsAt,
         endsAt,
       });
       if(timers.length) {
         const dd = DefaultDocument();
-        const { project_name: projectName, metadata: projectMetadata } = await Projects({ graphqlClient }).findProjectById({ projectId });
+        const { project_name: projectName, metadata: projectMetadata } = await Projects({ graphqlClient: GraphQLClient() }).findProjectById({ projectId });
         const { price_modifiers: priceModifiers } = parseMetadata([metadataTemplate, projectMetadata]);
         const totalHours = Duration.fromObject({ 
           minutes: timers.reduce((acc, item) => acc + item.total_duration, 0)
