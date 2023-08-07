@@ -6,7 +6,7 @@ import { calculateTotalCost, calculateDuration, metadata as parseMetadata } from
 
 const calculate = async (req, res, next) => {
   // TODO: Should update only if there are changed values
-  const timers = await Timers({ graphqlClient: GraphQLClient() }).findTimersByNoEndDate({ startsBefore: DateTime.now().toISO() }); 
+  const timers = await Timers({ client: GraphQLClient() }).findTimersByNoEndDate({ startsBefore: DateTime.now().toISO() }); 
   if(timers.length > 0) {
     await Promise.all(
       timers.map(async (item) => {
@@ -22,7 +22,7 @@ const calculate = async (req, res, next) => {
             endsAt: DateTime.now()
           });
           if(totalCost != undefined) {
-            await Timers({ graphqlClient: GraphQLClient() }).update({timerId: item.id, data: { duration: item.duration, totalDuration, totalDurationInHours, totalCost }});
+            await Timers({ client: GraphQLClient() }).update({timerId: item.id, data: { duration: item.duration, totalDuration, totalDurationInHours, totalCost }});
           }
           else {
             res.log.debug(`Total cost is undefined for timer ID: ${item.id}`);

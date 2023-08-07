@@ -9,7 +9,7 @@ const selectProjectId = async ({ ack, body, client, logger }, previousActionId, 
   await ack();
   try {
     const tasks = Tasks({ 
-      graphqlClient: GraphQLClient(), 
+      client: GraphQLClient(), 
       queryParams: {
         projectId: body.view.state.values['block__project_list'][previousActionId].selected_option.value
       } 
@@ -45,7 +45,7 @@ const selectProjectId = async ({ ack, body, client, logger }, previousActionId, 
 const removeTimerItem = async ({ ack, body, client, logger }) => {
   await ack();
   try {
-    const timers = Timers({ graphqlClient: GraphQLClient() });
+    const timers = Timers({ client: GraphQLClient() });
     const { status } = await timers.remove({ timerId: body.actions[0].value });
     if(status == true) {
       const timersList = await timers.list({ 
@@ -82,7 +82,7 @@ const removeTimerItem = async ({ ack, body, client, logger }) => {
 const editTimerItem = async ({ ack, body, client, logger }) => {
   await ack();
   try {
-    const timers = Timers({ graphqlClient: GraphQLClient() });
+    const timers = Timers({ client: GraphQLClient() });
     const { data } = await timers.get({ timerId: body.actions[0].value });
     let blocks = [
       {

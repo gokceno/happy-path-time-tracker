@@ -34,14 +34,14 @@ const create =  async (req, res, next) => {
   const endsAt = req.params.month == 'last' ? DateTime.now().minus({ months: 1 }).endOf('month').toISO() : DateTime.now().startOf('month').toISO();
   await Promise.all(
     projectIds.map(async (projectId) => {
-      const timers = await Timers({ graphqlClient: GraphQLClient() }).findTimersByProjectId({ 
+      const timers = await Timers({ client: GraphQLClient() }).findTimersByProjectId({ 
         projectId,
         startsAt,
         endsAt,
       });
       if(timers.length) {
         const dd = DefaultDocument();
-        const { project_name: projectName, metadata: projectMetadata } = await Projects({ graphqlClient: GraphQLClient() }).findProjectById({ projectId });
+        const { project_name: projectName, metadata: projectMetadata } = await Projects({ client: GraphQLClient() }).findProjectById({ projectId });
         const { price_modifiers: priceModifiers } = parseMetadata([metadataTemplate, projectMetadata]);
         const totalHours = Duration.fromObject({ 
           minutes: timers.reduce((acc, item) => acc + item.total_duration, 0)
