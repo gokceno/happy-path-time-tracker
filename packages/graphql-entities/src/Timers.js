@@ -1,11 +1,11 @@
 import { DateTime } from 'luxon';
 import { Users } from '@happy-path/graphql-entities';
 
-const Timers = ({ graphqlClient }) => {
+const Timers = ({ client }) => {
   const _findRunningTimer = async (params) => {
     const { externalUserId, email, did, userId } = params;
     if(externalUserId == undefined && email == undefined && did == undefined && userId == undefined) throw new Error('A user identifier must be set');
-    const actualUserId = await Users({ graphqlClient }).findUserId({ externalUserId, email, did, userId });
+    const actualUserId = await Users({ client }).findUserId({ externalUserId, email, did, userId });
     const TimersQuery = `
     query Timers {
       timers(filter: {ends_at: {_null: true}, user_id: {id: {_eq: ${actualUserId} }}}) {
@@ -25,7 +25,7 @@ const Timers = ({ graphqlClient }) => {
       }
     }
     `;
-    const response = await graphqlClient.query(TimersQuery);
+    const response = await client.query(TimersQuery);
     if(response.data.timers.length > 1) {
       throw new Error('Multiple running timers found, manual intervention required.');
     }
@@ -46,7 +46,7 @@ const Timers = ({ graphqlClient }) => {
     if(projectTaskId == undefined || (externalUserId == undefined && did == undefined && email == undefined)) {
       throw new Error('Required parameters not set.');
     }
-    const userId = await Users({ graphqlClient }).findUserId({ externalUserId, email, did });
+    const userId = await Users({ client }).findUserId({ externalUserId, email, did });
     const CreateTimerMutation = `
     mutation create_timers_item($userId: ID!, $duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String) {
       create_timers_item(
@@ -68,7 +68,7 @@ const Timers = ({ graphqlClient }) => {
       }
     }
     `;
-    const response = await graphqlClient.mutation(CreateTimerMutation, {
+    const response = await client.mutation(CreateTimerMutation, {
       userId,
       duration:+duration,
       projectTaskId: +projectTaskId,
@@ -105,7 +105,7 @@ const Timers = ({ graphqlClient }) => {
         }
       }
       `;
-      const response = await graphqlClient.mutation(StopTimerMutation, {
+      const response = await client.mutation(StopTimerMutation, {
         timerId: timer.id,
         endsAt: DateTime.now().toString()
       });
@@ -131,7 +131,7 @@ const Timers = ({ graphqlClient }) => {
       }
     }
     `;
-    const response = await graphqlClient.mutation(RemoveTimerMutation, { timerId });
+    const response = await client.mutation(RemoveTimerMutation, { timerId });
     if(response.error == undefined) {
       return { status: true, data: response.data.delete_timers_item };
     }
@@ -178,7 +178,7 @@ const Timers = ({ graphqlClient }) => {
       }
     }
     `;
-    const queryResponse = await graphqlClient.query(TimersQuery, { timerId });
+    const queryResponse = await client.query(TimersQuery, { timerId });
     if(queryResponse.data != undefined && queryResponse.data.timers_by_id != undefined) {
       return { status: true, data: queryResponse.data.timers_by_id };
     }
@@ -212,7 +212,7 @@ const Timers = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.mutation(EditTimerMutation, {
+    const response = await client.mutation(EditTimerMutation, {
       timerId: +timerId,
       totalDuration: +data.totalDuration,
       totalDurationInHours: +data.totalDurationInHours,
@@ -271,7 +271,7 @@ const Timers = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.query(TimerQuery, { timerId });
+    const response = await client.query(TimerQuery, { timerId });
     return response?.data?.timers_by_id || undefined;
   }
   const findTimersByUserId = async(params) => {
@@ -279,7 +279,7 @@ const Timers = ({ graphqlClient }) => {
     if(startsAt == undefined || endsAt == undefined || (userId == undefined && externalUserId == undefined && did == undefined && email == undefined)) {
       throw new Error('Required parameters not set.');
     }
-    const actualUserId = await Users({ graphqlClient }).findUserId({ externalUserId, email, did, userId });
+    const actualUserId = await Users({ client }).findUserId({ externalUserId, email, did, userId });
     const TimersQuery = `
     query Timers {
       timers(
@@ -304,7 +304,7 @@ const Timers = ({ graphqlClient }) => {
       }
     }
     `;
-    const response = await graphqlClient.query(TimersQuery);
+    const response = await client.query(TimersQuery);
     return response?.data?.timers || [];
   }
   const findTimersByProjectId = async(params) => {
@@ -338,7 +338,7 @@ const Timers = ({ graphqlClient }) => {
       }
     }
     `;
-    const response = await graphqlClient.query(TimersByProjectIdQuery);
+    const response = await client.query(TimersByProjectIdQuery);
     return response?.data?.timers || [];
   }
   const findTimersByDate = async(params) => {
@@ -363,7 +363,7 @@ const Timers = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.query(TimersQuery);
+    const response = await client.query(TimersQuery);
     return response?.data?.timers || [];
   }
   const findTimersByNoEndDate = async(params) => {
@@ -388,7 +388,7 @@ const Timers = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.query(TimersQuery, { startsBefore });
+    const response = await client.query(TimersQuery, { startsBefore });
     return response?.data?.timers || [];
   }
   return { 

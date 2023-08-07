@@ -1,4 +1,4 @@
-const Projects = ({ graphqlClient }) => {
+const Projects = ({ client }) => {
   const _fetch =  async () => {
     const ProjectsQuery = `
       {
@@ -8,7 +8,7 @@ const Projects = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.query(ProjectsQuery);
+    const response = await client.query(ProjectsQuery);
     return response.data.projects;
   }
   const list = async (formatter) => {
@@ -34,7 +34,7 @@ const Projects = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.query(ProjectByIdQuery, { projectId });
+    const response = await client.query(ProjectByIdQuery, { projectId });
     return response?.data?.projects_by_id || {};
   }
   return { list, findProjectById }

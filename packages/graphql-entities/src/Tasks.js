@@ -1,5 +1,5 @@
 // TODO: Should move queryParams to list or _fetch
-const Tasks = ({ graphqlClient, queryParams }) => {
+const Tasks = ({ client, queryParams }) => {
   const _fetch =  async () => {
     if (queryParams == undefined || queryParams.projectId == undefined) throw new Error('queryParams.projectId must be set');
     const ProjectsTasksQuery = `
@@ -13,7 +13,7 @@ const Tasks = ({ graphqlClient, queryParams }) => {
         }
       }
     `;
-    const response = await graphqlClient.query(ProjectsTasksQuery);
+    const response = await client.query(ProjectsTasksQuery);
     return response.data.projects_tasks;
   }
   const list = async (formatter) => {

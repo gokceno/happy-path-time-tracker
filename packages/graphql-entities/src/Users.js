@@ -1,4 +1,4 @@
-const Users = ({ graphqlClient }) => {
+const Users = ({ client }) => {
   const _create = async (params) => {
     const {firstName, lastName, timezone, externalUserId, email } = params;
     const CreateUserMutation = `
@@ -10,7 +10,7 @@ const Users = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.mutation(CreateUserMutation, {
+    const response = await client.mutation(CreateUserMutation, {
       firstName,
       lastName,
       timezone,
@@ -42,7 +42,7 @@ const Users = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.mutation(UpdateUserMutation, {
+    const response = await client.mutation(UpdateUserMutation, {
       firstName,
       lastName,
       timezone,
@@ -70,7 +70,7 @@ const Users = ({ graphqlClient }) => {
         }
       }
       `;
-      const queryResponse = await graphqlClient.query(UserQuery, { did });
+      const queryResponse = await client.query(UserQuery, { did });
       if(queryResponse?.data?.users != undefined && typeof queryResponse?.data?.users == 'object') {
         if(queryResponse.data.users.length == 0) return null;
         return +queryResponse.data.users[0].id;
@@ -87,7 +87,7 @@ const Users = ({ graphqlClient }) => {
         }
       }
       `;
-      const queryResponse = await graphqlClient.query(UserQuery, { email });
+      const queryResponse = await client.query(UserQuery, { email });
       if(queryResponse?.data?.users != undefined && typeof queryResponse?.data?.users == 'object') {
         if(queryResponse.data.users.length == 0) return null;
         return +queryResponse.data.users[0].id;
@@ -104,7 +104,7 @@ const Users = ({ graphqlClient }) => {
         }
       }
       `;
-      const queryResponse = await graphqlClient.query(UserQuery, { externalUserId });
+      const queryResponse = await client.query(UserQuery, { externalUserId });
       if(queryResponse?.data?.users != undefined && typeof queryResponse?.data?.users == 'object') {
         if(queryResponse.data.users.length == 0) return null;
         return +queryResponse.data.users[0].id;
@@ -162,7 +162,7 @@ const Users = ({ graphqlClient }) => {
         }
       }
     `;
-    const response = await graphqlClient.query(UserTimersQuery);
+    const response = await client.query(UserTimersQuery);
     return response?.data?.users || [];
   }
   return { syncByExternalUserId, syncByEmail, findUserId, findUsersByTimerDate }
