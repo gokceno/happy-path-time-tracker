@@ -196,7 +196,7 @@ const schema = new GraphQLSchema({
             id: { type: GraphQLString },
             startsAt: { type: GraphQLString },
             endsAt: { type: GraphQLString },
-            duration: { type: GraphQLInt },
+            totalDuration: { type: GraphQLInt },
           }
         }),
         args: {
@@ -210,7 +210,7 @@ const schema = new GraphQLSchema({
               id: timer.data.id,
               startsAt: timer.data.starts_at,
               endsAt: timer.data.ends_at,
-              duration: +timer.data.duration,
+              totalDuration: +timer.data.total_duration,
             };
           }
           else {
@@ -328,7 +328,7 @@ const schema = new GraphQLSchema({
           fields: {
             id: { type: GraphQLInt },
             startsAt: { type: GraphQLString },
-            duration: { type: GraphQLInt },
+            totalDuration: { type: GraphQLInt },
           }
         }),
         args: {
@@ -344,7 +344,7 @@ const schema = new GraphQLSchema({
             return { 
               id: timer.data.id,
               startsAt: timer.data.starts_at,
-              duration: timer.data.duration,
+              totalDuration: timer.data.total_duration,
             };
           }
           return {};
