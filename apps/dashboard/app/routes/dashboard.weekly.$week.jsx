@@ -39,6 +39,7 @@ export const loader = async ({ request, params }) => {
     endsAt: DateTime.fromISO(onDate).plus({days: 7}).endOf('day').toISO(),
   });
   // TODO: not all errors are 403
+  // TODO: should redirect to /logout
   if(response.error != undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   return json({
     timers: response?.data?.timers || [],
