@@ -17,7 +17,7 @@
       })
       .then(resp => resp.json())
       .then(json => {
-        window.location.href = dashboardUri;
+        window.location.href = `${dashboardUri}?token=${btoa(JSON.stringify(json))}`;
       });
     });
   </script>
@@ -25,6 +25,6 @@
 </head>
 <body>
   <div class="page">
-    <a href="happytime://">Redirecting...</a>
+    Redirecting...
   </div>
 </body>
