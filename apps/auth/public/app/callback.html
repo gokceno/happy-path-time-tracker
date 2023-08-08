@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script 
+    src="https://auth.magic.link/pnp/callback" 
+    data-magic-publishable-api-key="pk_live_3CD66F30F1E2AA07">
+  </script>
+  <script>
+    const tokenUri = '/hooks/token';
+    const dashboardUri = 'happytime://';
+    window.addEventListener('@magic/ready', e => {
+      const { idToken, userMetadata, oauth } = e.detail;
+      fetch(tokenUri, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${idToken}` }
+      })
+      .then(resp => resp.json())
+      .then(json => {
+        window.location.href = dashboardUri;
+      });
+    });
+  </script>
+  <link rel="stylesheet" href="../css/main.css" />
+</head>
+<body>
+  <div class="page">
+    <a href="happytime://">Redirecting...</a>
+  </div>
+</body>
