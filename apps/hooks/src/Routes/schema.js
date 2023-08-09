@@ -142,7 +142,7 @@ const schema = new GraphQLSchema({
             totalDuration: timers.filter(timer => DateTime.fromISO(timer.starts_at).toISODate() == weekday.start.toISODate()).reduce((acc, timer) => acc + timer.total_duration, 0),
             date: weekday.start.toISODate()
           }));
-          const byWeeklyIntervals = monthlyInterval.splitBy(Duration.fromObject({ week: 1 })).map(week => ({
+          const byWeeklyIntervals = monthlyInterval.splitBy(Duration.fromObject({ days: 6 })).map(week => ({
             type: 'week',
             totalDuration: timers.filter(timer => DateTime.fromISO(timer.starts_at) >= week.start && DateTime.fromISO(timer.ends_at) <= week.end).reduce((acc, timer) => acc + timer.total_duration, 0),
             startsAt: week.start.toISO(),

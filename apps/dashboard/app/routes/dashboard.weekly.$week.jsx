@@ -36,7 +36,7 @@ export const loader = async ({ request, params }) => {
   const { week: onDate } = params;
   const response = await Client({ token }).query(TimersQuery, {
     startsAt: DateTime.fromISO(onDate).startOf('day').toISO(),
-    endsAt: DateTime.fromISO(onDate).plus({days: 7}).endOf('day').toISO(),
+    endsAt: DateTime.fromISO(onDate).plus({days: 6}).endOf('day').toISO(),
   });
   // TODO: not all errors are 403
   // TODO: should redirect to /logout
@@ -74,10 +74,10 @@ export default function DashboardWeeklyWeekRoute() {
   }, []);
   return (
     <div className="self-stretch flex flex-col items-start justify-start gap-[16px] text-left text-lgi text-primary-dark-night font-primary-small-body-h5-medium">
-    <SectionHeader sectionTitle={`${DateTime.fromISO(onDate).toFormat('dd')} - ${DateTime.fromISO(onDate).plus({ days: 7 }).setLocale(culture).toFormat('dd LLLL')}`} totalDuration={totalDuration}/>
+    <SectionHeader sectionTitle={`${DateTime.fromISO(onDate).toFormat('dd')} - ${DateTime.fromISO(onDate).plus({ weeks: 1 }).setLocale(culture).toFormat('dd LLL')}`} totalDuration={totalDuration}/>
       {days.map((day) => (
         <div key={day} className="flex flex-col gap-[16px]">
-          <DayHeader key={day} title={DateTime.fromISO(day).setLocale(culture).toFormat('EEEE, dd LLLL')}/>
+          <DayHeader key={day} title={DateTime.fromISO(day).setLocale(culture).toFormat('EEEE, dd LLL')}/>
           {projects.map((project) => (
             <ClientContainer timezone={timezone} key={project} clientName={project} timers={timers.filter(timer => (DateTime.fromISO(timer.startsAt).toISODate() == day && timer.project.name === project))}/>
           ))}
