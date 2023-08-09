@@ -2,7 +2,7 @@ import { DateTime, Interval, Duration } from 'luxon';
 import { Link } from "@remix-run/react";
 import Week from "./week";
 
-const WeekPicker = ({ stats, timezone: zone, selectedDate }) => {
+const WeekPicker = ({ stats, timezone, selectedDate }) => {
   const monthlyInterval = Interval.fromDateTimes(
     DateTime.fromISO(selectedDate).startOf('month'),
     DateTime.fromISO(selectedDate).endOf('month')
@@ -15,7 +15,7 @@ const WeekPicker = ({ stats, timezone: zone, selectedDate }) => {
       </Link>
       <div className="flex flex-row items-start justify-start gap-[20px]">
       {weeks.map(week => 
-        <Week key={week} date={week} duration={stats?.byInterval?.find(date => date.type == 'week' && DateTime.fromISO(date.startsAt) >= week.start.setZone(zone) && DateTime.fromISO(date.endsAt) <= week.end.setZone(zone))?.totalDuration}/>
+        <Week key={week} date={week} duration={stats?.byInterval?.find(date => date.type == 'week' && DateTime.fromISO(date.startsAt) >= week.start.setZone(timezone))?.totalDuration}/>
       )}
       </div>
       <Link to={`/dashboard/weekly/${DateTime.fromISO(selectedDate).plus({months: 1}).startOf('month').toISODate()}`} className="cursor-pointer [border:none] p-1 bg-[transparent] rounded-80xl flex flex-row items-center justify-center">
