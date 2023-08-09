@@ -15,7 +15,7 @@ const WeekPicker = ({ stats, timezone: zone, selectedDate }) => {
       </Link>
       <div className="flex flex-row items-start justify-start gap-[20px]">
       {weeks.map(week => 
-        <Week key={week} date={week} duration={stats?.byInterval?.find(date => date.type == 'week' && DateTime.fromISO(date.startsAt) >= week.start && DateTime.fromISO(date.endsAt) <= week.end)?.totalDuration}/>
+        <Week key={week} date={week} duration={stats?.byInterval?.find(date => date.type == 'week' && DateTime.fromISO(date.startsAt).setZone(zone) >= week.start && DateTime.fromISO(date.endsAt).setZone(zone) <= week.end)?.totalDuration}/>
       )}
       </div>
       <Link to={`/dashboard/weekly/${DateTime.fromISO(selectedDate).plus({months: 1}).startOf('month').toISODate()}`} className="cursor-pointer [border:none] p-1 bg-[transparent] rounded-80xl flex flex-row items-center justify-center">
