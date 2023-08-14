@@ -29,7 +29,11 @@ export const loader = async ({ request, params }) => {
     stats: response?.data?.stats, 
     timezone: process.env.TIMEZONE || 'UTC'
   });
-};
+}
+
+export const shouldRevalidate = ({ currentParams, nextParams, defaultShouldRevalidate })  => {
+  return currentParams.day !== nextParams.day ? true : defaultShouldRevalidate;
+}
 
 export default function DashboardDailyRoute() {
   const { day: onDate } = useParams();
@@ -37,7 +41,7 @@ export default function DashboardDailyRoute() {
   return (
     <div className="w-[671px] flex flex-col pt-0 px-0 pb-8 box-border items-center justify-start gap-[32px] min-w-[345px] max-w-[906px]">
       <div className="self-stretch flex flex-col items-start justify-start">
-        <DayPicker stats={stats} timezone={timezone} selectedDate={onDate}/>
+        <DayPicker stats={stats} selectedDate={onDate}/>
       </div>
       <Outlet/>
     </div>

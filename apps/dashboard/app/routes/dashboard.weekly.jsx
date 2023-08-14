@@ -33,6 +33,10 @@ export const loader = async ({ request, params }) => {
   });
 };
 
+export const shouldRevalidate = ({ currentParams, nextParams, defaultShouldRevalidate })  => {
+  return currentParams.week !== nextParams.week ? true : defaultShouldRevalidate;
+}
+
 export default function DashboardWeeklyRoute() {
   const { week } = useParams();
   const { stats, timezone } = useLoaderData();
