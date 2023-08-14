@@ -2,7 +2,7 @@ import { DateTime, Interval, Duration } from 'luxon';
 import { Link } from "@remix-run/react";
 import Day from "./day";
 
-const DayPicker = ({ stats, timezone: zone, selectedDate }) => {
+const DayPicker = ({ stats, selectedDate }) => {
   const weeklyInterval = Interval.fromDateTimes(
     DateTime.fromISO(selectedDate).startOf('week'),
     DateTime.fromISO(selectedDate).endOf('week')
