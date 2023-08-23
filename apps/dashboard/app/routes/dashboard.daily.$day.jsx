@@ -2,11 +2,13 @@ import { Outlet, useLoaderData, useParams, useRevalidator } from '@remix-run/rea
 import { useEffect } from 'react';
 import { json, redirect } from '@remix-run/node';
 import { DateTime } from 'luxon';
+import * as Dialog from '@radix-ui/react-dialog';
 import { Frontend as Client } from '@happy-path/graphql-client';
 import { auth as authCookie } from '~/utils/cookies.server';
-import ClientContainer from "../components/client-container";
-import SectionHeader from "../components/section-header";
-import NoTimeEntry from "../components/no-time-entry";
+import ClientContainer from "~/components/client-container";
+import SectionHeader from "~/components/section-header";
+import NoTimeEntry from "~/components/no-time-entry";
+import StartNewTimerButton from "~/components/start-new-timer-button.jsx";
 
 const TimersQuery = `
   query Timers($startsAt: String!, $endsAt: String!) {
@@ -78,6 +80,8 @@ export default function DashboardDailyDayRoute() {
         <NoTimeEntry/>
         : ''
       }
+      <StartNewTimerButton to={`/dashboard/daily/${params.day}/projects`}/>
+      <Outlet/>
     </div>
   );
 }

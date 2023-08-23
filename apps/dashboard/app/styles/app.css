@@ -2,6 +2,8 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap");
 
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400&display=swap");
+
 *, ::before, ::after{
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -118,8 +120,16 @@
   left: 0px;
 }
 
+.left-\[347px\]{
+  left: 347px;
+}
+
 .left-\[50\%\]{
   left: 50%;
+}
+
+.left-\[calc\(50\%_-_197px\)\]{
+  left: calc(50% - 197px);
 }
 
 .right-\[0px\]{
@@ -128,6 +138,14 @@
 
 .top-\[0px\]{
   top: 0px;
+}
+
+.top-\[15\.5px\]{
+  top: 15.5px;
+}
+
+.top-\[calc\(50\%_-_258px\)\]{
+  top: calc(50% - 258px);
 }
 
 .z-\[0\]{
@@ -158,6 +176,10 @@
 .my-0{
   margin-top: 0px;
   margin-bottom: 0px;
+}
+
+.mt-3{
+  margin-top: 0.75rem;
 }
 
 .box-border{
@@ -194,6 +216,14 @@
 
 .h-8{
   height: 2rem;
+}
+
+.h-9{
+  height: 2.25rem;
+}
+
+.h-96{
+  height: 24rem;
 }
 
 .h-\[14\.42px\]{
@@ -242,6 +272,10 @@
 
 .w-\[38px\]{
   width: 38px;
+}
+
+.w-\[395px\]{
+  width: 395px;
 }
 
 .w-\[670px\]{
@@ -353,6 +387,10 @@
   overflow: hidden;
 }
 
+.overflow-y-auto{
+  overflow-y: auto;
+}
+
 .rounded{
   border-radius: 0.25rem;
 }
@@ -387,6 +425,28 @@
 
 .rounded-lg{
   border-radius: 0.5rem;
+}
+
+.border-\[1px\]{
+  border-width: 1px;
+}
+
+.border-b-\[1px\]{
+  border-bottom-width: 1px;
+}
+
+.border-solid{
+  border-style: solid;
+}
+
+.border-shades-of-cadet-gray-cadet-gray-200{
+  --tw-border-opacity: 1;
+  border-color: rgb(200 215 216 / var(--tw-border-opacity));
+}
+
+.border-shades-of-teal-teal-400{
+  --tw-border-opacity: 1;
+  border-color: rgb(51 150 161 / var(--tw-border-opacity));
 }
 
 .bg-\[transparent\]{
@@ -429,6 +489,11 @@
   background-color: rgba(255, 255, 255, 0.88);
 }
 
+.bg-shades-of-teal-teal-300{
+  --tw-bg-opacity: 1;
+  background-color: rgb(84 167 176 / var(--tw-bg-opacity));
+}
+
 .bg-shades-of-teal-teal-400{
   --tw-bg-opacity: 1;
   background-color: rgb(51 150 161 / var(--tw-bg-opacity));
@@ -460,6 +525,10 @@
   padding: 1rem;
 }
 
+.p-6{
+  padding: 1.5rem;
+}
+
 .p-8{
   padding: 2rem;
 }
@@ -477,6 +546,11 @@
 .px-4{
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+.px-5{
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
 }
 
 .px-6{
@@ -509,9 +583,22 @@
   padding-bottom: 1rem;
 }
 
+.py-6{
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
 .py-\[7px\]{
   padding-top: 7px;
   padding-bottom: 7px;
+}
+
+.pb-0{
+  padding-bottom: 0px;
+}
+
+.pb-2{
+  padding-bottom: 0.5rem;
 }
 
 .pb-4{
@@ -522,6 +609,10 @@
   padding-bottom: 2rem;
 }
 
+.pl-0{
+  padding-left: 0px;
+}
+
 .pl-2{
   padding-left: 0.5rem;
 }
@@ -530,12 +621,28 @@
   padding-left: 0.625rem;
 }
 
+.pl-6{
+  padding-left: 1.5rem;
+}
+
+.pr-0{
+  padding-right: 0px;
+}
+
+.pr-2{
+  padding-right: 0.5rem;
+}
+
 .pr-\[7px\]{
   padding-right: 7px;
 }
 
 .pt-0{
   padding-top: 0px;
+}
+
+.pt-4{
+  padding-top: 1rem;
 }
 
 .pt-6{
@@ -558,32 +665,40 @@
   font-family: Figtree;
 }
 
+.font-primary-small-body-h5-semibold{
+  font-family: Figtree;
+}
+
 .font-roboto-mono{
   font-family: 'Roboto Mono';
 }
 
+.font-space-mono{
+  font-family: 'Space Mono';
+}
+
 .text-3xl{
-  font-size: 22px;
+  font-size: 1.38rem;
 }
 
 .text-4xl{
-  font-size: 23px;
+  font-size: 1.44rem;
 }
 
 .text-base{
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .text-lgi{
-  font-size: 19px;
+  font-size: 1.19rem;
 }
 
 .text-sm{
-  font-size: 14px;
+  font-size: 0.88rem;
 }
 
 .text-xs{
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .font-medium{
@@ -626,6 +741,11 @@
   color: rgb(136 167 170 / var(--tw-text-opacity));
 }
 
+.text-shades-of-cadet-gray-cadet-gray-600{
+  --tw-text-opacity: 1;
+  color: rgb(124 152 155 / var(--tw-text-opacity));
+}
+
 .text-shades-of-light-white-64{
   color: rgba(255, 255, 255, 0.64);
 }
@@ -637,6 +757,16 @@
 
 .no-underline{
   text-decoration-line: none;
+}
+
+.opacity-\[0\.8\]{
+  opacity: 0.8;
+}
+
+.shadow-\[0px_8px_16px_rgba\(31\2c _45\2c _61\2c _0\.24\)\]{
+  --tw-shadow: 0px 8px 16px rgba(31, 45, 61, 0.24);
+  --tw-shadow-colored: 0px 8px 16px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .filter{

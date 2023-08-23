@@ -40,7 +40,7 @@ const TimeEntry = ({ timerId, taskName, timeEntryDescription, duration, isRunnin
             />
           </fetcher.Form>
           : 
-          <fetcher.Form method="post" action="/timers/start">
+          <fetcher.Form method="post" action="/timers/restart">
             <input value={timerId} type="hidden" name="timerId"/>
             <input
               type="image"
