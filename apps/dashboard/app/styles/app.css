@@ -116,6 +116,10 @@
   position: relative;
 }
 
+.bottom-0{
+  bottom: 0px;
+}
+
 .bottom-\[0px\]{
   bottom: 0px;
 }
@@ -136,6 +140,10 @@
   left: calc(50% - 197px);
 }
 
+.right-0{
+  right: 0px;
+}
+
 .right-\[0px\]{
   right: 0px;
 }
@@ -152,22 +160,6 @@
   top: calc(50% - 258px);
 }
 
-.bottom-0{
-  bottom: 0px;
-}
-
-.right-0{
-  right: 0px;
-}
-
-.bottom-4{
-  bottom: 1rem;
-}
-
-.right-4{
-  right: 1rem;
-}
-
 .z-\[0\]{
   z-index: 0;
 }
@@ -176,16 +168,16 @@
   z-index: 1;
 }
 
+.z-\[2147483647\]{
+  z-index: 2147483647;
+}
+
 .z-\[2\]{
   z-index: 2;
 }
 
 .z-\[3\]{
   z-index: 3;
-}
-
-.z-\[2147483647\]{
-  z-index: 2147483647;
 }
 
 .m-0{
@@ -204,10 +196,6 @@
 
 .mt-3{
   margin-top: 0.75rem;
-}
-
-.mb-\[5px\]{
-  margin-bottom: 5px;
 }
 
 .box-border{
@@ -266,20 +254,8 @@
   height: 72px;
 }
 
-.h-\[944px\]{
-  height: 944px;
-}
-
 .h-full{
   height: 100%;
-}
-
-.h-\[744px\]{
-  height: 744px;
-}
-
-.h-auto{
-  height: auto;
 }
 
 .h-screen{
@@ -318,6 +294,10 @@
   width: 38px;
 }
 
+.w-\[390px\]{
+  width: 390px;
+}
+
 .w-\[395px\]{
   width: 395px;
 }
@@ -338,20 +318,16 @@
   width: 100%;
 }
 
-.w-\[390px\]{
-  width: 390px;
-}
-
 .min-w-\[345px\]{
   min-width: 345px;
 }
 
-.max-w-\[906px\]{
-  max-width: 906px;
-}
-
 .max-w-\[100vw\]{
   max-width: 100vw;
+}
+
+.max-w-\[906px\]{
+  max-width: 906px;
 }
 
 .flex-1{
@@ -419,6 +395,10 @@
   justify-content: space-between;
 }
 
+.gap-\[10px\]{
+  gap: 10px;
+}
+
 .gap-\[16px\]{
   gap: 16px;
 }
@@ -437,10 +417,6 @@
 
 .gap-\[8px\]{
   gap: 8px;
-}
-
-.gap-\[10px\]{
-  gap: 10px;
 }
 
 .gap-x-\[15px\]{
@@ -504,10 +480,6 @@
   border-width: 1px;
 }
 
-.border{
-  border-width: 1px;
-}
-
 .border-b-\[1px\]{
   border-bottom-width: 1px;
 }
@@ -524,11 +496,6 @@
 .border-shades-of-teal-teal-400{
   --tw-border-opacity: 1;
   border-color: rgb(51 150 161 / var(--tw-border-opacity));
-}
-
-.border-gray-100{
-  --tw-border-opacity: 1;
-  border-color: rgb(243 244 246 / var(--tw-border-opacity));
 }
 
 .bg-\[transparent\]{
@@ -584,11 +551,6 @@
 .bg-shades-of-teal-teal-50{
   --tw-bg-opacity: 1;
   background-color: rgb(230 242 243 / var(--tw-bg-opacity));
-}
-
-.bg-white{
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
 .object-cover{
@@ -796,14 +758,6 @@
   font-size: 0.75rem;
 }
 
-.text-\[15px\]{
-  font-size: 15px;
-}
-
-.text-\[13px\]{
-  font-size: 13px;
-}
-
 .font-medium{
   font-weight: 500;
 }
@@ -818,10 +772,6 @@
 
 .leading-\[150\%\]{
   line-height: 150%;
-}
-
-.leading-\[1\.3\]{
-  line-height: 1.3;
 }
 
 .text-\[inherit\]{
@@ -876,18 +826,6 @@
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-.shadow-\[hsl\(206_22\%_7\%_\/_35\%\)_0px_10px_38px_-10px\2c _hsl\(206_22\%_7\%_\/_20\%\)_0px_10px_20px_-15px\]{
-  --tw-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
-  --tw-shadow-colored: 0px 10px 38px -10px var(--tw-shadow-color), 0px 10px 20px -15px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.shadow-lg{
-  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
 .outline-none{
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -897,28 +835,20 @@
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
-.\[border\:none\]{
-  border: none;
+.\[--viewport-padding\:_25px\]{
+  --viewport-padding: 25px;
 }
 
-.\[text-decoration\:none\]{
-  text-decoration: none;
+.\[border\:none\]{
+  border: none;
 }
 
 .\[grid-template-areas\:_\'title_action\'_\'description_action\'\]{
   grid-template-areas: 'title action' 'description action';
 }
 
-.\[grid-area\:_title\]{
-  grid-area: title;
-}
-
-.\[--viewport-padding\:_25px\]{
-  --viewport-padding: 25px;
-}
-
-.\[grid-area\:_description\]{
-  grid-area: description;
+.\[text-decoration\:none\]{
+  text-decoration: none;
 }
 
 body{
