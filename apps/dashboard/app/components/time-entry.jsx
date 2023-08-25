@@ -28,29 +28,31 @@ const TimeEntry = ({ timerId, taskName, timeEntryDescription, duration, isRunnin
           <div className="relative leading-[133%]">{Duration.fromObject({ minutes: duration }).toFormat('hh:mm')}</div>
         </div>
         { DateTime.local({ zone: timezone }).toISODate() == DateTime.fromISO(startsAt).toISODate() ? 
-        <div className="rounded-81xl bg-shades-of-dark-04 w-8 h-8 flex flex-row py-[7px] pr-[7px] pl-2.5 box-border items-center justify-center">
+          <div>
           { isRunning ? 
-          <fetcher.Form method="post" action="/timers/stop">
-            <input value={timerId} type="hidden" name="timerId"/>
-            <input
-              type="image"
-              className="relative rounded-12xs w-[12.09px] h-[14.42px]"
-              alt="Stop"
-              src="/pause.svg"
-            />
-          </fetcher.Form>
+            <fetcher.Form method="post" action="/timers/stop">
+              <input value={timerId} type="hidden" name="timerId"/>
+              <button className="cursor-pointer rounded-81xl bg-shades-of-dark-04 w-8 h-8 flex flex-row py-[7px] pr-[7px] pl-2.5 box-border items-center justify-center">
+                <img
+                  className="relative rounded-12xs w-[12.09px] h-[14.42px]"
+                  alt="Stop"
+                  src="/pause.svg"
+                />
+              </button>
+            </fetcher.Form>
           : 
-          <fetcher.Form method="post" action="/timers/restart">
-            <input value={timerId} type="hidden" name="timerId"/>
-            <input
-              type="image"
-              className="relative rounded-12xs w-[12.09px] h-[14.42px]"
-              alt="Start"
-              src="/play.svg"
-            />
-          </fetcher.Form>
+            <fetcher.Form method="post" action="/timers/restart">
+              <input value={timerId} type="hidden" name="timerId"/>
+              <button className="cursor-pointer rounded-81xl bg-shades-of-dark-04 w-8 h-8 flex flex-row py-[7px] pr-[7px] pl-2.5 box-border items-center justify-center">
+                <img
+                  className="relative rounded-12xs w-[12.09px] h-[14.42px]"
+                  alt="Start"
+                  src="/play.svg"
+                />
+              </button>
+            </fetcher.Form>
           }
-        </div>
+          </div>
         : ''
       }
       </div>
