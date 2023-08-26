@@ -1,4 +1,5 @@
 import { Link, useParams, useFetcher } from "@remix-run/react";
+import { PatternFormat } from 'react-number-format';
 import ModalSelectItem from '~/components/modal-select-item';
 
 export default function TimerStartRoute() {
@@ -21,12 +22,13 @@ export default function TimerStartRoute() {
         </div>
         <div className="self-stretch box-border h-12 flex flex-row items-center justify-center border-b-[1px] border-solid border-shades-of-teal-teal-400">
           <div className="rounded-lg flex flex-row py-1 px-2 items-center justify-center">
-            <input
+            <PatternFormat 
+              format="0#:##" 
+              isAllowed={({ formattedValue }) => formattedValue.split(':')[1] <= 59}
               className="[border:none] font-space-mono text-3xl bg-[transparent] relative leading-[133%] text-primary-dark-night text-center"
-              type="text"
               name="duration"
               placeholder="00:00 (optional)"
-            />
+            />;
           </div>
         </div>
       </div>
