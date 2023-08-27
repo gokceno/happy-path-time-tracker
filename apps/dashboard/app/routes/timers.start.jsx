@@ -16,8 +16,8 @@ export const action = async ({ request }) => {
   if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   
   const formData = await request.formData();
-
   const projectTaskIdInput = formData.get('projectTaskId');
+  
   const durationInput = formData.get('duration');
   const notesInput = formData.get('notes');
   const day = formData.get('day');
@@ -32,5 +32,6 @@ export const action = async ({ request }) => {
   if(response.error != undefined) {
     return json({ ok: false, error: response.error });
   }
-  return redirect(`/dashboard/daily/${day}`);
+  const flash = [{message: "You have started a timer. Don't forget to stop once you're done with it"}];
+  return redirect(`/dashboard/daily/${day}?flash=${btoa(JSON.stringify(flash))}`);
 };
