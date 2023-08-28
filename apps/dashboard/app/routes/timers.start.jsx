@@ -45,7 +45,7 @@ export const action = async ({ request }) => {
     if(response.error != undefined) {
       return json({ ok: false, error: response.error });
     }
-    flash = [{message: "You have started a timer. Don't forget to stop once you're done with it."}];
+    flash = [{message: "You started a timer. Don't forget to stop once you're done with it."}];
   }
   else {
     const response = await Client({ token }).mutation(LogMutation, {
@@ -58,7 +58,7 @@ export const action = async ({ request }) => {
     if(response.error != undefined) {
       return json({ ok: false, error: response.error });
     }
-    flash = [{message: "You have logged your time. Thank you."}];
+    flash = [{message: "You logged your time. Thank you."}];
   }
   
   return redirect(`/dashboard/daily/${day}?flash=${btoa(JSON.stringify(flash))}`);
