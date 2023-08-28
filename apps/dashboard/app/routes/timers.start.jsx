@@ -1,5 +1,5 @@
 import { json, redirect } from '@remix-run/node';
-import { Duration } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 import { Frontend as Client } from '@happy-path/graphql-client';
 import { auth as authCookie } from '~/utils/cookies.server';
 
@@ -10,6 +10,15 @@ const StartMutation = `
     }
   }
 `;
+
+const LogMutation = `
+  mutation Log($projectTaskId: Int!, $duration: Int, $notes: String, $startsAt: String!, $endsAt: String!) {
+    log(projectTaskId: $projectTaskId, duration: $duration, notes: $notes, startsAt: $startsAt, endsAt: $endsAt) {
+      id
+    }
+  }
+`;
+
 
 export const action = async ({ request }) => {
   const { token } = await authCookie.parse(request.headers.get('cookie')) || {};
@@ -24,14 +33,33 @@ export const action = async ({ request }) => {
 
   const [ hours, minutes ] = durationInput.split(':');
   const duration = (hours && minutes) ? Duration.fromObject({ hours, minutes }).as('minutes') : 0;
-  const response = await Client({ token }).mutation(StartMutation, {
-    projectTaskId: +projectTaskIdInput,
-    duration,
-    notes: notesInput,
-  });
-  if(response.error != undefined) {
-    return json({ ok: false, error: response.error });
+
+  let flash = [];
+  
+  if(DateTime.local({ timezone: process.env.TIMEZONE || 'UTC' }).toISODate() == day) {
+    const response = await Client({ token }).mutation(StartMutation, {
+      projectTaskId: +projectTaskIdInput,
+      duration,
+      notes: notesInput,
+    });
+    if(response.error != undefined) {
+      return json({ ok: false, error: response.error });
+    }
+    flash = [{message: "You have started a timer. Don't forget to stop once you're done with it."}];
   }
-  const flash = [{message: "You have started a timer. Don't forget to stop once you're done with it"}];
+  else {
+    const response = await Client({ token }).mutation(LogMutation, {
+      projectTaskId: +projectTaskIdInput,
+      duration,
+      notes: notesInput,
+      startsAt: DateTime.fromISO(day, { zone: process.env.TIMEZONE || 'UTC' }).toISO(),
+      endsAt: DateTime.fromISO(day, { zone: process.env.TIMEZONE || 'UTC' }).toISO(),
+    });
+    if(response.error != undefined) {
+      return json({ ok: false, error: response.error });
+    }
+    flash = [{message: "You have logged your time. Thank you."}];
+  }
+  
   return redirect(`/dashboard/daily/${day}?flash=${btoa(JSON.stringify(flash))}`);
 };

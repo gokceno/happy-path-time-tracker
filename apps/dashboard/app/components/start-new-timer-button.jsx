@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react";
 
-const StartNewTimerButton = ({ to }) => {
+const StartNewTimerButton = ({ to, isToday }) => {
   return (
     <Link to={to} className="[text-decoration:none] rounded-9xl h-12 flex flex-row p-3 box-border items-center justify-center relative gap-[8px] text-left text-base text-shades-of-cadet-gray-cadet-gray-400 font-primary-small-body-h5-medium">
       <img
@@ -8,9 +8,15 @@ const StartNewTimerButton = ({ to }) => {
         alt="Add project and start tracking"
         src="/prefix-icon2.svg"
       />
-      <div className="relative leading-[133%] font-medium z-[1]">
-        Add project and start tracking
-      </div>
+      { isToday == true ?
+        <div className="relative leading-[133%] font-medium z-[1]">
+          Add project and start tracking
+        </div>
+        :
+        <div className="relative leading-[133%] font-medium z-[1]">
+          Log your times
+        </div>
+      }
     </Link>
   );
 };
