@@ -125,8 +125,8 @@ const schema = new GraphQLSchema({
         },
         resolve: async (_, { date }, context) => {
           const timers = await Timers({ client: GraphQLClient() }).findTimersByUserId({ 
-            startsAt: DateTime.fromISO(date, { zone: process.env.TIMEZONE || 'UTC' }).startOf('month').toUTC(),
-            endsAt: DateTime.fromISO(date, { zone: process.env.TIMEZONE || 'UTC' }).endOf('month').toUTC(), 
+            startsAt: DateTime.fromISO(date, { zone: 'UTC' }).startOf('month').toUTC(),
+            endsAt: DateTime.fromISO(date, { zone: 'UTC' }).endOf('month').toUTC(), 
             email: context.email 
           });
           if(timers.length == 0) return {};
@@ -135,11 +135,13 @@ const schema = new GraphQLSchema({
             DateTime.fromISO(date).endOf('month')
           );
           const weeklyInterval = Interval.fromDateTimes(
-            DateTime.fromISO(date).startOf('week'),
+            DateTime.fromISO(date,).startOf('week'),
             DateTime.fromISO(date).endOf('week')
           );
           const byDate = weeklyInterval.splitBy(Duration.fromObject({ day: 1 })).map(weekday => ({
-            totalDuration: timers.filter(timer => DateTime.fromISO(timer.starts_at, { zone: process.env.TIMEZONE || 'UTC' }).toISODate() == weekday.start.toISODate()).reduce((acc, timer) => acc + timer.total_duration, 0),
+            totalDuration: timers
+              .filter(timer => DateTime.fromISO(timer.starts_at, { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC').toISODate() == weekday.start.toISODate())
+              .reduce((acc, timer) => acc + timer.total_duration, 0),
             date: weekday.start.toISODate()
           }));
           const byWeeklyIntervals = monthlyInterval.splitBy(Duration.fromObject({ week: 1 })).map(week => ({
