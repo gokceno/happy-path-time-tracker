@@ -25,7 +25,7 @@ const TimeEntry = ({ timerId, taskName, timeEntryDescription, duration, isRunnin
         <div className="flex flex-col py-1 px-2 items-start justify-start">
           <div className="relative leading-[133%]">{Duration.fromObject({ minutes: duration }).toFormat('hh:mm')}</div>
         </div>
-        { DateTime.local({ zone: timezone }).toISODate() == DateTime.fromISO(startsAt).toISODate() ? 
+        { DateTime.local({ zone: timezone }).toISODate() == DateTime.fromISO(startsAt, { zone: 'UTC'}).setZone(timezone).toISODate() ? 
           <div>
           { isRunning ? 
             <fetcher.Form method="post" action="/timers/stop">
