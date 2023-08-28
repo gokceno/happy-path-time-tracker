@@ -146,7 +146,7 @@ const schema = new GraphQLSchema({
           }));
           const byWeeklyIntervals = monthlyInterval.splitBy(Duration.fromObject({ week: 1 })).map(week => ({
             type: 'week',
-            totalDuration: timers.filter(timer => DateTime.fromISO(timer.starts_at, { zone: process.env.TIMEZONE || 'UTC' }) >= week.start && DateTime.fromISO(timer.ends_at, { zone: process.env.TIMEZONE || 'UTC' }) <= week.end).reduce((acc, timer) => acc + timer.total_duration, 0),
+            totalDuration: timers.filter(timer => DateTime.fromISO(timer.starts_at, { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC') >= week.start && DateTime.fromISO(timer.ends_at, { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC') <= week.end).reduce((acc, timer) => acc + timer.total_duration, 0),
             startsAt: week.start.setZone(process.env.TIMEZONE || 'UTC').toISO(),
             endsAt: week.end.setZone(process.env.TIMEZONE || 'UTC').toISO(),
           }));
