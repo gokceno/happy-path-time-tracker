@@ -24,7 +24,7 @@ export default function TimerStartRoute() {
           <div className="rounded-lg flex flex-row py-1 px-2 items-center justify-center">
             <PatternFormat 
               format="0#:##" 
-              isAllowed={({ formattedValue }) => formattedValue.split(':')[1] <= 59}
+              isAllowed={({ formattedValue }) => formattedValue.split(':')[0] <= 8 && formattedValue.split(':')[1] <= 59}
               className="[border:none] font-space-mono text-3xl bg-[transparent] relative leading-[133%] text-primary-dark-night text-center"
               name="duration"
               placeholder="00:00 (optional)"
