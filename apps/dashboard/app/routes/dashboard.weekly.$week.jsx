@@ -35,8 +35,8 @@ export const loader = async ({ request, params }) => {
   if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   const { week: onDate } = params;
   const response = await Client({ token }).query(TimersQuery, {
-    startsAt: DateTime.fromISO(onDate, { zone: process.env.TIMEZONE || 'UTC' }).startOf('day').toUTC().toISO(),
-    endsAt: DateTime.fromISO(onDate, { zone: process.env.TIMEZONE || 'UTC' }).plus({days: 6}).endOf('day').toUTC().toISO(),
+    startsAt: DateTime.fromISO(onDate, { zone: 'UTC' }).startOf('day').toUTC().toISO(),
+    endsAt: DateTime.fromISO(onDate, { zone: 'UTC' }).plus({days: 6}).endOf('day').toUTC().toISO(),
   });
   // TODO: not all errors are 403
   // TODO: should redirect to /logout
