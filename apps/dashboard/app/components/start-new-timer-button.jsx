@@ -10,7 +10,7 @@ const StartNewTimerButton = ({ to, isToday }) => {
       />
       { isToday == true ?
         <div className="relative leading-[133%] font-medium z-[1]">
-          Add project and start tracking
+          Start a new timer
         </div>
         :
         <div className="relative leading-[133%] font-medium z-[1]">
