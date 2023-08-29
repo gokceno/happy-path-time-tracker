@@ -8,8 +8,8 @@ dotenv.config();
 
 const notify = async (req, res, next) => {
   const users = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findUsersByTimerDate({
-    startsAt: DateTime.now().toFormat("yyyy-MM-dd'T00:00:00'"), 
-    endsAt: DateTime.now().toFormat("yyyy-MM-dd'T23:59:59'")
+    startsAt: DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toFormat("yyyy-MM-dd'T00:00:00'"), 
+    endsAt: DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toFormat("yyyy-MM-dd'T23:59:59'")
   });
   if(users != undefined) {
     const usersWithNoTimers = users.filter(item => item.timers.length == 0);
