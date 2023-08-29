@@ -30,7 +30,7 @@ const calculate = async (req, res, next) => {
             totalDuration, 
             email: timer.user_id.email, 
             startsAt: timer.starts_at, 
-            endsAt: timer.ends_at || DateTime.now()
+            endsAt: timer.ends_at || DateTime.local({ zone: process.env.TIMEZONE || 'UTC' })
           });
           if(timer.total_duration != totalDuration && totalCost != undefined) {
             const mutation = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).update({timerId, data: { duration: timer.duration, totalDuration, totalDurationInHours, totalCost }});

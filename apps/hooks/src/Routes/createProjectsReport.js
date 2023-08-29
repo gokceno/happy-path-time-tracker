@@ -30,8 +30,8 @@ const create =  async (req, res, next) => {
   let emailClient = EmailClient()
     .setSubject('Monthly Reports')
     .setBody({ html: '<p>Please find your monthly reports attached.</p>' });
-  const startsAt = req.params.month == 'last' ? DateTime.now().minus({ months: 1 }).startOf('month').toISO() : DateTime.now().startOf('month').toISO();
-  const endsAt = req.params.month == 'last' ? DateTime.now().minus({ months: 1 }).endOf('month').toISO() : DateTime.now().startOf('month').toISO();
+  const startsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).startOf('month').toISO() : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).startOf('month').toISO();
+  const endsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).endOf('month').toISO() : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).startOf('month').toISO();
   await Promise.all(
     projectIds.map(async (projectId) => {
       const timers = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findTimersByProjectId({ 
@@ -84,8 +84,8 @@ const create =  async (req, res, next) => {
           });
         dd.setHeader([
           { label: 'Project', value: projectName },
-          { label: 'Created At', value: DateTime.now().toLocaleString(DateTime.DATE_MED) },
-          { label: 'Valid For', value: (req.params.month == 'last' ? DateTime.now().minus({ months: 1 }).toFormat('MMMM yyyy') : DateTime.now().toFormat('MMMM yyyy')) },
+          { label: 'Created At', value: DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toLocaleString(DateTime.DATE_MED) },
+          { label: 'Valid For', value: (req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).toFormat('MMMM yyyy') : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toFormat('MMMM yyyy')) },
         ]);
         dd.setTotals({ totalHours, totalBillableAmount });
         dd.setBreakdownByTaskItems(tasks.map(task => ({ totalHours: Duration.fromObject({ minutes: task.totalMinutes}).toFormat('hh:mm'), ...task })));

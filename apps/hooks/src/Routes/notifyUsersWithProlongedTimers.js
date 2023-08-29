@@ -7,13 +7,13 @@ import { Timers } from '@happy-path/graphql-entities';
 dotenv.config();
 
 const notify = async (req, res, next) => {
-  const startsBefore = DateTime.now().minus({ minutes: process.env.PROLONGED_TIMER_TRESHOLD_1 || 240 }).toISO();
+  const startsBefore = DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ minutes: process.env.PROLONGED_TIMER_TRESHOLD_1 || 240 }).toISO();
   const timers = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findTimersByNoEndDate({ startsBefore }); 
   if(timers.length > 0) {
     timers.forEach(async (item) => {
       let message;
       const startsAt = DateTime.fromISO(item.starts_at);
-      const { minutes: durationInMinutes } = DateTime.now().diff(startsAt, 'minutes').toObject();
+      const { minutes: durationInMinutes } = DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).diff(startsAt, 'minutes').toObject();
       if(durationInMinutes >= (process.env.PROLONGED_TIMER_SHUTDOWN_TRESHOLD || 480)) {
         try {
           const mutation = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).stop({ timerId: item.id, userId: item.user_id.id });

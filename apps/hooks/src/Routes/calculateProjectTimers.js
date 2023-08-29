@@ -20,7 +20,7 @@ const calculate =  async (req, res, next) => {
       const timers = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findTimersByProjectId({ 
         projectId,
         startsAt: projectCreatedAt,
-        endsAt: DateTime.now().toISO(),
+        endsAt: DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toISO(),
       });
       await Promise.all(
         timers.map(async (item) => {
