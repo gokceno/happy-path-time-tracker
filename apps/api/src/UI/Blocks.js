@@ -37,7 +37,7 @@ const input = (params = {}) => {
 }
 
 const datePicker = (params = {}) => {
-	const { id = '', actionId = '', label = 'Select a date', placeholder = 'Select a date', initialDate = DateTime.now().toISODate() } = params;
+	const { id = '', actionId = '', label = 'Select a date', placeholder = 'Select a date', initialDate = DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toISODate() } = params;
 	return {
 		"type": "input",
 		"block_id": id,

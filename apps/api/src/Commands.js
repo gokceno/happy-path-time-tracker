@@ -61,7 +61,7 @@ const stop = async ({ command, respond, ack, body, client, logger }) => {
     const timers = Timers({ client: GraphQLClient() });
     const { status, data } = await timers.stop({ externalUserId: body['user_id'] });
     if(status === true) {
-      await respond(`Running timer ⏳ for "${data.task.tasks_id.task_name}" in "${data.task.projects_id.project_name}" stopped at ${DateTime.now().toLocaleString(DateTime.TIME_SIMPLE)}. You logged a total time of ${Duration.fromObject({minutes: data.total_duration}).toHuman({ unitDisplay: 'short' })}. Good job 👍`);
+      await respond(`Running timer ⏳ for "${data.task.tasks_id.task_name}" in "${data.task.projects_id.project_name}" stopped at ${DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toLocaleString(DateTime.TIME_SIMPLE)}. You logged a total time of ${Duration.fromObject({minutes: data.total_duration}).toHuman({ unitDisplay: 'short' })}. Good job 👍`);
     }
     else {
       await respond(`You don't have any running timers. You can start a new timer by typing /happy start. Good luck 🍀`); 
@@ -98,8 +98,8 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
     let startsAt, endsAt, humanReadableDateInterval;
     if(commandTextTokens.length == 3) {
       const [commandName, startDateInput, endDateInput] = commandTextTokens;
-      startsAt = DateTime.fromISO(startDateInput + 'T00:00:00');
-      endsAt = DateTime.fromISO(endDateInput + 'T23:59:59');
+      startsAt = DateTime.fromISO(startDateInput + 'T00:00:00', { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC');
+      endsAt = DateTime.fromISO(endDateInput + 'T23:59:59', { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC');
       if(!startsAt.isValid || !endsAt.isValid) {
         throw new Error('Supplied dates are not in correct format (eg. 2023-12-31)');
       }
@@ -111,13 +111,13 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
     else {
       const [commandName, dateInterval = 'today'] = commandTextTokens; // Values: today|yesterday
       if(dateInterval === 'yesterday') {
-        startsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'00:00:00");
-        endsAt = DateTime.now().minus({ days: 1 }).toFormat("yyyy-MM-dd'T'23:59:59");
+        startsAt = DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ days: 1 }).toFormat("yyyy-MM-dd'T'00:00:00");
+        endsAt = DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ days: 1 }).toFormat("yyyy-MM-dd'T'23:59:59");
         humanReadableDateInterval = dateInterval;
       }
       else {
-        startsAt = DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00");
-        endsAt = DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59");
+        startsAt = DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toFormat("yyyy-MM-dd'T'00:00:00");
+        endsAt = DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toFormat("yyyy-MM-dd'T'23:59:59");
         humanReadableDateInterval = 'today';
       }
     }

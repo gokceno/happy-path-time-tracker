@@ -38,7 +38,7 @@ const timeEntry = (params = {}) => {
 
 // TODO: Timezone'lar hatalı o nedenle saatler yanlış gözüküyor.
 const timerDisplay = (params = {}) => {
-	const timerEndTime = params.item.ends_at != undefined ? DateTime.fromISO(params.item.ends_at).toLocaleString(DateTime.TIME_SIMPLE) : '(still running)';
+	const timerEndTime = params.item.ends_at != undefined ? DateTime.fromISO(params.item.ends_at, { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC').toLocaleString(DateTime.TIME_SIMPLE) : '(still running)';
 	return {
 		"type": "context",
 		"elements": [
@@ -52,7 +52,7 @@ const timerDisplay = (params = {}) => {
 			},
 			{
 				"type": "mrkdwn",
-				"text": `*From:* ${DateTime.fromISO(params.item.starts_at).toLocaleString(DateTime.TIME_SIMPLE)} *to* ${timerEndTime}`
+				"text": `*From:* ${DateTime.fromISO(params.item.starts_at, { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC').toLocaleString(DateTime.TIME_SIMPLE)} *to* ${timerEndTime}`
 			},
 			{
 				"type": "mrkdwn",
@@ -60,7 +60,7 @@ const timerDisplay = (params = {}) => {
 			},
 			{
 				"type": "mrkdwn",
-				"text": `*On:* ${DateTime.fromISO(params.item.starts_at).toLocaleString(DateTime.DATE_SHORT)}`
+				"text": `*On:* ${DateTime.fromISO(params.item.starts_at, { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC').toLocaleString(DateTime.DATE_SHORT)}`
 			}
 		]
 	};

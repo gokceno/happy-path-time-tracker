@@ -50,8 +50,8 @@ const removeTimerItem = async ({ ack, body, client, logger }) => {
     if(status == true) {
       const timersList = await timers.list({ 
         externalUserId: body.user.id, 
-        startsAt: DateTime.now().toFormat("yyyy-MM-dd'T'00:00:00"), 
-        endsAt: DateTime.now().toFormat("yyyy-MM-dd'T'23:59:59") 
+        startsAt: DateTime.local({ zone: timezone }).toFormat("yyyy-MM-dd'T'00:00:00"), 
+        endsAt: DateTime.local({ zone: timezone }).toFormat("yyyy-MM-dd'T'23:59:59") 
       }, timeEntriesListFormatter);
       const result = await client.views.update({
         trigger_id: body.trigger_id,
@@ -99,7 +99,7 @@ const editTimerItem = async ({ ack, body, client, logger }) => {
       input({id: 'block__duration', initialValue: data.duration + '', label: 'Duration (optional, in minutes)', actionId: 'action__duration', type: 'number_input' }),
     ];
     if(data.starts_at == data.ends_at) {
-      blocks.push(datePicker({ id: 'block__on_date', actionId: 'action__on_date', label: 'Select a date', initialDate: DateTime.fromISO(data.starts_at).toFormat('yyyy-MM-dd') }));
+      blocks.push(datePicker({ id: 'block__on_date', actionId: 'action__on_date', label: 'Select a date', initialDate: DateTime.fromISO(data.starts_at, { zone: 'UTC' }).toISODate() }));
     }
     const result = await client.views.update({
       trigger_id: body.trigger_id,

@@ -42,7 +42,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
     return timers;
   }
   const log = async (params) => {
-    const { projectTaskId, externalUserId, email, did, taskComment = '', duration = 0, startsAt = DateTime.now().toString(), endsAt = DateTime.now().toString() } = params;
+    const { projectTaskId, externalUserId, email, did, taskComment = '', duration = 0, startsAt = DateTime.local({ zone: timezone }).toISO(), endsAt = DateTime.local({ zone: timezone }).toISO() } = params;
     if(projectTaskId == undefined || (externalUserId == undefined && did == undefined && email == undefined)) {
       throw new Error('Required parameters not set.');
     }
@@ -107,7 +107,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
       `;
       const response = await client.mutation(StopTimerMutation, {
         timerId: timer.id,
-        endsAt: DateTime.now().toString()
+        endsAt: DateTime.local({ zone: timezone }).toISO()
       });
       if(response.error == undefined) {
         return { status: true, data: response.data.update_timers_item };
@@ -237,7 +237,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
       const timer = await findTimerById({ timerId });
       if(timer == undefined) throw new Error('Timer not found.');
       if(DateTime.fromISO(timer.starts_at, { zone: 'UTC' }).setZone(timezone).toISODate() != DateTime.local({ zone: timezone }).toISODate()) throw new Error('Can restart only todays timers. Timer expired.');
-      return await update({ timerId, data: { duration: (timer.total_duration || 0), startsAt: DateTime.now(), endsAt: null }});
+      return await update({ timerId, data: { duration: (timer.total_duration || 0), startsAt: DateTime.local({ zone: timezone }), endsAt: null }});
     }
     else {
       throw new Error('You have a running timer, please stop it first.');
