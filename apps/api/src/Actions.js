@@ -45,7 +45,7 @@ const selectProjectId = async ({ ack, body, client, logger }, previousActionId, 
 const removeTimerItem = async ({ ack, body, client, logger }) => {
   await ack();
   try {
-    const timers = Timers({ client: GraphQLClient() });
+    const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
     const { status } = await timers.remove({ timerId: body.actions[0].value });
     if(status == true) {
       const timersList = await timers.list({ 
@@ -82,7 +82,7 @@ const removeTimerItem = async ({ ack, body, client, logger }) => {
 const editTimerItem = async ({ ack, body, client, logger }) => {
   await ack();
   try {
-    const timers = Timers({ client: GraphQLClient() });
+    const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
     const { data } = await timers.get({ timerId: body.actions[0].value });
     let blocks = [
       {

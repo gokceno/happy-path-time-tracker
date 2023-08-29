@@ -10,7 +10,7 @@ import { Backend as GraphQLClient } from '@happy-path/graphql-client';
 const start = async ({ command, respond, ack, body, client, logger }, actionId) => {
   await ack();
   try {
-    const timers = Timers({ client: GraphQLClient() });
+    const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
     const { hasRunningTimer } = await timers.status({ externalUserId: body['user_id'] });
     if(!hasRunningTimer || actionId == 'log__action__select_project_id') {
       const projects = Projects({ client: GraphQLClient() });
@@ -58,7 +58,7 @@ const start = async ({ command, respond, ack, body, client, logger }, actionId) 
 const stop = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
-    const timers = Timers({ client: GraphQLClient() });
+    const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
     const { status, data } = await timers.stop({ externalUserId: body['user_id'] });
     if(status === true) {
       await respond(`Running timer ⏳ for "${data.task.tasks_id.task_name}" in "${data.task.projects_id.project_name}" stopped at ${DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toLocaleString(DateTime.TIME_SIMPLE)}. You logged a total time of ${Duration.fromObject({minutes: data.total_duration}).toHuman({ unitDisplay: 'short' })}. Good job 👍`);
@@ -76,7 +76,7 @@ const stop = async ({ command, respond, ack, body, client, logger }) => {
 const status = async ({ command, respond, ack, body, client, logger }) => {
   await ack();
   try {
-    const timers = Timers({ client: GraphQLClient() });
+    const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
     const {timer, hasRunningTimer } = await timers.status({ externalUserId: body['user_id'] });
     if(hasRunningTimer === true) {
       await respond(`You have a running timer for ${Duration.fromObject({minutes: timer.total_duration}).toHuman({ unitDisplay: 'short' })}, for project ${timer.task.projects_id.project_name}. Keep going 🏁`);
@@ -124,7 +124,7 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
     if(startsAt === undefined || endsAt === undefined) {
       throw new Error('Missing start date or end date parameter.');
     }
-    const timers = await Timers({ client: GraphQLClient() }).list({ externalUserId: body['user_id'], startsAt, endsAt }, timeEntriesListFormatter);
+    const timers = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).list({ externalUserId: body['user_id'], startsAt, endsAt }, timeEntriesListFormatter);
     if(timers.length > 0) {
       const result = await client.views.open({
         trigger_id: body.trigger_id,
