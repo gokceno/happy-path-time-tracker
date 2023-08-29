@@ -348,7 +348,7 @@ const schema = new GraphQLSchema({
           timerId: { type: new GraphQLNonNull(GraphQLInt) }
         },
         resolve: async (_, { timerId }, context) => {
-          const timers = Timers({ client: GraphQLClient() });
+          const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
           const timer = await timers.restart({
             timerId,
             email: context.email,

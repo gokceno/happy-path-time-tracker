@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { Users } from '@happy-path/graphql-entities';
 
-const Timers = ({ client }) => {
+const Timers = ({ client, timezone = 'UTC' }) => {
   const _findRunningTimer = async (params) => {
     const { externalUserId, email, did, userId } = params;
     if(externalUserId == undefined && email == undefined && did == undefined && userId == undefined) throw new Error('A user identifier must be set');
@@ -236,7 +236,7 @@ const Timers = ({ client }) => {
       const { timerId } = params;
       const timer = await findTimerById({ timerId });
       if(timer == undefined) throw new Error('Timer not found.');
-      if(DateTime.fromISO(timer.starts_at).toISODate() != DateTime.now().toISODate()) throw new Error('Can restart only todays timers. Timer expired.');
+      if(DateTime.fromISO(timer.starts_at, { zone: 'UTC' }).setZone(timezone).toISODate() != DateTime.local({ zone: timezone }).toISODate()) throw new Error('Can restart only todays timers. Timer expired.');
       return await update({ timerId, data: { duration: (timer.total_duration || 0), startsAt: DateTime.now(), endsAt: null }});
     }
     else {
@@ -403,9 +403,9 @@ const Timers = ({ client }) => {
     restart,
     findTimerById,
     findTimersByProjectId, 
-    findTimersByUserId,
-    findTimersByDate,
-    findTimersByNoEndDate 
+    findTimersByUserId, 
+    findTimersByDate, 
+    findTimersByNoEndDate, 
   }
 }
 
