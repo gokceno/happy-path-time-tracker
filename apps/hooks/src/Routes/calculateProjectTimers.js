@@ -17,7 +17,7 @@ const calculate =  async (req, res, next) => {
     projectIds.map(async (projectId) => {
       const { metadata: projectMetadata, created_at: projectCreatedAt } = await Projects({ client: GraphQLClient() }).findProjectById({ projectId });
       const metadata = parseMetadata([metadataTemplate, projectMetadata]);
-      const timers = await Timers({ client: GraphQLClient() }).findTimersByProjectId({ 
+      const timers = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findTimersByProjectId({ 
         projectId,
         startsAt: projectCreatedAt,
         endsAt: DateTime.now().toISO(),
@@ -35,7 +35,7 @@ const calculate =  async (req, res, next) => {
             });
             if(totalCost != undefined && totalCost != null && totalCost != item.total_cost) {
               setTimeout(
-                async () => await Timers({ client: GraphQLClient() }).update({ timerId: item.id, data: { 
+                async () => await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).update({ timerId: item.id, data: { 
                   totalCost,
                   totalDurationInHours: item.total_duration_in_hours,
                   totalDuration: item.total_duration,  

@@ -13,7 +13,7 @@ const calculate = async (req, res, next) => {
     res.status(403).send({error: `Requested hook type doesn't exist. Exiting.`});
   }
   if(timerId != undefined) {
-    const timer = await Timers({ client: GraphQLClient() }).findTimerById({ timerId });
+    const timer = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findTimerById({ timerId });
     if(timer != undefined) {
       const { totalDuration, totalDurationInHours } = calculateDuration({ 
         startsAt: timer.starts_at, 
@@ -33,7 +33,7 @@ const calculate = async (req, res, next) => {
             endsAt: timer.ends_at || DateTime.now()
           });
           if(timer.total_duration != totalDuration && totalCost != undefined) {
-            const mutation = await Timers({ client: GraphQLClient() }).update({timerId, data: { duration: timer.duration, totalDuration, totalDurationInHours, totalCost }});
+            const mutation = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).update({timerId, data: { duration: timer.duration, totalDuration, totalDurationInHours, totalCost }});
             res.json({ ok: true, data: mutation.data });
           }
           else {

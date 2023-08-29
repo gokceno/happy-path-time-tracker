@@ -34,7 +34,7 @@ const create =  async (req, res, next) => {
   const endsAt = req.params.month == 'last' ? DateTime.now().minus({ months: 1 }).endOf('month').toISO() : DateTime.now().startOf('month').toISO();
   await Promise.all(
     projectIds.map(async (projectId) => {
-      const timers = await Timers({ client: GraphQLClient() }).findTimersByProjectId({ 
+      const timers = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findTimersByProjectId({ 
         projectId,
         startsAt,
         endsAt,

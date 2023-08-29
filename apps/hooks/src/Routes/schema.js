@@ -50,7 +50,7 @@ const schema = new GraphQLSchema({
           }
         })),
         resolve: async (_, { startsAt, endsAt }, context) => {
-          const timers = Timers({ client: GraphQLClient() });
+          const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
           return (await timers.findTimersByUserId({ startsAt, endsAt, email: context.email })).map(item => ({ 
             id: item.id, 
             startsAt: item.starts_at,
@@ -124,7 +124,7 @@ const schema = new GraphQLSchema({
           date: { type: new GraphQLNonNull(GraphQLString) }
         },
         resolve: async (_, { date }, context) => {
-          const timers = await Timers({ client: GraphQLClient() }).findTimersByUserId({ 
+          const timers = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findTimersByUserId({ 
             startsAt: DateTime.fromISO(date, { zone: 'UTC' }).startOf('month').toUTC(),
             endsAt: DateTime.fromISO(date, { zone: 'UTC' }).endOf('month').toUTC(), 
             email: context.email 
@@ -185,7 +185,7 @@ const schema = new GraphQLSchema({
           notes: { type: GraphQLString }
         },
         resolve: async (_, { projectTaskId, startsAt, duration, notes }, context) => {
-          const timers = Timers({ client: GraphQLClient() });
+          const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
           const timer = await timers.start({
             projectTaskId,
             email: context.email,
@@ -216,7 +216,7 @@ const schema = new GraphQLSchema({
           timerId: { type: new GraphQLNonNull(GraphQLInt) },
         },
         resolve: async (_, { timerId }, context) => {
-          const timers = Timers({ client: GraphQLClient() });
+          const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
           const timer = await timers.stop({ timerId, email: context.email });          
           if(timer.status == true) {
             return { 
@@ -249,7 +249,7 @@ const schema = new GraphQLSchema({
           endsAt: { type: GraphQLString }
         },
         resolve: async (_, { projectTaskId, duration, notes, startsAt, endsAt }, context) => {
-          const timers = Timers({ client: GraphQLClient() });
+          const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
           const timer = await timers.log({
             projectTaskId,
             email: context.email,
@@ -279,7 +279,7 @@ const schema = new GraphQLSchema({
           timerId: { type: new GraphQLNonNull(GraphQLInt) },
         },
         resolve: async (_, { timerId }, context) => {
-          const timers = Timers({ client: GraphQLClient() });
+          const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
           const timer = await timers.remove({ timerId, email: context.email });
           if(timer.status == true) {
             return { id: timer.data.id };
@@ -310,7 +310,7 @@ const schema = new GraphQLSchema({
           })}
         },
         resolve: async (_, { timerId, input }, context) => {
-          const timers = Timers({ client: GraphQLClient() });
+          const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
           const { totalDuration, totalDurationInHours } = calculateDuration({ 
             startsAt: input?.startsAt, 
             endsAt: input?.endsAt, 
