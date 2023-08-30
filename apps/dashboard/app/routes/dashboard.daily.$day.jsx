@@ -69,7 +69,6 @@ export default function DashboardDailyDayRoute() {
     return () => clearInterval(interval);
   }, []);
 
-
   return (
     <div className="self-stretch flex flex-col items-start justify-start gap-[16px] text-left text-lgi text-primary-dark-night font-primary-small-body-h5-medium">
       <SectionHeader sectionTitle={DateTime.fromISO(day).isValid ? DateTime.fromISO(day).setLocale(culture).toLocaleString(DateTime.DATE_MED) : 'Logs'} totalDuration={totalDuration}/>
@@ -82,6 +81,7 @@ export default function DashboardDailyDayRoute() {
       }
       <StartNewTimerButton 
         to={`/dashboard/daily/${day}/projects`} 
+        hasRunningTimer={timers.filter(timer => timer.endsAt == undefined).length == 1}
         isToday={DateTime.fromISO(day, { zone: timezone }).toISODate() == DateTime.local({ zone: timezone }).toISODate() }
       />
       <Outlet/>

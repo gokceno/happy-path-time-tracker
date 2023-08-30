@@ -198,6 +198,10 @@
   margin-top: 0.75rem;
 }
 
+.mb-\[5px\]{
+  margin-bottom: 5px;
+}
+
 .box-border{
   box-sizing: border-box;
 }
@@ -758,6 +762,10 @@
   font-size: 0.75rem;
 }
 
+.text-\[15px\]{
+  font-size: 15px;
+}
+
 .font-medium{
   font-weight: 500;
 }
@@ -849,6 +857,10 @@
 
 .\[text-decoration\:none\]{
   text-decoration: none;
+}
+
+.\[grid-area\:_title\]{
+  grid-area: title;
 }
 
 body{
