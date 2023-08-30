@@ -236,8 +236,14 @@ const Timers = ({ client, timezone = 'UTC' }) => {
       const { timerId } = params;
       const timer = await findTimerById({ timerId });
       if(timer == undefined) throw new Error('Timer not found.');
-      if(DateTime.fromISO(timer.starts_at, { zone: 'UTC' }).setZone(timezone).toISODate() != DateTime.local({ zone: timezone }).toISODate()) throw new Error('Can restart only todays timers. Timer expired.');
-      return await update({ timerId, data: { duration: (timer.total_duration || 0), startsAt: DateTime.local({ zone: timezone }), endsAt: null }});
+      if(DateTime.fromISO(timer.starts_at, { zone: 'UTC' }).setZone(timezone).toISODate() != DateTime.local({ zone: timezone }).toISODate()) 
+        throw new Error('Can restart only todays timers. Timer expired.');
+      return await update({ timerId, data: { 
+        duration: (timer.total_duration || 0), 
+        totalDuration: (timer.total_duration || 0), 
+        startsAt: DateTime.local({ zone: timezone }), 
+        endsAt: null 
+      }});
     }
     else {
       throw new Error('You have a running timer, please stop it first.');
