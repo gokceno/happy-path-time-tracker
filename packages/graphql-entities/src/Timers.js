@@ -90,6 +90,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
       const StopTimerMutation = `
       mutation Update_timers_item($timerId: ID!, $endsAt: Date!) {
         update_timers_item(id: $timerId, data: {ends_at: $endsAt}) {
+          id
           starts_at
           ends_at
           duration
