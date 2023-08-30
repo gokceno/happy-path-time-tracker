@@ -1,4 +1,5 @@
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useSearchParams } from '@remix-run/react';
+import { useEffect } from 'react';
 import { DateTime, Duration } from 'luxon';
 
 String.prototype.ellipsis = function(n) {
@@ -6,7 +7,16 @@ String.prototype.ellipsis = function(n) {
 }
 
 const TimeEntry = ({ timerId, taskName, timeEntryDescription, duration, isRunning, startsAt, timezone }) => {
+  let [searchParams, setSearchParams] = useSearchParams();
   const fetcher = useFetcher();
+
+  useEffect(() => {
+    if(fetcher.data?.ok == false) {
+      const flash = fetcher.data.error.graphQLErrors.map(e => ({ message: e.message }));
+      setSearchParams({ flash: btoa(JSON.stringify(flash)) })
+    }
+  }, [fetcher]);
+
   return (
     <div className="w-[670px] flex flex-row py-0 px-6 box-border items-center justify-between text-left text-sm text-primary-dark-night font-primary-small-body-h5-medium">
       <div className="rounded-lg flex flex-row py-2 px-0 items-center justify-start gap-[4px]">
