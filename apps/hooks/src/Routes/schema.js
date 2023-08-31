@@ -125,8 +125,8 @@ const schema = new GraphQLSchema({
         },
         resolve: async (_, { date }, context) => {
           const timers = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findTimersByUserId({ 
-            startsAt: DateTime.fromISO(date, { zone: 'UTC' }).startOf('month').toUTC(),
-            endsAt: DateTime.fromISO(date, { zone: 'UTC' }).endOf('month').toUTC(), 
+            startsAt: DateTime.fromISO(date, { zone: 'UTC' }).startOf('month').minus({ week: 1 }).toUTC(),
+            endsAt: DateTime.fromISO(date, { zone: 'UTC' }).endOf('month').plus({ week: 1 }).toUTC(), 
             email: context.email 
           });
           if(timers.length == 0) return {};
