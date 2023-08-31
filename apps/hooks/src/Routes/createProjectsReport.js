@@ -78,7 +78,7 @@ const create =  async (req, res, next) => {
           }
           return people;
         }, []);
-        if(priceModifiers.length > 0) dd.setNotes({
+        if(priceModifiers && priceModifiers.length > 0) dd.setNotes({
             title: 'Applied Price Modifiers',
             text: priceModifiers.map(priceModifier => ( '- ' + priceModifiersDescriptions[priceModifier]) ).join('\n')
           });
