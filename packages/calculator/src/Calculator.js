@@ -21,8 +21,8 @@ const calculateTotalCost = (params) => {
     if(matchedPrice != undefined && matchedPrice?.length > 0) {
       const priceModifiersToApply = (metadata.price_modifiers !== undefined && typeof metadata.price_modifiers === 'object') ? Object.values(metadata.price_modifiers) : [];
       const availablePriceModifiersToApply = Object.entries(priceModifiers)
-      .filter(([methodName, method]) => typeof method === 'function' && priceModifiersToApply.includes(methodName))
-      .map(([methodName, method]) => method);
+        .filter(([methodName, method]) => typeof method === 'function' && priceModifiersToApply.includes(methodName))
+        .map(([methodName, method]) => method);
       const price = availablePriceModifiersToApply.reduce((acc, func) => func(acc, totalDuration, startsAt, endsAt), matchedPrice[0]?.price);
       totalCost = +((price * totalDurationInHours).toFixed(2));
     }
@@ -38,7 +38,7 @@ const calculateDuration = (params) => {
   if(endsAt == undefined) endsAt = DateTime.now();
   const { minutes: durationInMinutes } = endsAt.diff(startsAt, 'minutes').toObject();
   const totalDuration = Math.floor(durationInMinutes + duration);
-  const totalDurationInHours = +((totalDuration / 60).toFixed(2));
+  const totalDurationInHours = +((totalDuration / 60).toFixed(4));
   return { totalDuration, totalDurationInHours };
 }
 
