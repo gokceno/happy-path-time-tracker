@@ -96,7 +96,8 @@ const create =  async (req, res, next) => {
             nameSurname: `${timer.user_id.first_name} ${timer.user_id.last_name[0] || ''}`, 
             task: timer.task.tasks_id.task_name, 
             hours: Duration.fromObject({ minutes: timer.total_duration}).toFormat('hh:mm'), 
-            billableAmount: timer.total_cost
+            billableAmount: timer.total_cost,
+            notes: timer.notes,
           }))
         );
         await dd.setLogo({ logoFilePath: process.env.REPORTS_LOGO_URI });

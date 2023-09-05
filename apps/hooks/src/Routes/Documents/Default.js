@@ -245,7 +245,15 @@ const Document = () => {
           ... _tableBodyColProps2
         },
         {
-          text: item.task,
+          text: [
+            item.task,
+            '\n',
+            {
+              text: item.notes || 'Notes n/a',
+              fontSize: 8,
+              color: '#6a6d6e',
+            },
+          ],
           ... _tableBodyColProps2
         },
         {
