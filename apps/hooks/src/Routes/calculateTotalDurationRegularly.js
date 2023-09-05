@@ -1,4 +1,3 @@
-import YAML from 'yaml';
 import { DateTime } from 'luxon';
 import { Backend as GraphQLClient } from '@happy-path/graphql-client';
 import { Timers } from '@happy-path/graphql-entities';
