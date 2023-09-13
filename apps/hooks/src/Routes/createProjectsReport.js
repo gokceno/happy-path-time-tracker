@@ -31,7 +31,7 @@ const create =  async (req, res, next) => {
     .setSubject('Monthly Reports')
     .setBody({ html: '<p>Please find your monthly reports attached.</p>' });
   const startsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).startOf('month').toISO() : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).startOf('month').toISO();
-  const endsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).endOf('month').toISO() : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).startOf('month').toISO();
+  const endsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).endOf('month').toISO() : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).endOf('month').toISO();
   await Promise.all(
     projectIds.map(async (projectId) => {
       const timers = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findTimersByProjectId({ 
