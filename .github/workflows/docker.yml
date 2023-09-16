@@ -23,7 +23,7 @@ jobs:
     - name: Build API
       uses: docker/build-push-action@v5.0.0
       with:
-        context: Dockerfile.api
+        file: Dockerfile.api
         push: true
         tags: |
           ghcr.io/gokceno/happy-path-api:latest
@@ -31,7 +31,7 @@ jobs:
     - name: Build Auth
       uses: docker/build-push-action@v5.0.0
       with:
-        context: Dockerfile.auth
+        file: Dockerfile.auth
         push: true
         tags: |
           ghcr.io/gokceno/happy-path-auth:latest
@@ -39,7 +39,7 @@ jobs:
     - name: Build Dashboard
       uses: docker/build-push-action@v5.0.0
       with:
-        context: Dockerfile.dashboard
+        file: Dockerfile.dashboard
         push: true
         tags: |
           ghcr.io/gokceno/happy-path-dashboard:latest
@@ -47,7 +47,7 @@ jobs:
     - name: Build Hooks
       uses: docker/build-push-action@v5.0.0
       with:
-        context: Dockerfile.hooks
+        file: Dockerfile.hooks
         push: true
         tags: |
           ghcr.io/gokceno/happy-path-hooks:latest
