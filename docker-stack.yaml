@@ -1,0 +1,57 @@
+version: '3'
+services:
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - .caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      - happypath
+  api:
+    container_name: api
+    image: ghcr.io/gokceno/happy-path-api:latest
+    restart: always
+    env_file:
+       - .api.env
+    depends_on:
+      - directus
+    networks:
+      - happypath
+  directus:
+    container_name: directus
+    image: directus/directus:latest
+    restart: always
+    volumes:
+      - ./public/uploads:/directus/uploads
+    networks:
+      - happypath
+    env_file:
+      - .directus.env
+  hooks:
+    container_name: hooks
+    image: ghcr.io/gokceno/happy-path-hooks:latest
+    restart: always
+    networks:
+      - happypath
+    env_file:
+      - .hooks.env
+  dashboard:
+    container_name: dashboard
+    image: ghcr.io/gokceno/happy-path-dashboard:latest
+    restart: always
+    networks:
+      - happypath
+    env_file:
+      - .dashboard.env
+  auth:
+    container_name: auth
+    image: ghcr.io/gokceno/happy-path-auth:latest
+    restart: always
+    networks:
+      - happypath
+networks:
+  happypath:

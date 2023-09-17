@@ -1,0 +1,7 @@
+:80 {
+	reverse_proxy / dashboard:4001
+	reverse_proxy /api api:3000
+	reverse_proxy /hooks hooks:4000
+	reverse_proxy /directus directus:8055
+	reverse_proxy /auth auth:8080
+}
