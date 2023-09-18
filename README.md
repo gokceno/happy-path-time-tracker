@@ -1,17 +1,23 @@
 
 # Happy Path Time Tracker
-Happy Path is a time tracker app built for Slack. It uses [Directus](http://directus.io/) as its backend and [Slack's Bolt Framework](https://slack.dev/bolt-js/concepts) for the frontend. 
+Happy Path is a time tracker app built for Slack and Web. It uses [Directus](http://directus.io/) as its backend and [Slack's Bolt Framework](https://slack.dev/bolt-js/concepts) for the frontend.  On the web frontend, it uses [React&Remix](http://remix.run/).
 
-Currently it's work-in-progress (although usable), and single-tenant, so use it at your own risk and expect to receive breaking updates.
+Currently, it's a work-in-progress (although usable) and single-tenant, so use it at your own risk and expect to receive breaking updates.
 
 ## Understanding the Layout
 
-Happy Path has 3 main components:
+Happy Path has 5 main components:
 1. **Slack handler:** For communication with Slack; to receive and send messages, process the received commands, etc. Named "api" in the Docker Compose file.
 2. **Directus API layer:** Main component for storing all the information and exposing GraphQL APIs for communication.  It's a  [Directus](http://directus.io/) backed service.
 3. **Hooks handler:** Webhook handler for data transformation and enrichment.
+4. **Dashboard:** A web interface for users to review and manage their time entries. Currently, starting-stoping a timer and create new time logs are possible. 
+5. **Authentication:** We're using [Magic](http://magic.link/) for web authentication (for Slack no authentication is needed as it's handled by Slack). Once users are onboarded with Slack, they can log in with a magic link and start using the dashboard.
 
 ## Running
+
+> **You need a Postgres Server!** DB layer is not included in the Compose file. Your options are:
+> 1. You can add it yourself to the Compose file.
+> 2. Or grab a serverless Postgres from [neon.tech](http://neon.tech/) or a similar vendor.
 
 > **Running for the first time?** Make sure you apply the migrations to [Directus](http://directus.io/) right after you start it, [follow the migrations guide here](https://docs.directus.io/self-hosted/cli.html#applying-a-snapshot).
 
@@ -46,6 +52,22 @@ Backend uses [Directus](http://directus.io/) for APIs and data handling. Please 
 3. Commit the snapshot. Keep in mind that the snapshot will not be processed automatically among environments.
 
 Snapshots reside under `snapshots/` directory.
+
+### Deploying for Production
+
+You can use the `docker-stack.yml` file for production deploys. `docker stack` is a Docker Swarm command hence you'll need a one. You can easily deploy using the following instructions.
+
+#### Prerequisites
+1. Set up a DB server and obtain the CA Certificate (on DigitalOcean, it's needed, may vary for other vendors).
+2. Prepare the `.env` files; currently Stack file requires an env for each of its services.
+3. Update the `Caddyfile` accordingly to match your hostname, etc. Make sure to point your DNS before as it'll try to obtain an SSL for you.
+
+#### Setting up
+1. Deploy the entire project or copy the `.caddy` directory, the `.env` files and the `docker-stack.yml` file to your new server.
+2. Start your Swarm with `docker swarm init` if you have more than one network adapter, you may need to use `--advertise-addr` In our case Tailscale was installed and caused an issue.
+3. Deploy the stack with `docker stack deploy --compose-file docker-stack.yaml happypath` command.
+
+You can observe your setup with `docker stack ps happypath` or view the logs for each service with `docker service logs <service-name> -f`
 
 ## Installation
 
