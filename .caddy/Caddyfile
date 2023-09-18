@@ -1,7 +1,17 @@
 :80 {
-	reverse_proxy / dashboard:4001
-	reverse_proxy /api api:3000
-	reverse_proxy /hooks hooks:4000
-	reverse_proxy /directus directus:8055
-	reverse_proxy /auth auth:8080
+	handle_path /api* {
+		reverse_proxy api:3000
+	}
+	handle_path /hooks* {
+		reverse_proxy hooks:4000
+	}
+	handle_path /directus* {
+		reverse_proxy directus:8055
+	}
+	handle_path /auth* {
+		reverse_proxy auth:8080
+	}
+	handle_path /* {
+		reverse_proxy dashboard:4001
+	}
 }
