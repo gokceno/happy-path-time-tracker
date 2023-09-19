@@ -155,7 +155,7 @@ const Document = () => {
         },
         {
           border: [false, false, false, true],
-          text: item.totalBillableAmount.toCurrency(),
+          text: item.totalBillableAmount?.toCurrency(),
           fillColor: '#f5f5f5',
           alignment: 'right',
           margin: [0, 5, 0, 5],
@@ -198,7 +198,7 @@ const Document = () => {
         },
         {
           border: [false, false, false, true],
-          text: item.totalBillableAmount.toCurrency(),
+          text: item.totalBillableAmount?.toCurrency(),
           fillColor: '#f5f5f5',
           alignment: 'right',
           margin: [0, 5, 0, 5],
@@ -263,7 +263,7 @@ const Document = () => {
           ... _tableBodyColProps2
         },
         {
-          text: item.billableAmount.toCurrency(),
+          text: item.billableAmount?.toCurrency(),
           fillColor: '#f5f5f5',
           alignment: 'right',
           ... _tableBodyColProps2
