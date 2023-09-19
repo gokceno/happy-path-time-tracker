@@ -10,7 +10,7 @@ services:
     networks:
       - happypath
   api:
-    image: ghcr.io/gokceno/happy-path-api:latest
+    image: ghcr.io/gokceno/happy-path-api:2.0.0
     env_file:
        - .api.env
     depends_on:
@@ -18,25 +18,25 @@ services:
     networks:
       - happypath
   directus:
-    image: directus/directus:latest
+    image: directus/directus:10.6.1
     networks:
       - happypath
     env_file:
       - .directus.env
   hooks:
-    image: ghcr.io/gokceno/happy-path-hooks:latest
+    image: ghcr.io/gokceno/happy-path-hooks:2.0.0
     networks:
       - happypath
     env_file:
       - .hooks.env
   dashboard:
-    image: ghcr.io/gokceno/happy-path-dashboard:latest
+    image: ghcr.io/gokceno/happy-path-dashboard:2.0.0
     networks:
       - happypath
     env_file:
       - .dashboard.env
   auth:
-    image: ghcr.io/gokceno/happy-path-auth:latest
+    image: ghcr.io/gokceno/happy-path-auth:2.0.0
     networks:
       - happypath
 networks:
