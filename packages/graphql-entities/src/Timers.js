@@ -289,9 +289,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
     const actualUserId = await Users({ client }).findUserId({ externalUserId, email, did, userId });
     const TimersQuery = `
     query Timers {
-      timers(
-      filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}, user_id: { id: {_eq: "${actualUserId}"}}}
-      ) {
+      timers(limit: -1, filter: {starts_at: {_between: ["${startsAt}", "${endsAt}"]}, user_id: { id: {_eq: "${actualUserId}"}}}) {
         id
         duration
         total_duration
@@ -319,7 +317,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
     if(projectId == undefined || startsAt == undefined || endsAt == undefined) throw new Error('Missing arguments');
     const TimersByProjectIdQuery = `
     query timers {
-      timers(filter: {task: {projects_id: {id: {_eq: ${projectId}}}}, starts_at: {_between: ["${startsAt}", "${endsAt}"]}} sort: "starts_at") {
+      timers(limit: -1, filter: {task: {projects_id: {id: {_eq: ${projectId}}}}, starts_at: {_between: ["${startsAt}", "${endsAt}"]}} sort: "starts_at") {
         id
         user_id {
           first_name
@@ -354,7 +352,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
     if(startsAt == undefined && endsAt == undefined) throw new Error('Missing arguments');
     const TimersQuery = `
       query timers {
-        timers(filter: starts_at: {_between: ["${startsAt}", "${endsAt}"]}} sort: "starts_at") {
+        timers(limit: -1, filter: starts_at: {_between: ["${startsAt}", "${endsAt}"]}} sort: "starts_at") {
           id
           user_id {
             email
@@ -379,7 +377,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
     if(startsBefore == undefined) throw new Error('Missing arguments');
     const TimersQuery = `
       query timers($startsBefore: String!) {
-        timers(filter: {ends_at: {_null: true}, starts_at: {_lte: $startsBefore}}) {
+        timers(limit: -1, filter: {ends_at: {_null: true}, starts_at: {_lte: $startsBefore}}) {
           id
           user_id {
             email
