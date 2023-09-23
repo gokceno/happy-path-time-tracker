@@ -32,15 +32,18 @@ const create =  async (req, res, next) => {
   const endsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).endOf('month').toISO() : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).endOf('month').toISO();
   await Promise.all(
     projectIds.map(async (projectId) => {
-      const timers = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findTimersByProjectId({ 
+      const { project_name: projectName, metadata: projectMetadata } = await Projects({ client: GraphQLClient() }).findProjectById({ projectId });
+      const { price_modifiers: priceModifiers, reports } = parseMetadata([metadataTemplate, projectMetadata]);
+      if(reports == undefined) throw new Error('Reports section required in project metadata.');
+      let timers = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findTimersByProjectId({ 
         projectId,
         startsAt,
         endsAt,
       });
+      if(reports?.excluded_tasks !== undefined && Array.isArray(reports?.excluded_tasks) && reports?.excluded_tasks.length > 0) {
+        timers = timers.filter(timer => !reports.excluded_tasks.includes(timer.task.tasks_id.task_name));
+      }
       if(timers.length) {
-        const { project_name: projectName, metadata: projectMetadata } = await Projects({ client: GraphQLClient() }).findProjectById({ projectId });
-        const { price_modifiers: priceModifiers, reports } = parseMetadata([metadataTemplate, projectMetadata]);
-        if(reports == undefined) throw new Error('Reports section required in project metadata.');
         const totalHours = Duration.fromObject({ 
           minutes: timers.reduce((acc, item) => acc + item.total_duration, 0)
         }).toFormat('hh:mm');
