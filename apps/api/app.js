@@ -46,9 +46,9 @@ app.command('/happy', async({ command, respond, ack, body, client, logger }) => 
         break;
       default:
         const message = `
-        💡💡💡 Happy Path is a data suite where we track our time entries ⏱️, analyze them and ultimately make financial decisions. It's expected to replace the "Before Sunset" project in Fall 2023.
+        💡💡💡 Happy Path is a data suite where we track our time entries ⏱️, analyze them and ultimately make financial decisions.
         
-        Happy Path MacOS app and web client is underway, meanwhile you can use it via Slack.
+        You can use it via Slack, the [web interface](https://app.usehappypath.com/) or the [MacOS app](https://github.com/BrewInteractive/happy-path-macos-client/releases).
         
         Below are valid Slack commands for Happy Path:
 
