@@ -24,8 +24,6 @@ const create =  async (req, res, next) => {
       bolditalics: './fonts/Roboto/Roboto-MediumItalic.ttf'
     }
   };
-  const emailRecipents = (process.env.REPORTS_EMAIL_RECIPENTS || '').split(',');
-  if(emailRecipents.length == 0) res.status(403).send({error: `Email recipents not found. Exiting.`});
   let numberOfDocsProcessed = 0;
   let emailClient = EmailClient()
     .setSubject('Monthly Reports')
@@ -42,7 +40,8 @@ const create =  async (req, res, next) => {
       if(timers.length) {
         const dd = DefaultDocument();
         const { project_name: projectName, metadata: projectMetadata } = await Projects({ client: GraphQLClient() }).findProjectById({ projectId });
-        const { price_modifiers: priceModifiers } = parseMetadata([metadataTemplate, projectMetadata]);
+        const { price_modifiers: priceModifiers, reports } = parseMetadata([metadataTemplate, projectMetadata]);
+        if(reports == undefined) throw new Error('Reports section required in project metadata.');
         const totalHours = Duration.fromObject({ 
           minutes: timers.reduce((acc, item) => acc + item.total_duration, 0)
         }).toFormat('hh:mm');
@@ -113,13 +112,13 @@ const create =  async (req, res, next) => {
           pdfDoc.end();
         });
         numberOfDocsProcessed++;
+        if(reports?.recipients !== undefined && reports.recipients.length > 0) {
+          reports.recipients.forEach(email => emailClient.addRecipent({ email }));
+          emailClient.send();
+        }
       }
     })
   );
-  if(numberOfDocsProcessed > 0) {
-    emailRecipents.forEach(email => emailClient.addRecipent({ email }));
-    emailClient.send();
-  }
   res.json({ok: true, numberOfDocsProcessed});
 }
 
