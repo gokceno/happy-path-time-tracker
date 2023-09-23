@@ -169,4 +169,40 @@ prices:
       - jr. qa
 ```
 
+### Adding Price Modifiers
+
+Happy Path has the following price modifiers, which are run during billable calculation:
+
+- **noLessThanOneHour:** Rounds a time entry to one hour (60 minutes) if it's below 60 minutes. Useful if you charge your clients minimum of one hour.
+- **weekends :** Multiples the billable rate with 1.5 if the work is done during saturday or sunday. If a work started or ended in the weekend it's considered as a weekend job regardless of how much of it done during weekend.
+- **overtime:** Multiplies the billable rate with 1.5 if the work is done between hours 18:00 in the evening and 08:00 in the morning.
+
+You can call these modifiers per project by using the following in the metadata:
+
+```yaml
+price_modifiers:
+  - "noLessThanOneHour"
+  - "weekends"
+  - "overtime"
+```
+
+### Configuring Reports
+
+Happy Path is able to produce PDF reports for interested parties. Reports are configurable for projects by the following directives in the project metadata:
+
+```yaml
+reports:
+  currency: USD
+  recipients:
+    - <email_address>
+  excluded_tasks:
+    - <task_name>
+```
+
+Basically;
+
+- Currency displayed in the reports are configurable; please note that this is not mentioned elsewhere, for example, if you're to build a dashboard within Directus, you still need to implement this value there.
+- You can define the report recipients with their email addresses. Reports are not downloadable; they are produced asyncronously and e-mailed to you when done.
+- You can exclude certain task types from your reports, when used a task type is tracked and calculated but not included in the reports. Useful when certain task types are not billable.
+
 > Written with [StackEdit](https://stackedit.io/).
