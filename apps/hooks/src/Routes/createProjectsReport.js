@@ -38,14 +38,13 @@ const create =  async (req, res, next) => {
         endsAt,
       });
       if(timers.length) {
-        const dd = DefaultDocument();
         const { project_name: projectName, metadata: projectMetadata } = await Projects({ client: GraphQLClient() }).findProjectById({ projectId });
         const { price_modifiers: priceModifiers, reports } = parseMetadata([metadataTemplate, projectMetadata]);
         if(reports == undefined) throw new Error('Reports section required in project metadata.');
         const totalHours = Duration.fromObject({ 
           minutes: timers.reduce((acc, item) => acc + item.total_duration, 0)
         }).toFormat('hh:mm');
-        const totalBillableAmount = timers.reduce((acc, item) => acc + item.total_cost, 0).toCurrency();
+        const totalBillableAmount = timers.reduce((acc, item) => acc + item.total_cost, 0).toCurrency(reports?.currency);
         const tasks = timers.reduce((tasks, timer) => {
           const task = tasks.find(task => task.taskTitle == timer.task.tasks_id.task_name);
           if (task == undefined) {
@@ -62,11 +61,11 @@ const create =  async (req, res, next) => {
           return tasks;
         }, []);
         const people = timers.reduce((people, timer) => {
-          const person = people.find(person => person.email == timer.user_id.email);
+          const person = people.find(person => person.email == timer.user_id?.email);
           if (person == undefined) {
             people.push({ 
-              email: timer.user_id.email,
-              nameSurname: [timer.user_id.first_name, timer.user_id.last_name].join(' '),
+              email: timer.user_id?.email,
+              nameSurname: [timer.user_id?.first_name, timer.user_id?.last_name].join(' '),
               totalMinutes: timer.total_duration,
               totalBillableAmount: timer.total_cost
             });
@@ -77,10 +76,12 @@ const create =  async (req, res, next) => {
           }
           return people;
         }, []);
+        const dd = DefaultDocument();
         if(priceModifiers && priceModifiers.length > 0) dd.setNotes({
             title: 'Applied Price Modifiers',
             text: priceModifiers.map(priceModifier => ( '- ' + priceModifiersDescriptions[priceModifier]) ).join('\n')
           });
+        dd.setCurrency(reports?.currency);
         dd.setHeader([
           { label: 'Project', value: projectName },
           { label: 'Created At', value: DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toLocaleString(DateTime.DATE_MED) },
@@ -92,7 +93,7 @@ const create =  async (req, res, next) => {
         dd.setWorkItems(
           timers.map(timer => ({
             date: DateTime.fromISO(timer.starts_at).toLocaleString(DateTime.DATE_MED), 
-            nameSurname: `${timer.user_id.first_name} ${timer.user_id.last_name[0] || ''}`, 
+            nameSurname: `${timer.user_id?.first_name} ${timer.user_id?.last_name[0] || ''}`, 
             task: timer.task.tasks_id.task_name, 
             hours: Duration.fromObject({ minutes: timer.total_duration}).toFormat('hh:mm'), 
             billableAmount: timer.total_cost,

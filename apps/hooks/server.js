@@ -16,8 +16,8 @@ import {
   token
 } from './src/Routes/index.js';
 
-Number.prototype.toCurrency = function () {
-  return new Intl.NumberFormat((process.env.LOCALE_CULTURE || 'en-US'), { style: 'currency', currency: (process.env.LOCALE_CURRENCY || 'USD') }).format(this);
+Number.prototype.toCurrency = function (currency) {
+  return new Intl.NumberFormat((process.env.LOCALE_CULTURE || 'en-US'), { style: 'currency', currency: (currency || process.env.LOCALE_CURRENCY || 'USD') }).format(this);
 }
 
 Array.prototype.random = function () {

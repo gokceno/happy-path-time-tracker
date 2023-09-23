@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 
 const Document = () => {
+  let _currency;
   let _logoFile;
   let _totalHours = 0;
   let _totalBillableAmount = 0;
@@ -155,7 +156,7 @@ const Document = () => {
         },
         {
           border: [false, false, false, true],
-          text: item.totalBillableAmount?.toCurrency(),
+          text: item.totalBillableAmount?.toCurrency(_currency),
           fillColor: '#f5f5f5',
           alignment: 'right',
           margin: [0, 5, 0, 5],
@@ -198,7 +199,7 @@ const Document = () => {
         },
         {
           border: [false, false, false, true],
-          text: item.totalBillableAmount?.toCurrency(),
+          text: item.totalBillableAmount?.toCurrency(_currency),
           fillColor: '#f5f5f5',
           alignment: 'right',
           margin: [0, 5, 0, 5],
@@ -263,7 +264,7 @@ const Document = () => {
           ... _tableBodyColProps2
         },
         {
-          text: item.billableAmount?.toCurrency(),
+          text: item.billableAmount?.toCurrency(_currency),
           fillColor: '#f5f5f5',
           alignment: 'right',
           ... _tableBodyColProps2
@@ -451,10 +452,14 @@ const Document = () => {
     if(text != undefined) _notes.push({ text, style: 'notesText'});
     return true;
   }
+  const setCurrency = (currency) => {
+    return (_currency = currency || 'USD');
+  }
   return {
     get,
     setLogo,
     setWorkItems,
+    setCurrency,
     setTotals,
     setBreakdownByTeamMembers,
     setBreakdownByTaskItems,
