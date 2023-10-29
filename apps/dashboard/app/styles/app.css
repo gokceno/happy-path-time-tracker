@@ -198,6 +198,10 @@
   margin-bottom: 0px;
 }
 
+.mt-2{
+  margin-top: 0.5rem;
+}
+
 .mt-3{
   margin-top: 0.75rem;
 }
@@ -696,6 +700,10 @@
 
 .pr-2{
   padding-right: 0.5rem;
+}
+
+.pr-6{
+  padding-right: 1.5rem;
 }
 
 .pr-\[7px\]{
