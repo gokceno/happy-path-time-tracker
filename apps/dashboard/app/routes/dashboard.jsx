@@ -86,7 +86,7 @@ export default function Dashboard() {
             <AlertDialog.Description className="self-stretch flex flex-row m-0 pt-0 pr-6 items-center justify-end gap-[8px]">
               <AlertDialog.Action asChild>
                 <button
-                  className="cursor-pointer [border:none] mt-2 p-4 text-shades-of-cadet-gray-cadet-gray-400 self-stretch rounded-9xl h-12 flex flex-row box-border items-center justify-center relative gap-[8px]"
+                  className="cursor-pointer [border:none] mt-2 p-4 bg-shades-of-cadet-gray-cadet-gray-50 text-shades-of-cadet-gray-cadet-gray-400 self-stretch rounded-9xl h-12 flex flex-row box-border items-center justify-center relative gap-[8px]"
                   onClick={() => {
                     setIsLogoutDialogOpen(false);
                   }}
