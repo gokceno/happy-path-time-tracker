@@ -23,6 +23,7 @@ export default function App() {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
+        <script defer data-domain="app.usehappypath.com" src="https://plausible.io/js/script.js"></script>
       </head>
       <body>
         <Outlet/>
