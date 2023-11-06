@@ -164,6 +164,34 @@ const schema = new GraphQLSchema({
           };
         },
       },
+      timer: {
+        args: {
+          id: { type: GraphQLInt },
+        },
+        type: new GraphQLObjectType({
+          name: 'Timer',
+          fields: {
+            id: { type: GraphQLInt },
+            startsAt: { type: GraphQLString },
+            endsAt: { type: GraphQLString },
+            duration: { type: GraphQLInt },
+            totalDuration: { type: GraphQLInt },
+            notes: { type: GraphQLString },
+          }
+        }),
+        resolve: async (_, { id }, context) => {
+          const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
+          const timer = await timers.findTimerById({ timerId: id });
+          return {
+            id: timer?.id,
+            startsAt: timer?.starts_at,
+            endsAt: timer?.ends_at,
+            duration: timer?.duration,
+            totalDuration: timer?.total_duration,
+            notes: timer?.notes,
+          }
+        },
+      },
     },
   }),
   mutation: new GraphQLObjectType({
