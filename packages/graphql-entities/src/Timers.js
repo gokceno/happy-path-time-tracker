@@ -261,6 +261,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
           ends_at
           duration
           total_duration
+          notes
           task {
             tasks_id {
               task_name

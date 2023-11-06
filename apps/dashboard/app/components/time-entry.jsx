@@ -1,4 +1,4 @@
-import { useFetcher, useSearchParams } from '@remix-run/react';
+import { useFetcher, useSearchParams, Link } from '@remix-run/react';
 import { useEffect } from 'react';
 import { DateTime, Duration } from 'luxon';
 
@@ -25,11 +25,11 @@ const TimeEntry = ({ timerId, taskName, timeEntryDescription, duration, isRunnin
             <div className="relative leading-[133%]">{taskName}</div>
           </div>
         </div>
-        <button className="cursor-pointer [border:none] py-1 px-2 bg-[transparent] rounded-9xl h-8 flex flex-row box-border items-center justify-center relative gap-[8px]">
+        <Link to={`/dashboard/daily/${DateTime.local({ zone: timezone }).toISODate()}/${timerId}/edit`} className="no-underline [border:none] py-1 px-2 bg-[transparent] rounded-9xl h-8 flex flex-row box-border items-center justify-center relative gap-[8px]">
           <div className="relative text-sm leading-[133%] font-medium font-primary-small-body-h5-medium text-shades-of-cadet-gray-cadet-gray-400 text-left z-[1]">
-            {timeEntryDescription.ellipsis(48)}
+            {timeEntryDescription ? timeEntryDescription.ellipsis(48) : 'Notes n/a. Click to edit'}
           </div>
-        </button>
+        </Link>
       </div>
       <div className="flex flex-row items-center justify-end gap-[8px] text-shades-of-cadet-gray-cadet-gray-500 font-roboto-mono">
         <div className="flex flex-col py-1 px-2 items-start justify-start">
