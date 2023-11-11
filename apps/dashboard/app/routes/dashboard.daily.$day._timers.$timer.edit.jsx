@@ -13,6 +13,8 @@ const TimerQuery = `
       id
       duration
       notes
+      startsAt
+      endsAt
     }
   }
 `;
@@ -34,8 +36,10 @@ export default function TimerStartRoute() {
   const fetcher = useFetcher();
   return (
     <fetcher.Form method="post" action="/timers/edit" className="self-stretch flex flex-col p-6 items-center justify-start z-[2] text-shades-of-cadet-gray-cadet-gray-600">
-      <input value={timer} type="hidden" name="timerId"/>
+      <input value={timer.id} type="hidden" name="timerId"/>
       <input value={day} type="hidden" name="day"/>
+      <input value={timer.startsAt} type="hidden" name="startsAt"/>
+      <input value={timer.endsAt} type="hidden" name="endsAt"/>
       <div className="self-stretch flex flex-col items-center justify-start">
         <div className="self-stretch box-border h-12 flex flex-row items-center justify-center border-b-[1px] border-solid border-shades-of-teal-teal-400">
           <div className="rounded-lg flex flex-row py-1 px-2 items-center justify-center">
@@ -43,7 +47,7 @@ export default function TimerStartRoute() {
               className="[border:none] font-space-mono text-3xl bg-[transparent] relative leading-[133%] text-primary-dark-night text-center"
               type="text"
               name="notes"
-              value={timer?.notes || ''}
+              defaultValue={timer?.notes || ''}
               placeholder={!timer?.notes ? 'Notes' : ''}
             />
           </div>
@@ -55,7 +59,7 @@ export default function TimerStartRoute() {
               isAllowed={({ formattedValue }) => formattedValue.split(':')[0] <= 8 && formattedValue.split(':')[1] <= 59}
               className="[border:none] font-space-mono text-3xl bg-[transparent] relative leading-[133%] text-primary-dark-night text-center"
               name="duration"
-              value={Duration.fromObject({minutes: timer?.duration}).toFormat('hh:mm') || '00:00'}
+              defaultValue={Duration.fromObject({minutes: timer?.duration}).toFormat('hh:mm') || '00:00'}
             />
           </div>
         </div>
