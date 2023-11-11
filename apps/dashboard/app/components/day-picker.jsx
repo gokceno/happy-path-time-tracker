@@ -2,10 +2,10 @@ import { DateTime, Interval, Duration } from 'luxon';
 import { Link } from "@remix-run/react";
 import Day from "./day";
 
-const DayPicker = ({ stats, selectedDate }) => {
+const DayPicker = ({ stats, selectedDate, culture }) => {
   const weeklyInterval = Interval.fromDateTimes(
-    DateTime.fromISO(selectedDate).startOf('week'),
-    DateTime.fromISO(selectedDate).endOf('week')
+    DateTime.fromISO(selectedDate).setLocale(culture).startOf('week'),
+    DateTime.fromISO(selectedDate).setLocale(culture).endOf('week')
   );
   const days = weeklyInterval.splitBy(Duration.fromObject({ day: 1 }));
   return (

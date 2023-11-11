@@ -27,7 +27,8 @@ export const loader = async ({ request, params }) => {
   return json({ 
     currentTimeEntriesInterval: 'daily',
     stats: response?.data?.stats, 
-    timezone: process.env.TIMEZONE || 'UTC'
+    timezone: process.env.TIMEZONE || 'UTC',
+    culture: process.env.LOCALE_CULTURE || 'en-US',
   });
 }
 
@@ -37,11 +38,11 @@ export const shouldRevalidate = ({ currentParams, nextParams, defaultShouldReval
 
 export default function DashboardDailyRoute() {
   const { day: onDate } = useParams();
-  const { stats, timezone } = useLoaderData();
+  const { stats, timezone, culture } = useLoaderData();
   return (
     <div className="w-[671px] flex flex-col pt-0 px-0 pb-8 box-border items-center justify-start gap-[32px] min-w-[345px] max-w-[906px]">
       <div className="self-stretch flex flex-col items-start justify-start">
-        <DayPicker stats={stats} selectedDate={onDate}/>
+        <DayPicker stats={stats} selectedDate={onDate} culture={culture}/>
       </div>
       <Outlet/>
     </div>
