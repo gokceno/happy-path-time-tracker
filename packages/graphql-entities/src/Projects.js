@@ -2,7 +2,7 @@ const Projects = ({ client }) => {
   const _fetch =  async () => {
     const ProjectsQuery = `
       {
-        projects(sort: "project_name") {
+        projects(filter: {status:{_eq: "published"}}, sort: "project_name") {
           id
           project_name
         }
