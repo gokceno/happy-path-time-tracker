@@ -17,6 +17,6 @@ export const loader = async ({ request, params }) => {
   const { day, timer } = params;
   let flash = [];
   const response = await Client({ token }).mutation(TimersMutation, { timerId: +timer });
-  response.error !== undefined ? flash.push({message: response.error}) : flash.push({message: 'You removed your time entry. Thank you.'});
+  response.error !== undefined ? flash.push({message: response.error}) : flash.push({message: 'You removed your time entry. Good job!'});
   return redirect(`/dashboard/daily/${day}?flash=${btoa(JSON.stringify(flash))}`);
 };
