@@ -4,7 +4,7 @@ const Tasks = ({ client, queryParams }) => {
     if (queryParams == undefined || queryParams.projectId == undefined) throw new Error('queryParams.projectId must be set');
     const ProjectsTasksQuery = `
       {
-        projects_tasks(filter: {projects_id: {id: {_eq: ${queryParams.projectId}}}}) {
+        projects_tasks(filter: {projects_id: {id: {_eq: ${queryParams.projectId}}}}, sort: "tasks_id.task_name") {
           id
           tasks_id {
             task_name
