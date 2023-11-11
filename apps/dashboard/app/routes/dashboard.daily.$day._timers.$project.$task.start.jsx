@@ -16,7 +16,7 @@ export default function TimerStartRoute() {
               className="[border:none] font-space-mono text-3xl bg-[transparent] relative leading-[133%] text-primary-dark-night text-center"
               type="text"
               name="notes"
-              placeholder="Comments"
+              placeholder="Notes"
             />
           </div>
         </div>
