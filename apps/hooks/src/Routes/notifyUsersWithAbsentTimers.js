@@ -2,14 +2,14 @@ import dotenv from 'dotenv';
 import { DateTime } from 'luxon';
 import { Backend as GraphQLClient } from '@happy-path/graphql-client';
 import { Notification } from '@happy-path/notification';
-import { Timers } from '@happy-path/graphql-entities';
+import { Users } from '@happy-path/graphql-entities';
 
 dotenv.config();
 
 const notify = async (req, res, next) => {
-  const users = await Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findUsersByTimerDate({
-    startsAt: DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toFormat("yyyy-MM-dd'T00:00:00'"), 
-    endsAt: DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toFormat("yyyy-MM-dd'T23:59:59'")
+  const users = await Users({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' }).findUsersByTimerDate({
+    startsAt: DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).startOf('day').toISO(), 
+    endsAt: DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).endOf('day').toISO(),
   });
   if(users != undefined) {
     const usersWithNoTimers = users.filter(item => item.timers.length == 0);
@@ -22,15 +22,15 @@ const notify = async (req, res, next) => {
     });
     usersWithNoTimers.forEach(async (item) => {
       await Notification()
-      .addRecipent(item.slack_user_id, 'slack')
-      .addRecipent(item.email, 'email')
-      .send({ message: `You haven't started any timers ⏳ today. Care to log some time? 🙏` });
+        .addRecipent(item.slack_user_id, 'slack')
+        .addRecipent(item.email, 'email')
+        .send({ message: `You haven't started any timers ⏳ today. Care to log some time? 🙏` });
     });
     usersWithLowTimers.forEach(async (item) => {
       await Notification()
-      .addRecipent(item.slack_user_id, 'slack')
-      .addRecipent(item.email, 'email')
-      .send({ message: `How is your day going? I see that you haven't logged much time ⏳ today. Care to log more time? 🙏` });
+        .addRecipent(item.slack_user_id, 'slack')
+        .addRecipent(item.email, 'email')
+        .send({ message: `How is your day going? I see that you haven't logged much time ⏳ today. Care to log more time? 🙏` });
     });
     res.json({ok: true, numOfUsersWithNoTimers: usersWithNoTimers.length, numOfUsersWithLowTimers: usersWithLowTimers.length});
   }

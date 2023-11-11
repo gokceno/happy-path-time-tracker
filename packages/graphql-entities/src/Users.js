@@ -162,7 +162,11 @@ const Users = ({ client }) => {
         }
       }
     `;
-    const response = await client.query(UserTimersQuery);
+    const response = await client.query(UserTimersQuery, {
+      startsAt,
+      endsAt,
+    });
+    console.log(response);
     return response?.data?.users || [];
   }
   return { syncByExternalUserId, syncByEmail, findUserId, findUsersByTimerDate }
