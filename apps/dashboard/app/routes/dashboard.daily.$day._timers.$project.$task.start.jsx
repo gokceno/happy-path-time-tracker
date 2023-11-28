@@ -1,10 +1,18 @@
-import { Link, useFetcher, useParams } from "@remix-run/react";
+import { Link, useFetcher, useParams } from '@remix-run/react';
+import { useEffect, useState } from 'react';
 
-import ModalSelectItem from "~/components/modal-select-item";
-import { PatternFormat } from "react-number-format";
+import { PatternFormat } from 'react-number-format';
 
 export default function TimerStartRoute() {
   const { day, project, task } = useParams();
+  const [tempProject, setTempProject] = useState('');
+  const [tempTask, setTempTask] = useState('');
+
+  useEffect(() => {
+    setTempProject(window.localStorage.getItem('project'));
+    setTempTask(window.localStorage.getItem('task'));
+  }, []);
+
   const fetcher = useFetcher();
   return (
     <fetcher.Form
@@ -12,14 +20,32 @@ export default function TimerStartRoute() {
       action="/timers/start"
       className="self-stretch flex flex-col px-6 py-2 items-center justify-start z-[2] text-shades-of-cadet-gray-cadet-gray-600"
     >
-      <input value={task} type="hidden" name="projectTaskId" />
-      <input value={day} type="hidden" name="day" />
+      <input
+        value={task}
+        type="hidden"
+        name="projectTaskId"
+      />
+      <input
+        value={day}
+        type="hidden"
+        name="day"
+      />
+      <input
+        value={tempProject}
+        type="hidden"
+        name="tempProject"
+      />
+      <input
+        value={tempTask}
+        type="hidden"
+        name="tempTask"
+      />
       <div className="self-stretch flex flex-col items-center justify-start">
         <div className="self-stretch flex flex-row items-center justify-center">
           <textarea
             className="w-full h-12 [outline:none] self-stretch text-primary-dark-night border-[1px] border-solid border-shades-of-cadet-gray-cadet-gray-200 p-4 rounded-lg leading-[133%]"
             name="notes"
-            placeholder="Notes"
+            placeholder="Notess"
           />
         </div>
         <div className="self-stretch mt-4 box-border h-12 flex flex-row items-center justify-center border-b-[1px] border-solid border-shades-of-cadet-gray-cadet-gray-200">
@@ -27,8 +53,8 @@ export default function TimerStartRoute() {
             <PatternFormat
               format="0#:##"
               isAllowed={({ formattedValue }) =>
-                formattedValue.split(":")[0] <= 8 &&
-                formattedValue.split(":")[1] <= 59
+                formattedValue.split(':')[0] <= 8 &&
+                formattedValue.split(':')[1] <= 59
               }
               className="[border:none] [outline:none] font-space-mono text-3xl bg-[transparent] relative leading-[133%] text-primary-dark-night text-center"
               name="duration"
