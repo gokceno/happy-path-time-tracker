@@ -206,6 +206,10 @@
   margin-top: 0.75rem;
 }
 
+.mt-4{
+  margin-top: 1rem;
+}
+
 .box-border{
   box-sizing: border-box;
 }
@@ -501,11 +505,6 @@
   border-color: rgb(200 215 216 / var(--tw-border-opacity));
 }
 
-.border-shades-of-teal-teal-400{
-  --tw-border-opacity: 1;
-  border-color: rgb(51 150 161 / var(--tw-border-opacity));
-}
-
 .bg-\[transparent\]{
   background-color: transparent;
 }
@@ -584,10 +583,6 @@
 
 .p-4{
   padding: 1rem;
-}
-
-.p-6{
-  padding: 1.5rem;
 }
 
 .p-8{
@@ -861,6 +856,10 @@
 
 .\[grid-template-areas\:_\'title_action\'_\'description_action\'\]{
   grid-template-areas: 'title action' 'description action';
+}
+
+.\[outline\:none\]{
+  outline: none;
 }
 
 .\[text-decoration\:none\]{
