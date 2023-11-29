@@ -5,6 +5,7 @@ const StartNewTimerButton = ({
   isToday,
   hasRunningTimer,
   additionalTag,
+  projectTask,
 }) => {
   let [searchParams, setSearchParams] = useSearchParams();
   const checkIfRunningTimer = (e) => {
@@ -15,7 +16,30 @@ const StartNewTimerButton = ({
       setSearchParams({ flash: btoa(JSON.stringify(flash)) });
       e.preventDefault();
     }
+
+    // Set project and task in local storage if projectTask is defined
+    // It means that the button is a recent projectTask button
+    if (projectTask) {
+      window &&
+        window.localStorage.setItem(
+          'project',
+          JSON.stringify({
+            title: projectTask.projectName,
+            id: projectTask.projectId,
+          })
+        );
+
+      window &&
+        window.localStorage.setItem(
+          'task',
+          JSON.stringify({
+            title: projectTask.taskName,
+            id: projectTask.taskId,
+          })
+        );
+    }
   };
+
   return (
     <Link
       to={to}
