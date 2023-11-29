@@ -130,35 +130,30 @@ export default function DashboardDailyDayRoute() {
         />
       ))}
       {!timers.length > 0 ? <NoTimeEntry /> : ''}
-      <StartNewTimerButton
-        to={`/dashboard/daily/${day}/projects`}
-        hasRunningTimer={
-          timers.filter((timer) => timer.endsAt == undefined).length == 1
-        }
-        isToday={isToday}
-      />
-      {recentProjectTasks && recentProjectTasks?.length > 0 && (
-        <>
-          <div className="relative leading-[133%] font-semibold text-sm">
-            Recent Projects
-          </div>
-          <div className="text-sm">
-            {recentProjectTasks &&
-              recentProjectTasks?.length > 0 &&
-              sortRecentProjectsByCount(recentProjectTasks).map(
-                (projectTask) => (
-                  <ModalSelectItem
-                    id={projectTask.taskId}
-                    key={projectTask.taskId}
-                    to={`/dashboard/daily/${day}/${projectTask.projectId}/${projectTask.taskId}/start`}
-                    title={`${projectTask.projectName} / ${projectTask.taskName}`}
-                    type="task"
-                  />
-                )
-              )}
-          </div>
-        </>
-      )}
+
+      <div className="flex flex-col justify-start items-start">
+        {recentProjectTasks &&
+          recentProjectTasks?.length > 0 &&
+          sortRecentProjectsByCount(recentProjectTasks).map((projectTask) => (
+            <StartNewTimerButton
+              key={projectTask.taskId}
+              to={`/dashboard/daily/${day}/${projectTask.projectId}/${projectTask.taskId}/start`}
+              additionalTag={`${projectTask.projectName} / ${projectTask.taskName}`}
+              hasRunningTimer={
+                timers.filter((timer) => timer.endsAt == undefined).length == 1
+              }
+              isToday={isToday}
+            />
+          ))}
+        <StartNewTimerButton
+          to={`/dashboard/daily/${day}/projects`}
+          hasRunningTimer={
+            timers.filter((timer) => timer.endsAt == undefined).length == 1
+          }
+          isToday={isToday}
+        />
+      </div>
+
       <Outlet />
     </div>
   );

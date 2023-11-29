@@ -45,7 +45,7 @@ export default function TimerStartRoute() {
           <textarea
             className="w-full h-12 [outline:none] self-stretch text-primary-dark-night border-[1px] border-solid border-shades-of-cadet-gray-cadet-gray-200 p-4 rounded-lg leading-[133%]"
             name="notes"
-            placeholder="Notess"
+            placeholder="Notes"
           />
         </div>
         <div className="self-stretch mt-4 box-border h-12 flex flex-row items-center justify-center border-b-[1px] border-solid border-shades-of-cadet-gray-cadet-gray-200">
