@@ -1,9 +1,10 @@
-import { useParams, useLoaderData } from '@remix-run/react';
-import { useState } from 'react';
 import { json, redirect } from '@remix-run/node';
+import { useLoaderData, useParams } from '@remix-run/react';
+
 import { Frontend as Client } from '@happy-path/graphql-client';
-import { auth as authCookie } from '~/utils/cookies.server';
 import ModalSelectItem from '~/components/modal-select-item';
+import { auth as authCookie } from '~/utils/cookies.server';
+import { useState } from 'react';
 
 const ProjectsQuery = `
   query Projects {
@@ -15,10 +16,14 @@ const ProjectsQuery = `
 `;
 
 export const loader = async ({ request }) => {
-  const { token } = await authCookie.parse(request.headers.get('cookie')) || {};
-  if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
+  const { token } =
+    (await authCookie.parse(request.headers.get('cookie'))) || {};
+
+  if (token == undefined)
+    return redirect(process.env.LOGIN_URI || '/auth/login');
   const response = await Client({ token }).query(ProjectsQuery);
-  if(response.error != undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
+  if (response.error != undefined)
+    return redirect(process.env.LOGIN_URI || '/auth/login');
   return json({
     projects: response?.data?.projects || [],
   });
@@ -44,9 +49,19 @@ export default function ProjectSelectRoute() {
         </div>
       </div>
       <div className="self-stretch bg-primary-real-white flex flex-col items-start justify-start">
-        { projects.filter(project => project.projectName.toUpperCase().includes(filterBy.toUpperCase())).map(project =>   
-          <ModalSelectItem key={project.id} to={`/dashboard/daily/${params.day}/${project.id}/tasks`} title={project.projectName}/>
-        )}
+        {projects
+          .filter((project) =>
+            project.projectName.toUpperCase().includes(filterBy.toUpperCase())
+          )
+          .map((project) => (
+            <ModalSelectItem
+              key={project.id}
+              id={project.id}
+              to={`/dashboard/daily/${params.day}/${project.id}/tasks`}
+              title={project.projectName}
+              type="project"
+            />
+          ))}
       </div>
     </div>
   );
