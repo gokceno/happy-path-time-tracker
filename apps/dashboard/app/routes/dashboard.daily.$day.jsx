@@ -143,6 +143,7 @@ export default function DashboardDailyDayRoute() {
                 timers.filter((timer) => timer.endsAt == undefined).length == 1
               }
               isToday={isToday}
+              projectTask={projectTask}
             />
           ))}
         <StartNewTimerButton
