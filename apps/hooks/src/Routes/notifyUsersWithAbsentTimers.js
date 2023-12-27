@@ -16,7 +16,7 @@ const notify = async (req, res, next) => {
     const usersWithLowTimers = users.filter(item => { 
       if(item.timers.length > 0) {
         const totalTimerLength = item.timers.reduce((acc, item) => acc + item.total_duration, 0);
-        return (totalTimerLength < process.env.LOW_TIMER_TRESHOLD || 120);
+        return (totalTimerLength < (process.env.LOW_TIMER_TRESHOLD || 120));
       }
       return false;
     });
