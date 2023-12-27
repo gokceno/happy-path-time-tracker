@@ -28,8 +28,8 @@ const create =  async (req, res, next) => {
   let emailClient = EmailClient()
     .setSubject('Monthly Reports')
     .setBody({ html: '<p>Please find your monthly reports attached.</p>' });
-  const startsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).startOf('month').toISO() : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).startOf('month').toISO();
-  const endsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).endOf('month').toISO() : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).endOf('month').toISO();
+  const startsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).startOf('month').toUTC().toISO() : DateTime.local({ zone: (process.env.TIMEZONE || 'UTC') }).startOf('month').toUTC().toISO();
+  const endsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).endOf('month').toUTC().toISO() : DateTime.local({ zone: (process.env.TIMEZONE || 'UTC') }).endOf('month').toUTC().toISO();
   await Promise.all(
     projectIds.map(async (projectId) => {
       const { project_name: projectName, metadata: projectMetadata } = await Projects({ client: GraphQLClient() }).findProjectById({ projectId });
@@ -95,7 +95,7 @@ const create =  async (req, res, next) => {
         dd.setBreakdownByTeamMembers(people.map(person => ({ totalHours: Duration.fromObject({ minutes: person.totalMinutes}).toFormat('hh:mm'), ...person })));
         dd.setWorkItems(
           timers.map(timer => ({
-            date: DateTime.fromISO(timer.starts_at).toLocaleString(DateTime.DATE_MED), 
+            date: DateTime.fromISO(timer.starts_at, { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC').toLocaleString(DateTime.DATE_MED), 
             nameSurname: `${timer.user_id?.first_name} ${timer.user_id?.last_name[0] || ''}`, 
             task: timer.task.tasks_id.task_name, 
             hours: Duration.fromObject({ minutes: timer.total_duration}).toFormat('hh:mm'), 
