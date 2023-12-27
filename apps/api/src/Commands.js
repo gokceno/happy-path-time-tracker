@@ -98,8 +98,8 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
     let startsAt, endsAt, humanReadableDateInterval;
     if(commandTextTokens.length == 3) {
       const [commandName, startDateInput, endDateInput] = commandTextTokens;
-      startsAt = DateTime.fromISO(startDateInput + 'T00:00:00', { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC');
-      endsAt = DateTime.fromISO(endDateInput + 'T23:59:59', { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC');
+      startsAt = DateTime.fromISO(startDateInput).startOf('day');
+      endsAt = DateTime.fromISO(endDateInput).endOf('day');
       if(!startsAt.isValid || !endsAt.isValid) {
         throw new Error('Supplied dates are not in correct format (eg. 2023-12-31)');
       }
@@ -111,13 +111,13 @@ const list = async ({ command, respond, ack, body, client, logger }) => {
     else {
       const [commandName, dateInterval = 'today'] = commandTextTokens; // Values: today|yesterday
       if(dateInterval === 'yesterday') {
-        startsAt = DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ days: 1 }).toFormat("yyyy-MM-dd'T'00:00:00");
-        endsAt = DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ days: 1 }).toFormat("yyyy-MM-dd'T'23:59:59");
+        startsAt = DateTime.local().minus({ days: 1 }).startOf('day');
+        endsAt = DateTime.local().minus({ days: 1 }).endOf('day');
         humanReadableDateInterval = dateInterval;
       }
       else {
-        startsAt = DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toFormat("yyyy-MM-dd'T'00:00:00");
-        endsAt = DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toFormat("yyyy-MM-dd'T'23:59:59");
+        startsAt = DateTime.local().startOf('day');
+        endsAt = DateTime.local().endOf('day');
         humanReadableDateInterval = 'today';
       }
     }
