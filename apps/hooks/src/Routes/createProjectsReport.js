@@ -28,8 +28,8 @@ const create =  async (req, res, next) => {
   let emailClient = EmailClient()
     .setSubject('Monthly Reports')
     .setBody({ html: '<p>Please find your monthly reports attached.</p>' });
-  const startsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).startOf('month').toUTC().toISO() : DateTime.local({ zone: (process.env.TIMEZONE || 'UTC') }).startOf('month').toUTC().toISO();
-  const endsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).endOf('month').toUTC().toISO() : DateTime.local({ zone: (process.env.TIMEZONE || 'UTC') }).endOf('month').toUTC().toISO();
+  const startsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).startOf('month').toUTC().toISO() : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).startOf('month').toUTC().toISO();
+  const endsAt = req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).endOf('month').toUTC().toISO() : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).endOf('month').toUTC().toISO();
   await Promise.all(
     projectIds.map(async (projectId) => {
       const { project_name: projectName, metadata: projectMetadata } = await Projects({ client: GraphQLClient() }).findProjectById({ projectId });
