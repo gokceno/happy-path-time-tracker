@@ -13,7 +13,6 @@ import { json, redirect } from '@remix-run/node';
 import { Frontend as Client } from '@happy-path/graphql-client';
 import ClientContainer from '~/components/client-container';
 import { DateTime } from 'luxon';
-import ModalSelectItem from '~/components/modal-select-item';
 import NoTimeEntry from '~/components/no-time-entry';
 import SectionHeader from '~/components/section-header';
 import StartNewTimerButton from '~/components/start-new-timer-button.jsx';
@@ -132,6 +131,24 @@ export default function DashboardDailyDayRoute() {
       {!timers.length > 0 ? <NoTimeEntry /> : ''}
 
       <div className="flex flex-col justify-start items-start">
+        {recentProjectTasks?.length && (
+          <p className="font-medium text-base my-2">
+            Brand New <span className="text-4xl">🤘🏻</span>
+          </p>
+        )}
+        <StartNewTimerButton
+          to={`/dashboard/daily/${day}/projects`}
+          hasRunningTimer={
+            timers.filter((timer) => timer.endsAt == undefined).length == 1
+          }
+          isToday={isToday}
+        />
+
+        {recentProjectTasks?.length && (
+          <p className="font-medium text-base my-2">
+            Recent <span className="text-4xl">👇🏻</span>
+          </p>
+        )}
         {recentProjectTasks &&
           recentProjectTasks?.length > 0 &&
           sortRecentProjectsByCount(recentProjectTasks).map((projectTask) => (
@@ -146,13 +163,6 @@ export default function DashboardDailyDayRoute() {
               projectTask={projectTask}
             />
           ))}
-        <StartNewTimerButton
-          to={`/dashboard/daily/${day}/projects`}
-          hasRunningTimer={
-            timers.filter((timer) => timer.endsAt == undefined).length == 1
-          }
-          isToday={isToday}
-        />
       </div>
 
       <Outlet />

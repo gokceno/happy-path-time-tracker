@@ -53,11 +53,25 @@ const StartNewTimerButton = ({
       />
       {isToday == true ? (
         <div className="relative leading-[133%] font-medium z-[1]">
-          Start a new timer {additionalTag && ` for ${additionalTag}`}
+          Start a new timer{' '}
+          {additionalTag && (
+            <span
+              dangerouslySetInnerHTML={{
+                __html: ` for <span class="text-orange-400">${additionalTag}</span>`,
+              }}
+            />
+          )}
         </div>
       ) : (
         <div className="relative leading-[133%] font-medium z-[1]">
-          Log your times {additionalTag && ` for ${additionalTag}`}
+          Log your times{' '}
+          {additionalTag && (
+            <span
+              dangerouslySetInnerHTML={{
+                __html: ` for <span class="text-orange-400">${additionalTag}</span>`,
+              }}
+            />
+          )}
         </div>
       )}
     </Link>
