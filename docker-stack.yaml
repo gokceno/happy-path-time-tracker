@@ -18,7 +18,7 @@ services:
     networks:
       - happypath
   directus:
-    image: directus/directus:10.6.1
+    image: directus/directus:10.8.3
     networks:
       - happypath
     env_file:
