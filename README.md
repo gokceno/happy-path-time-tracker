@@ -48,7 +48,7 @@ Backend uses [Directus](http://directus.io/) for APIs and data handling. Please 
 **Creating a snapshot:**
 
 1. Go to `apps/directus` in the command-line
-2. Run `yarn create-snapshot`
+2. Run `yarn snapshot:create`
 3. Commit the snapshot. Keep in mind that the snapshot will not be processed automatically among environments.
 
 Snapshots reside under `snapshots/` directory.

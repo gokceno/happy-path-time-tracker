@@ -7,7 +7,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "create-snapshot": "npx directus schema snapshot ./snapshots/\"$(date \"+%F\")\"-snapshot-\"$(date \"+%s\")\".yaml"
+    "snapshot:create": "npx directus schema snapshot ./snapshots/\"$(date \"+%F\")\"-snapshot-\"$(date \"+%s\")\".yaml"
   },
   "dependencies": {
     "pg": "8.10.0",
