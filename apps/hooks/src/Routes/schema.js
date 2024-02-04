@@ -1,8 +1,8 @@
 import { DateTime, Interval, Duration } from 'luxon';
 import { GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLInputObjectType } from 'graphql';
-import { Projects, Tasks, Timers } from '@happy-path/graphql-entities';
+import { Projects, Tasks, Timers, Metadata } from '@happy-path/graphql-entities';
 import { Backend as GraphQLClient } from '@happy-path/graphql-client';
-import { calculateDuration } from '@happy-path/calculator';
+import { calculateDuration, metadata as parseMetadata } from '@happy-path/calculator';
 
 const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -94,8 +94,27 @@ const schema = new GraphQLSchema({
           projectId: { type: new GraphQLNonNull(GraphQLInt) }
         },
         resolve: async (_, { projectId }, context) => {
-          const tasks = Tasks({ client: GraphQLClient(), queryParams: { projectId } });
-          return (await tasks.list()).map(item => ({ id: item.id, taskName: item.tasks_id.task_name }));
+          const tasks = await Tasks({ client: GraphQLClient(), queryParams: { projectId } }).list();
+          const project = await Projects({ client: GraphQLClient() }).findProjectById({ projectId });
+          const metadata = await Metadata({ client: GraphQLClient() }).get();
+          const { groups, task_modifiers: taskModifiers } = parseMetadata([metadata, project.metadata]);
+          let tasksToFilter = [];
+          if(taskModifiers?.deny_list !== undefined) { 
+            const { deny_list: denyList } = taskModifiers;
+            denyList
+              .filter(
+                deny => deny.groups.filter(deniedGroup => {
+                  const filteredGroups = groups.filter(group => {
+                    return (group[deniedGroup]?.members || []).indexOf(context.email) !== -1;
+                  });
+                  return filteredGroups.length > 0 && Object.keys(filteredGroups[0]).includes(deniedGroup);
+                }).length
+              )
+              .map(deny => tasksToFilter.push(...deny.tasks));
+          }
+          return tasks
+            .filter(item => !tasksToFilter.includes(item.tasks_id.task_name))
+            .map(item => ({ id: item.id, taskName: item.tasks_id.task_name }));
         },
       },
       stats: {
