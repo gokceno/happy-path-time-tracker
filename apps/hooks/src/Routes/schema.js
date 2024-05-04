@@ -35,6 +35,7 @@ const schema = new GraphQLSchema({
             duration: { type: GraphQLInt },
             totalDuration: { type: GraphQLInt },
             notes: { type: GraphQLString },
+            relations: { type: new GraphQLList(GraphQLString) },
             project: {type: new GraphQLObjectType({
               name: 'Project',
               fields: {
@@ -58,6 +59,7 @@ const schema = new GraphQLSchema({
             duration: item.duration,
             totalDuration: item.total_duration,
             notes: item.notes,
+            relations: item.relations,
             project: { 
               id: item.task.projects_id.id,
               name: item.task.projects_id.project_name 
@@ -196,6 +198,7 @@ const schema = new GraphQLSchema({
             duration: { type: GraphQLInt },
             totalDuration: { type: GraphQLInt },
             notes: { type: GraphQLString },
+            relations: { type: new GraphQLList(GraphQLString) },
           }
         }),
         resolve: async (_, { id }, context) => {
@@ -208,6 +211,7 @@ const schema = new GraphQLSchema({
             duration: timer?.duration,
             totalDuration: timer?.total_duration,
             notes: timer?.notes,
+            relations: timer?.relations,
           }
         },
       },
@@ -229,14 +233,16 @@ const schema = new GraphQLSchema({
         args: {
           projectTaskId: { type: new GraphQLNonNull(GraphQLInt) },
           duration: { type: GraphQLInt },
-          notes: { type: GraphQLString }
+          notes: { type: GraphQLString },
+          relations: { type: new GraphQLList(GraphQLString) },
         },
-        resolve: async (_, { projectTaskId, startsAt, duration, notes }, context) => {
+        resolve: async (_, { projectTaskId, startsAt, duration, notes, relations }, context) => {
           const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
           const timer = await timers.start({
             projectTaskId,
             email: context.email,
             duration,
+            relations,
             taskComment: notes
           });
           if(timer.status == true) {
@@ -292,15 +298,17 @@ const schema = new GraphQLSchema({
           projectTaskId: { type: new GraphQLNonNull(GraphQLInt) },
           duration: { type: GraphQLInt },
           notes: { type: GraphQLString },
+          relations: { type: new GraphQLList(GraphQLString) },
           startsAt: { type: GraphQLString },
           endsAt: { type: GraphQLString }
         },
-        resolve: async (_, { projectTaskId, duration, notes, startsAt, endsAt }, context) => {
+        resolve: async (_, { projectTaskId, duration, notes, startsAt, endsAt, relations }, context) => {
           const timers = Timers({ client: GraphQLClient(), timezone: process.env.TIMEZONE || 'UTC' });
           const timer = await timers.log({
             projectTaskId,
             email: context.email,
             duration,
+            relations,
             taskComment: notes,
             startsAt,
             endsAt
@@ -352,7 +360,8 @@ const schema = new GraphQLSchema({
               duration: { type: GraphQLInt },
               startsAt: { type: GraphQLString },
               endsAt: { type: GraphQLString },
-              notes: { type: GraphQLString }
+              notes: { type: GraphQLString },
+              relations: { type: new GraphQLList(GraphQLString) },
             }
           })}
         },
@@ -370,6 +379,7 @@ const schema = new GraphQLSchema({
             startsAt: input?.startsAt,
             endsAt: input?.endsAt,
             taskComment: input?.notes,
+            relations: input?.relations,
           }});
           if(timer.status == true) {
             return { 

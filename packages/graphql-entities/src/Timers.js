@@ -42,15 +42,15 @@ const Timers = ({ client, timezone = 'UTC' }) => {
     return timers;
   }
   const log = async (params) => {
-    const { projectTaskId, externalUserId, email, did, taskComment = '', duration = 0, startsAt = DateTime.local({ zone: timezone }).toISO(), endsAt = DateTime.local({ zone: timezone }).toISO() } = params;
+    const { projectTaskId, externalUserId, email, did, taskComment = '', relations = [], duration = 0, startsAt = DateTime.local({ zone: timezone }).toISO(), endsAt = DateTime.local({ zone: timezone }).toISO() } = params;
     if(projectTaskId == undefined || (externalUserId == undefined && did == undefined && email == undefined)) {
       throw new Error('Required parameters not set.');
     }
     const userId = await Users({ client }).findUserId({ externalUserId, email, did });
     const CreateTimerMutation = `
-    mutation create_timers_item($userId: ID!, $duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String) {
+    mutation create_timers_item($userId: ID!, $duration: Int, $endsAt: Date, $startsAt: Date!, $projectTaskId: ID!, $taskComment: String, $relations: JSON) {
       create_timers_item(
-      data: {user_id: {id: $userId}, duration: $duration, ends_at: $endsAt, starts_at: $startsAt, notes: $taskComment, task: {id: $projectTaskId}}
+      data: {user_id: {id: $userId}, duration: $duration, ends_at: $endsAt, starts_at: $startsAt, notes: $taskComment, relations: $relations, task: {id: $projectTaskId}}
       ) {
         id
         starts_at
@@ -73,6 +73,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
       duration:+duration,
       projectTaskId: +projectTaskId,
       taskComment,
+      relations,
       startsAt,
       endsAt
     });
@@ -168,6 +169,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
         duration
         total_duration
         notes
+        relations
         task {
           tasks_id {
             task_name
@@ -193,8 +195,8 @@ const Timers = ({ client, timezone = 'UTC' }) => {
     const { timerId, data } = params;
     if(timerId == undefined) throw new Error('Required parameters not set.');
     const EditTimerMutation = `
-      mutation update_timers_item($timerId: ID!, $taskComment: String, $duration: Int, $totalDuration: Int, $startsAt: Date, $endsAt: Date, $totalCost: Float, $totalDurationInHours: Float) {
-        update_timers_item(id: $timerId, data: {total_cost: $totalCost, notes: $taskComment, total_duration: $totalDuration, duration: $duration, total_duration_in_hours: $totalDurationInHours, starts_at: $startsAt, ends_at: $endsAt}) {
+      mutation update_timers_item($timerId: ID!, $taskComment: String, $relations: JSON, $duration: Int, $totalDuration: Int, $startsAt: Date, $endsAt: Date, $totalCost: Float, $totalDurationInHours: Float) {
+        update_timers_item(id: $timerId, data: {total_cost: $totalCost, notes: $taskComment, relations: $relations, total_duration: $totalDuration, duration: $duration, total_duration_in_hours: $totalDurationInHours, starts_at: $startsAt, ends_at: $endsAt}) {
           id
           duration
           total_duration
@@ -221,7 +223,8 @@ const Timers = ({ client, timezone = 'UTC' }) => {
       totalCost: +data.totalCost,
       startsAt: data.startsAt,
       endsAt: data.endsAt,
-      taskComment: data.taskComment
+      taskComment: data.taskComment,
+      relations: data.relations,
     });
     if(response.error == undefined) {
       return { status: true, data: response.data.update_timers_item };
@@ -262,6 +265,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
           duration
           total_duration
           notes
+          relations
           task {
             tasks_id {
               task_name
@@ -307,6 +311,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
           }
         }
         notes
+        relations
       }
     }
     `;
@@ -330,6 +335,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
         total_duration_in_hours
         total_cost
         notes
+        relations
         starts_at
         ends_at
         task {
