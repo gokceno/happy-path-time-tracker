@@ -196,6 +196,10 @@ reports:
     - <email_address>
   excluded_tasks:
     - <task_name>
+  included_reports:
+    - breakdown_by_team_members
+    - breakdown_by_tasks
+    - work_items
 ```
 
 Basically;

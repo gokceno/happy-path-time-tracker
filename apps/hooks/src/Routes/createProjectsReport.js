@@ -91,18 +91,25 @@ const create =  async (req, res, next) => {
           { label: 'Valid For', value: (req.params.month == 'last' ? DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).minus({ months: 1 }).toFormat('MMMM yyyy') : DateTime.local({ zone: process.env.TIMEZONE || 'UTC' }).toFormat('MMMM yyyy')) },
         ]);
         dd.setTotals({ totalHours, totalBillableAmount });
-        dd.setBreakdownByTaskItems(tasks.map(task => ({ totalHours: Duration.fromObject({ minutes: task.totalMinutes}).toFormat('hh:mm'), ...task })));
-        dd.setBreakdownByTeamMembers(people.map(person => ({ totalHours: Duration.fromObject({ minutes: person.totalMinutes}).toFormat('hh:mm'), ...person })));
-        dd.setWorkItems(
-          timers.map(timer => ({
-            date: DateTime.fromISO(timer.starts_at, { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC').toLocaleString(DateTime.DATE_MED), 
-            nameSurname: `${timer.user_id?.first_name} ${timer.user_id?.last_name[0] || ''}`, 
-            task: timer.task.tasks_id.task_name, 
-            hours: Duration.fromObject({ minutes: timer.total_duration}).toFormat('hh:mm'), 
-            billableAmount: timer.total_cost,
-            notes: timer.notes,
-          }))
-        );
+        const includedReports = reports.included_reports || [];
+        if(includedReports.includes('breakdown_by_tasks')) {
+          dd.setBreakdownByTaskItems(tasks.map(task => ({ totalHours: Duration.fromObject({ minutes: task.totalMinutes}).toFormat('hh:mm'), ...task })));
+        }
+        if(includedReports.includes('breakdown_by_team_members')) {
+          dd.setBreakdownByTeamMembers(people.map(person => ({ totalHours: Duration.fromObject({ minutes: person.totalMinutes}).toFormat('hh:mm'), ...person })));
+        }
+        if(includedReports.includes('work_items')) {
+          dd.setWorkItems(
+            timers.map(timer => ({
+              date: DateTime.fromISO(timer.starts_at, { zone: 'UTC' }).setZone(process.env.TIMEZONE || 'UTC').toLocaleString(DateTime.DATE_MED), 
+              nameSurname: `${timer.user_id?.first_name} ${timer.user_id?.last_name[0] || ''}`, 
+              task: timer.task.tasks_id.task_name, 
+              hours: Duration.fromObject({ minutes: timer.total_duration}).toFormat('hh:mm'), 
+              billableAmount: timer.total_cost,
+              notes: timer.notes,
+            }))
+          );
+        }
         await dd.setLogo({ logoFilePath: process.env.REPORTS_LOGO_URI });
         const printer = new pdfMake(fonts);
         const pdfDoc = printer.createPdfKitDocument(dd.get());

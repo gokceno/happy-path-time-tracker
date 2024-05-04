@@ -112,15 +112,19 @@ const Document = () => {
     }
   }
   const _getSubTitle = (text) => {
-   return {
-      text,
-      color: '#333333',
-      width: '*',
-      fontSize: 18,
-      bold: true,
-      alignment: 'left',
-      margin: [0, 0, 0, 15],
-    }
+   return [
+      '\n\n',
+      '\n\n',
+      {
+        text,
+        color: '#333333',
+        width: '*',
+        fontSize: 18,
+        bold: true,
+        alignment: 'left',
+        margin: [0, 0, 0, 15],
+      }
+    ];
   }
   const _getBreakdownByTaskItems = () => {
     const header = [
@@ -331,41 +335,33 @@ const Document = () => {
           ],
         },
         '\n\n',
-        '\n\n',
-        '\n\n',
-        _getSubTitle('Breakdown by Tasks'),
-        {
+        _breakdownByTaskItems.length ? _getSubTitle('Breakdown by Tasks') : null,
+        _breakdownByTaskItems.length ? {
           layout: _defaultTableLayout,
           table: {
             headerRows: 1,
             widths: ['*', 50, 80],
             body: _getBreakdownByTaskItems()
           },
-        },
-        '\n\n',
-        '\n\n',
-        _getSubTitle('Breakdown by Team Members'),
-        {
+        } : null,
+        _breakdownByTeamMembers.length ? _getSubTitle('Breakdown by Team Members') : null,
+        _breakdownByTeamMembers.length ? {
           layout: _defaultTableLayout,
           table: {
             headerRows: 1,
             widths: ['*', 50, 80],
             body: _getBreakdownByTeamMembers()
           },
-        },
-        '\n\n',
-        '\n\n',
-        _getSubTitle('Work Items'),
-        {
+        } : null,
+        _workItems.length ? _getSubTitle('Work Items') : null,
+        _workItems.length ? {
           layout: _defaultTableLayout,
           table: {
             headerRows: 1,
             widths: [60, 60, '*', 40, 60],
             body: _getWorkItems()
           },
-        },
-        '\n\n',
-        '\n\n',
+        } : null,
         _getSubTitle('Totals'),
         {
           layout: _footerTableLayout,
