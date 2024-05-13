@@ -12,6 +12,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
         id
         duration
         total_duration
+        relations
         starts_at
         ends_at
         task {
@@ -57,6 +58,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
         ends_at
         duration
         total_duration
+        relations
         task {
           tasks_id {
             task_name
@@ -168,6 +170,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
         ends_at
         duration
         total_duration
+        relations
         notes
         relations
         task {
@@ -200,6 +203,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
           id
           duration
           total_duration
+          elations
           total_duration_in_hours
           total_cost
           starts_at
@@ -299,6 +303,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
         duration
         total_duration
         starts_at
+        relations
         ends_at
         task {
           id
@@ -367,6 +372,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
             id
           }
           duration
+          relations
           starts_at
           task {
             projects_id {
@@ -392,6 +398,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
             id
           }
           duration
+          relations
           starts_at
           task {
             projects_id {
