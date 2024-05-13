@@ -203,7 +203,7 @@ const Timers = ({ client, timezone = 'UTC' }) => {
           id
           duration
           total_duration
-          elations
+          relations
           total_duration_in_hours
           total_cost
           starts_at
