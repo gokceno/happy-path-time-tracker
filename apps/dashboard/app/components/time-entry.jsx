@@ -62,7 +62,7 @@ const TimeEntry = ({
                 key={index}
                 className="py-0.5 marker:text-color"
               >
-                -{' '}
+                &bull;{' '}
                 <a
                   onClick={(event) => event.stopPropagation()}
                   href={link}
@@ -70,7 +70,7 @@ const TimeEntry = ({
                   rel="noreferrer"
                   className="text-shades-of-teal-teal-400 no-underline hover:underline"
                 >
-                  {link}
+                  {link.ellipsis(36)}
                 </a>
               </li>
             ))}

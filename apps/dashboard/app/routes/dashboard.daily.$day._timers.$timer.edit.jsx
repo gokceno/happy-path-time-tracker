@@ -1,13 +1,12 @@
 import { Link, useFetcher, useLoaderData, useParams } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
+import { useRef, useState } from 'react';
 
 import { Frontend as Client } from '@happy-path/graphql-client';
 import { Duration } from 'luxon';
 import LinkSection from '../components/link-section';
-import ModalSelectItem from '~/components/modal-select-item';
 import { PatternFormat } from 'react-number-format';
 import { auth as authCookie } from '~/utils/cookies.server';
-import { useState } from 'react';
 
 const TimerQuery = `
   query Timer($timerId: Int!) {
@@ -39,7 +38,7 @@ export const loader = async ({ request, params }) => {
 };
 
 export default function TimerStartRoute() {
-  const { day, project, task } = useParams();
+  const { day } = useParams();
   const { timer } = useLoaderData();
   const fetcher = useFetcher();
 
@@ -51,6 +50,8 @@ export default function TimerStartRoute() {
       setLinks([...links, value]);
     }
   };
+
+  const childRef = useRef();
 
   return (
     <fetcher.Form
@@ -118,6 +119,7 @@ export default function TimerStartRoute() {
             onRemoveLink={() => setIsNewInputVisible(true)}
             onAddLink={onAddLink}
             setIsNewInputVisible={setIsNewInputVisible}
+            ref={childRef}
           />
         )}
 
@@ -141,14 +143,17 @@ export default function TimerStartRoute() {
         </div>
       </div>
       <button
-        type="submit"
+        onClick={async () => {
+          await childRef.current?.submit();
+          fetcher.submit();
+        }}
         className="cursor-pointer [border:none] mt-3 p-3 bg-shades-of-teal-teal-300 self-stretch rounded-9xl h-12 flex flex-row box-border items-center justify-center relative gap-[8px]"
       >
         <div className="relative text-base leading-[133%] font-medium font-primary-small-body-h5-semibold text-primary-real-white text-left z-[2]">
           Save Changes
         </div>
       </button>
-      <div className="self-stretch rounded-lg flex flex-row pt-4 pb-0 items-center justify-start gap-[8px] z-[3] items-center justify-center">
+      <div className="self-stretch rounded-lg flex flex-row pt-4 pb-0 items-center justify-start gap-[8px] z-[3]   justify-center">
         <Link
           to={`/timers/remove/${day}/${timer.id}`}
           className="rounded-9xl h-8 flex flex-row py-1 pr-2 pl-0 box-border items-center justify-center relative gap-[4px] text-shades-of-teal-teal-400"

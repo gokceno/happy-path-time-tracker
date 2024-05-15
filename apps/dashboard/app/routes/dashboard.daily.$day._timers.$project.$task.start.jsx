@@ -1,5 +1,5 @@
 import { Link, useFetcher, useParams } from '@remix-run/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import LinkSection from '../components/link-section';
 import { PatternFormat } from 'react-number-format';
@@ -22,6 +22,8 @@ export default function TimerStartRoute() {
     setTempProject(window.localStorage.getItem('project'));
     setTempTask(window.localStorage.getItem('task'));
   }, []);
+
+  const childRef = useRef();
 
   const fetcher = useFetcher();
   return (
@@ -89,6 +91,7 @@ export default function TimerStartRoute() {
             onRemoveLink={() => setIsNewInputVisible(true)}
             onAddLink={onAddLink}
             setIsNewInputVisible={setIsNewInputVisible}
+            ref={childRef}
           />
         )}
 
@@ -108,7 +111,10 @@ export default function TimerStartRoute() {
         </div>
       </div>
       <button
-        type="submit"
+        onClick={async () => {
+          await childRef.current?.submit();
+          fetcher.submit();
+        }}
         className="cursor-pointer [border:none] mt-3 p-3 bg-shades-of-teal-teal-300 self-stretch rounded-9xl h-12 flex flex-row box-border items-center justify-center relative gap-[8px]"
       >
         <div className="relative text-base leading-[133%] font-medium font-primary-small-body-h5-semibold text-primary-real-white text-left z-[2]">
