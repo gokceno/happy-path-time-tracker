@@ -1,4 +1,4 @@
-FROM directus/directus:10.10.0
+FROM directus/directus:10.11.0
 
 USER root
 RUN apk --no-cache add procps
