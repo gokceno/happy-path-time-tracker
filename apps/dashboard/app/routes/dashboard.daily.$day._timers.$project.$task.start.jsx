@@ -1,6 +1,7 @@
 import { Link, useFetcher, useParams } from '@remix-run/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import LinkSection from '../components/link-section';
 import { PatternFormat } from 'react-number-format';
 
 export default function TimerStartRoute() {
@@ -8,10 +9,21 @@ export default function TimerStartRoute() {
   const [tempProject, setTempProject] = useState('');
   const [tempTask, setTempTask] = useState('');
 
+  const [links, setLinks] = useState([]);
+  const [isNewInputVisible, setIsNewInputVisible] = useState(true);
+
+  const onAddLink = (value) => {
+    if (value) {
+      setLinks([...links, value]);
+    }
+  };
+
   useEffect(() => {
     setTempProject(window.localStorage.getItem('project'));
     setTempTask(window.localStorage.getItem('task'));
   }, []);
+
+  const childRef = useRef();
 
   const fetcher = useFetcher();
   return (
@@ -40,14 +52,49 @@ export default function TimerStartRoute() {
         type="hidden"
         name="tempTask"
       />
+      <input
+        type="hidden"
+        name="relations"
+        value={JSON.stringify(links)}
+      />
+
       <div className="self-stretch flex flex-col items-center justify-start">
         <div className="self-stretch flex flex-row items-center justify-center">
           <textarea
-            className="w-full h-12 [outline:none] self-stretch text-primary-dark-night border-[1px] border-solid border-shades-of-cadet-gray-cadet-gray-200 p-4 rounded-lg leading-[133%]"
+            className="font-primary-small-body-h5-semibold text-sm w-full h-12 [outline:none] self-stretch text-primary-dark-night border-[1px] border-solid border-shades-of-cadet-gray-cadet-gray-200 p-4 rounded-lg leading-[133%]"
             name="notes"
             placeholder="Notes"
           />
         </div>
+        <div className="self-stretch flex py-4 justify-start">
+          Related Links
+        </div>
+
+        {links.map((value, index) => (
+          <LinkSection
+            key={index}
+            value={value}
+            onRemoveLink={() => {
+              const newLinks = [...links];
+              newLinks.splice(index, 1);
+              setLinks(newLinks);
+            }}
+            onAddLink={onAddLink}
+            setIsNewInputVisible={setIsNewInputVisible}
+          />
+        ))}
+
+        {isNewInputVisible && (
+          <LinkSection
+            key={Math.random()}
+            hideMinus={true}
+            onRemoveLink={() => setIsNewInputVisible(true)}
+            onAddLink={onAddLink}
+            setIsNewInputVisible={setIsNewInputVisible}
+            ref={childRef}
+          />
+        )}
+
         <div className="self-stretch mt-4 box-border h-12 flex flex-row items-center justify-center border-b-[1px] border-solid border-shades-of-cadet-gray-cadet-gray-200">
           <div className="rounded-lg flex flex-row py-1 px-2 items-center justify-center">
             <PatternFormat
@@ -64,7 +111,10 @@ export default function TimerStartRoute() {
         </div>
       </div>
       <button
-        type="submit"
+        onClick={async () => {
+          await childRef.current?.submit();
+          fetcher.submit();
+        }}
         className="cursor-pointer [border:none] mt-3 p-3 bg-shades-of-teal-teal-300 self-stretch rounded-9xl h-12 flex flex-row box-border items-center justify-center relative gap-[8px]"
       >
         <div className="relative text-base leading-[133%] font-medium font-primary-small-body-h5-semibold text-primary-real-white text-left z-[2]">

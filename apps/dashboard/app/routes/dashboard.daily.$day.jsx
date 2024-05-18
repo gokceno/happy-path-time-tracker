@@ -26,6 +26,7 @@ const TimersQuery = `
       endsAt
       duration
       totalDuration
+      relations
       notes
       task {
         name

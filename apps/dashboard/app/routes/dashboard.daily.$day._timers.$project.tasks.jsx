@@ -37,7 +37,7 @@ export default function TaskSelectRoute() {
   const [filterBy, setFilterBy] = useState('');
 
   return (
-    <div className="overflow-y-auto self-stretch flex flex-col items-center justify-start z-[2] text-shades-of-cadet-gray-cadet-gray-600">
+    <div className="overflow-y-auto max-h-96 self-stretch flex flex-col items-center justify-start z-[2] text-shades-of-cadet-gray-cadet-gray-600">
       <div className="self-stretch rounded-lg flex flex-row py-0 px-6 items-center justify-start">
         <input
           className="font-primary-small-body-h5-semibold text-sm bg-[transparent] flex-1 rounded flex flex-row p-2 items-center justify-start border-[1px] border-solid border-shades-of-cadet-gray-cadet-gray-200"

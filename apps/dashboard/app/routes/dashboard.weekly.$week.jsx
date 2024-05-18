@@ -1,13 +1,14 @@
 import { Outlet, useLoaderData, useParams, useRevalidator } from '@remix-run/react';
-import { useEffect } from 'react';
 import { json, redirect } from '@remix-run/node';
+
 import { Frontend as Client } from '@happy-path/graphql-client';
-import { DateTime } from 'luxon';
-import { auth as authCookie } from '~/utils/cookies.server';
 import ClientContainer from '../components/client-container';
-import SectionHeader from '../components/section-header';
+import { DateTime } from 'luxon';
 import DayHeader from '../components/day-header';
 import NoTimeEntry from '../components/no-time-entry';
+import SectionHeader from '../components/section-header';
+import { auth as authCookie } from '~/utils/cookies.server';
+import { useEffect } from 'react';
 
 const TimersQuery = `
   query Timers($startsAt: String!, $endsAt: String!) {
@@ -18,6 +19,7 @@ const TimersQuery = `
       duration
       totalDuration
       notes
+      relations
       task {
         name
         id

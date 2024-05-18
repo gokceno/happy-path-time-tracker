@@ -8,16 +8,16 @@ import { json, redirect } from '@remix-run/node';
 import { Frontend as Client } from '@happy-path/graphql-client';
 
 const StartMutation = `
-  mutation Start($projectTaskId: Int!, $duration: Int, $notes: String) {
-    start(projectTaskId: $projectTaskId, duration: $duration, notes: $notes) {
+  mutation Start($projectTaskId: Int!, $duration: Int, $notes: String, $relations: [String]) {
+    start(projectTaskId: $projectTaskId, duration: $duration, notes: $notes, relations: $relations) {
       id
     }
   }
 `;
 
 const LogMutation = `
-  mutation Log($projectTaskId: Int!, $duration: Int, $notes: String, $startsAt: String!, $endsAt: String!) {
-    log(projectTaskId: $projectTaskId, duration: $duration, notes: $notes, startsAt: $startsAt, endsAt: $endsAt) {
+  mutation Log($projectTaskId: Int!, $duration: Int, $notes: String, $startsAt: String!, $endsAt: String!, $relations: [String]) {
+    log(projectTaskId: $projectTaskId, duration: $duration, notes: $notes, startsAt: $startsAt, endsAt: $endsAt, relations: $relations) {
       id
     }
   }
@@ -33,6 +33,7 @@ export const action = async ({ request }) => {
   const projectTaskIdInput = formData.get('projectTaskId');
   const tempProject = formData.get('tempProject');
   const tempTask = formData.get('tempTask');
+  const relations = JSON.parse(formData.get('relations'))?.map((i) => i) || [];
 
   const durationInput = formData.get('duration');
   const notesInput = formData.get('notes');
@@ -54,6 +55,7 @@ export const action = async ({ request }) => {
       projectTaskId: +projectTaskIdInput,
       duration,
       notes: notesInput,
+      relations,
     });
     if (response.error != undefined) {
       return json({ ok: false, error: response.error });
@@ -69,6 +71,7 @@ export const action = async ({ request }) => {
       projectTaskId: +projectTaskIdInput,
       duration,
       notes: notesInput,
+      relations,
       startsAt: DateTime.fromISO(day, {
         zone: process.env.TIMEZONE || 'UTC',
       }).toISO(),
