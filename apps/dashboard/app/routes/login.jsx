@@ -31,7 +31,7 @@ export const action = async ({ request }) => {
     const token = await new SignJWT({ email })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
-      .setExpirationTime('2h')
+      .setExpirationTime(process.env.JWT_EXPIRES || '1h')
       .sign(secret);
     return redirect('/dashboard', {
       headers: {
