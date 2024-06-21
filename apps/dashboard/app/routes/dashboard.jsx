@@ -1,30 +1,28 @@
-import * as AlertDialog from "@radix-ui/react-alert-dialog";
-import * as Toast from "@radix-ui/react-toast";
-import * as jose from "jose";
+import * as AlertDialog from '@radix-ui/react-alert-dialog';
+import * as Toast from '@radix-ui/react-toast';
+import { jwtVerify } from 'jose';
 
 import {
   Outlet,
   useLoaderData,
   useNavigate,
   useSearchParams,
-} from "@remix-run/react";
-import { json, redirect } from "@remix-run/node";
+} from '@remix-run/react';
 
-import Header from "../components/header";
-import { auth as authCookie } from "~/utils/cookies.server";
-import { useState } from "react";
+import { json } from '@remix-run/node';
 
-export const meta = () => [{ title: "Dashboard - Happy Path" }];
+import Header from '../components/header';
+import { auth as authCookie } from '~/utils/cookies.server';
+import { useState } from 'react';
+
+export const meta = () => [{ title: 'Dashboard - Happy Path' }];
 
 export const loader = async ({ request }) => {
-  const { token } =
-    (await authCookie.parse(request.headers.get("cookie"))) || {};
-  if (token == undefined)
-    return redirect(process.env.LOGIN_URI || "/auth/login");
+  const token = await authCookie.parse(request.headers.get('cookie'));
   const secret = new TextEncoder().encode(process.env.JWT_SECRET);
   const {
     payload: { email },
-  } = await jose.jwtVerify(token, secret);
+  } = await jwtVerify(token, secret);
   return json({
     email,
   });
@@ -37,9 +35,9 @@ export default function Dashboard() {
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
 
   let notifications = [];
-  if (searchParams.get("flash")) {
+  if (searchParams.get('flash')) {
     try {
-      const flash = JSON.parse(atob(searchParams.get("flash")));
+      const flash = JSON.parse(atob(searchParams.get('flash')));
       notifications = flash.map((f) => f.message);
     } catch (e) {
       console.error(e);
@@ -54,7 +52,10 @@ export default function Dashboard() {
   return (
     <div className="relative bg-shades-of-cadet-gray-cadet-gray-900 w-full h-screen left-[50%] transform translate-x-[-50%]">
       <div className="absolute top-[0px] left-[0px] bg-primary-real-white w-full flex flex-col py-0 px-8 box-border items-center justify-start h-full">
-        <Header email={email} onLogout={handleLogout} />
+        <Header
+          email={email}
+          onLogout={handleLogout}
+        />
         <Outlet />
       </div>
       <Toast.Provider duration={2500}>
@@ -101,7 +102,7 @@ export default function Dashboard() {
                   type="submit"
                   className="cursor-pointer [border:none] mt-2 p-4 bg-shades-of-teal-teal-300 self-stretch rounded-9xl h-12 flex flex-row box-border items-center justify-center relative gap-[8px]"
                   onClick={() => {
-                    navigate("/auth/logout");
+                    navigate('/logout');
                   }}
                 >
                   <div className="relative text-base leading-[133%] font-medium font-primary-small-body-h5-semibold text-primary-real-white text-left z-[2]">
