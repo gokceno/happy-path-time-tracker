@@ -16,16 +16,12 @@ const TasksQuery = `
 `;
 
 export const loader = async ({ request, params }) => {
-  const { token } =
-    (await authCookie.parse(request.headers.get('cookie'))) || {};
-  if (token == undefined)
-    return redirect(process.env.LOGIN_URI || '/auth/login');
+  const token = await authCookie.parse(request.headers.get('cookie'));
+  if (token == undefined) return redirect('/login');
   const { project } = params;
   const response = await Client({ token }).query(TasksQuery, {
     projectId: +project,
   });
-  if (response.error != undefined)
-    return redirect(process.env.LOGIN_URI || '/auth/login');
   return json({
     tasks: response?.data?.tasks || [],
   });

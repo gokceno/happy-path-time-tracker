@@ -41,13 +41,11 @@ const TimersQuery = `
 `;
 
 export const loader = async ({ request, params }) => {
-  const { token } =
-    (await authCookie.parse(request.headers.get('cookie'))) || {};
+  const token = await authCookie.parse(request.headers.get('cookie'));
   const recentProjectTasks =
     (await recentProjectTasksCookie.parse(request.headers.get('cookie'))) || {};
 
-  if (token == undefined)
-    return redirect(process.env.LOGIN_URI || '/auth/login');
+  if (token == undefined) return redirect('/login');
   const { day: onDate } = params;
   const response = await Client({ token }).query(TimersQuery, {
     startsAt: DateTime.fromISO(onDate, { zone: process.env.TIMEZONE || 'UTC' })
@@ -59,9 +57,6 @@ export const loader = async ({ request, params }) => {
       .toUTC()
       .toISO(),
   });
-  // TODO: not all errors are 403
-  if (response.error != undefined)
-    return redirect(process.env.LOGIN_URI || '/auth/login');
   return json({
     recentProjectTasks: recentProjectTasks || [],
     url: process.env.API_GRAPHQL_URL,

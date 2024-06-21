@@ -220,8 +220,8 @@
   margin-bottom: 0.5rem;
 }
 
-.-mb-6{
-  margin-bottom: -1.5rem;
+.-mb-4{
+  margin-bottom: -1rem;
 }
 
 .mb-0{
@@ -262,10 +262,6 @@
 
 .mt-8{
   margin-top: 2rem;
-}
-
-.-mb-4{
-  margin-bottom: -1rem;
 }
 
 .box-border{

@@ -33,16 +33,13 @@ const TimersQuery = `
 `;
 
 export const loader = async ({ request, params }) => {
-  const { token } = await authCookie.parse(request.headers.get('cookie')) || {};
-  if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
+  const token = await authCookie.parse(request.headers.get('cookie'));
+  if (token == undefined) return redirect('/login');
   const { week: onDate } = params;
   const response = await Client({ token }).query(TimersQuery, {
     startsAt: DateTime.fromISO(onDate, { zone: 'UTC' }).startOf('day').toUTC().toISO(),
     endsAt: DateTime.fromISO(onDate, { zone: 'UTC' }).plus({days: 6}).endOf('day').toUTC().toISO(),
   });
-  // TODO: not all errors are 403
-  // TODO: should redirect to /logout
-  if(response.error != undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
   return json({
     timers: response?.data?.timers || [],
     culture: process.env.LOCALE_CULTURE || 'en-US',
