@@ -1,9 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import pino from 'pino';
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 import pinoHttp from 'pino-http';
-import { createRequire } from "module";
 import { createHandler } from 'graphql-http/lib/use/express';
 import { 
   calculateTotalDuration,
@@ -13,7 +12,6 @@ import {
   notifyUsersWithAbsentTimers,
   createProjectsReport,
   schema,
-  token
 } from './src/Routes/index.js';
 
 Number.prototype.toCurrency = function (currency) {
@@ -23,14 +21,6 @@ Number.prototype.toCurrency = function (currency) {
 Array.prototype.random = function () {
   return this[Math.floor((Math.random()*this.length))];
 }
-
-// Apply some hacks & init Magic
-const require = createRequire(import.meta.url);
-const { Magic } = require('@magic-sdk/admin');
-const magic = new Magic(process.env.MAGIC_SECRET_KEY);
-
-// Init JWT
-const { verify } = jwt;
 
 // Init Express
 const app = express();
@@ -57,25 +47,16 @@ const authenticateAPI = async (req, res, next) => {
   next();
 }
 
-const authenticateUserByMagic = async (req, res, next) => {
-  try {
-    const [type, token] = (req.headers['authorization'] || '').split(' ');
-    magic.token.validate(token);
-    next();
-  }
-  catch(e) {
-    return res.sendStatus(403);
-  }
-}
-
 const authenticateUserByJWT = async (req, res, next) => {
   const [type, token] = (req.headers['authorization'] || '').split(' ');
-  jwt.verify(token, process.env.JWT_SECRET || '', (err, decoded) => {
-    if(decoded == undefined) return res.sendStatus(403);
-    else {
-      next();
-    }
-  });
+  const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+  const {
+    payload: { email },
+  } = await jwtVerify(token, secret);
+  if(email == undefined) return res.sendStatus(403);
+  else {
+    next();
+  }
 }
 
 app.use(pinoHttpLogger);
@@ -89,16 +70,17 @@ app.post('/notify/users/with/absent/timers', authenticateAPI, notifyUsersWithAbs
 app.post('/notify/users/with/prolonged/timers', authenticateAPI, notifyUsersWithProlongedTimers);
 app.post('/reports/projects/create/month/:month', authenticateAPI, createProjectsReport);
 app.post('/calculate/project/timers', authenticateAPI, calculateProjectTimers);
-app.post('/token', authenticateUserByMagic, token);
 
 // TODO: Crashes when no token is present
 app.all('/graphql', authenticateUserByJWT, createHandler({ 
   schema, 
   context: async (req) => {
     const [type, token] = (req.headers['authorization'] || '').split(' ');
-    return jwt.verify(token, process.env.JWT_SECRET, (e, decoded) => {
-      return decoded;
-    });
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const {
+      payload: { email },
+    } = await jwtVerify(token, secret);
+    return { email };
   } 
 }));
 
