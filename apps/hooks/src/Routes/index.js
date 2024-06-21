@@ -5,4 +5,3 @@ export { notify as notifyUsersWithProlongedTimers } from './notifyUsersWithProlo
 export { notify as notifyUsersWithAbsentTimers } from './notifyUsersWithAbsentTimers.js';
 export { create as createProjectsReport } from './createProjectsReport.js';
 export { schema } from './schema.js';
-export { token } from './token.js';
