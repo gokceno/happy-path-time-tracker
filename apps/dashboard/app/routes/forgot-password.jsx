@@ -17,8 +17,8 @@ const ForgotPassword = () => {
           src="/hummingbird.png"
         />
         <div className="flex flex-col justify-center p-8 bg-white mt-8 w-full rounded-lg">
-          <h2 className="my-0 text-center text-xl font-semibold leading-9 tracking-tight text-gray-500">
-            Forgot Password
+          <h2 className="my-0 text-center text-xl font-semibold leading-9 tracking-tight text-primary-dark-night">
+            Recover Account
           </h2>
 
           {isCodeSent && (
