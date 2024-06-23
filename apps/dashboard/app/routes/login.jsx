@@ -1,4 +1,4 @@
-import { SignJWT } from 'jose';
+import { SignJWT, jwtVerify } from 'jose';
 import { useState } from 'react';
 import { Form, useFetcher } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
@@ -25,19 +25,31 @@ export const action = async ({ request }) => {
     email,
     password,
   });
-
   if (response.data?.auth_login !== null) {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const token = await new SignJWT({ email })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setIssuedAt()
-      .setExpirationTime(process.env.JWT_EXPIRES || '1h')
-      .sign(secret);
-    return redirect('/dashboard', {
-      headers: {
-        'Set-Cookie': await authCookie.serialize(token),
-      },
-    });
+    const directusJWTSecret = new TextEncoder().encode(
+      process.env.DIRECTUS_JWT_SECRET
+    );
+    const {
+      payload: { id, app_access: hasAppAccess },
+    } = await jwtVerify(
+      response.data.auth_login.access_token,
+      directusJWTSecret
+    );
+    if (hasAppAccess === true) {
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+      const token = await new SignJWT({ email })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setIssuedAt()
+        .setExpirationTime(process.env.JWT_EXPIRES || '1h')
+        .sign(secret);
+      return redirect('/dashboard', {
+        headers: {
+          'Set-Cookie': await authCookie.serialize(token),
+        },
+      });
+    } else {
+      return json({ ok: false });
+    }
   } else {
     return json({ ok: false, error: response.error });
   }
