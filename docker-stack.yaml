@@ -35,9 +35,5 @@ services:
       - happypath
     env_file:
       - .dashboard.env
-  auth:
-    image: ghcr.io/gokceno/happy-path-auth:2.0.0
-    networks:
-      - happypath
 networks:
   happypath:
