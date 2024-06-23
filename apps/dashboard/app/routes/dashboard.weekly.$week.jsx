@@ -43,7 +43,7 @@ export const loader = async ({ request, params }) => {
   return json({
     timers: response?.data?.timers || [],
     culture: process.env.LOCALE_CULTURE || 'en-US',
-    tinezone: process.env.TIMEZONE || 'UTC',
+    timezone: process.env.TIMEZONE || 'UTC',
     revalidateDateEvery: process.env.REVALIDATE_DATA_EVERY || 60
   });
 };
