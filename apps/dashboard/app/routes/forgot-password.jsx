@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+export const meta = () => [{ title: 'Recover Account - Happy Path' }];
+
 const ForgotPassword = () => {
   const [isInvalidAttempt, setIsInvalidAttempt] = useState(true);
   const [isCodeSent, setIsCodeSent] = useState(true);

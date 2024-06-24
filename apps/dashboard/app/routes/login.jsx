@@ -14,6 +14,8 @@ const LoginMutation = `
   }
 `;
 
+export const meta = () => [{ title: 'Login - Happy Path' }];
+
 export const action = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get('email');
