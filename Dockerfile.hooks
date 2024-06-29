@@ -15,4 +15,4 @@ RUN yarn install
 
 EXPOSE 4000
 
-CMD turbo start --filter='./apps/hooks'
+CMD turbo start --filter='./apps/hooks' --env-mode=loose

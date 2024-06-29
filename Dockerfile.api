@@ -15,4 +15,4 @@ RUN yarn install
 
 EXPOSE 3000
 
-CMD turbo start --filter='./apps/api'
+CMD turbo start --filter='./apps/api' --env-mode=loose

@@ -12,8 +12,8 @@ COPY ./ /usr/app
 # Install dependencies
 RUN yarn global add turbo
 RUN yarn install
-RUN turbo build
+RUN turbo build --env-mode=loose
 
 EXPOSE 4001
 
-CMD turbo start --filter='./apps/dashboard'
+CMD turbo start --filter='./apps/dashboard' --env-mode=loose
