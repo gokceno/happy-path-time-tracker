@@ -1,6 +1,5 @@
 import { SignJWT, jwtVerify } from 'jose';
-import { useState } from 'react';
-import { Form, useFetcher } from '@remix-run/react';
+import { useFetcher } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
 import { Frontend as Client } from '@happy-path/graphql-client';
 import { auth as authCookie } from '~/utils/cookies.server';
@@ -32,7 +31,7 @@ export const action = async ({ request }) => {
       process.env.DIRECTUS_JWT_SECRET
     );
     const {
-      payload: { id, app_access: hasAppAccess },
+      payload: { app_access: hasAppAccess },
     } = await jwtVerify(
       response.data.auth_login.access_token,
       directusJWTSecret
