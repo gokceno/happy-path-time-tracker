@@ -93,7 +93,7 @@ const Login = () => {
                   htmlFor="email"
                   className="text-sm font-medium leading-6 text-gray-500"
                 >
-                  Email address
+                  Email Address
                 </label>
                 <div className="mt-2 w-full">
                   <input
