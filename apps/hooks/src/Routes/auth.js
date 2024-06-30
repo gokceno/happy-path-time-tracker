@@ -1,5 +1,8 @@
+import dotenv from 'dotenv';
 import { SignJWT, jwtVerify } from "jose";
 import { Frontend as Client } from "@happy-path/graphql-client";
+
+dotenv.config();
 
 const LoginMutation = `
   mutation Login($email: String!, $password: String!) {
