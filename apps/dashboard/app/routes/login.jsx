@@ -26,10 +26,6 @@ export const action = async ({ request }) => {
     email,
     password,
   });
-
-  console.log(response, response.data);
-
-
   if (response.data?.auth_login) {
     const directusJWTSecret = new TextEncoder().encode(
       process.env.DIRECTUS_JWT_SECRET

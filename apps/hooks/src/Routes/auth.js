@@ -30,9 +30,6 @@ export const auth = async (req, res) => {
       directusJWTSecret,
     );
     if (hasAppAccess === true) {
-
-      console.log(process.env.JWT_EXPIRES);
-
       const secret = new TextEncoder().encode(process.env.JWT_SECRET);
       const token = await new SignJWT({ email: req.body.email })
         .setProtectedHeader({ alg: "HS256" })
