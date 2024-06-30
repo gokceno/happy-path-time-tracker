@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import express from "express";
 import bodyParser from "body-parser";
 import pino from "pino";
@@ -14,6 +15,8 @@ import {
   schema,
   auth,
 } from "./src/Routes/index.js";
+
+dotenv.config();
 
 Number.prototype.toCurrency = function (currency) {
   return new Intl.NumberFormat(process.env.LOCALE_CULTURE || "en-US", {

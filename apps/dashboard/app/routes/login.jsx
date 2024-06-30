@@ -20,16 +20,16 @@ export const action = async ({ request }) => {
   const email = formData.get('email');
   const password = formData.get('password');
   if (email === undefined || password === undefined) return json({ error: '' });
-
-
-  console.log(process.env.API_DIRECTUS_URL, process.env.DIRECTUS_JWT_SECRET);
-
   const response = await Client({
     url: (process.env.API_DIRECTUS_URL || '') + '/graphql/system',
   }).mutation(LoginMutation, {
     email,
     password,
   });
+
+  console.log(response, response.data);
+
+
   if (response.data?.auth_login) {
     const directusJWTSecret = new TextEncoder().encode(
       process.env.DIRECTUS_JWT_SECRET

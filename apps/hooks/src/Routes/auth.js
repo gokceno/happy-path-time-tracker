@@ -1,8 +1,5 @@
-import dotenv from 'dotenv';
 import { SignJWT, jwtVerify } from "jose";
 import { Frontend as Client } from "@happy-path/graphql-client";
-
-dotenv.config();
 
 const LoginMutation = `
   mutation Login($email: String!, $password: String!) {
@@ -33,6 +30,9 @@ export const auth = async (req, res) => {
       directusJWTSecret,
     );
     if (hasAppAccess === true) {
+
+      console.log(process.env.JWT_EXPIRES);
+
       const secret = new TextEncoder().encode(process.env.JWT_SECRET);
       const token = await new SignJWT({ email: req.body.email })
         .setProtectedHeader({ alg: "HS256" })
