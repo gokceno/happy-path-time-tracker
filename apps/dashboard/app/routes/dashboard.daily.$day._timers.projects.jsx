@@ -16,14 +16,9 @@ const ProjectsQuery = `
 `;
 
 export const loader = async ({ request }) => {
-  const { token } =
-    (await authCookie.parse(request.headers.get('cookie'))) || {};
-
-  if (token == undefined)
-    return redirect(process.env.LOGIN_URI || '/auth/login');
+  const token = await authCookie.parse(request.headers.get('cookie'));
+  if (token == undefined) return redirect('/login');
   const response = await Client({ token }).query(ProjectsQuery);
-  if (response.error != undefined)
-    return redirect(process.env.LOGIN_URI || '/auth/login');
   return json({
     projects: response?.data?.projects || [],
   });

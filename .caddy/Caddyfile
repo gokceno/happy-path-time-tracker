@@ -8,9 +8,6 @@
 	handle_path /directus* {
 		reverse_proxy directus:8055
 	}
-	handle_path /auth* {
-		reverse_proxy auth:8080
-	}
 	handle_path /* {
 		reverse_proxy dashboard:4001
 	}

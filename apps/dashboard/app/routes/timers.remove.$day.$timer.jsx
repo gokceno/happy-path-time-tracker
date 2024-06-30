@@ -12,8 +12,8 @@ const TimersMutation = `
 `;
 
 export const loader = async ({ request, params }) => {
-  const { token } = await authCookie.parse(request.headers.get('cookie')) || {};
-  if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
+  const token = await authCookie.parse(request.headers.get('cookie'));
+  if (token == undefined) return redirect('/login');
   const { day, timer } = params;
   let flash = [];
   const response = await Client({ token }).mutation(TimersMutation, { timerId: +timer });

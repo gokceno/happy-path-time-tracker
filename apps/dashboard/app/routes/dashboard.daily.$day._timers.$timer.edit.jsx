@@ -22,16 +22,12 @@ const TimerQuery = `
 `;
 
 export const loader = async ({ request, params }) => {
-  const { token } =
-    (await authCookie.parse(request.headers.get('cookie'))) || {};
-  if (token == undefined)
-    return redirect(process.env.LOGIN_URI || '/auth/login');
+  const token = await authCookie.parse(request.headers.get('cookie'));
+  if (token == undefined) return redirect('/login');
   const { day, timer } = params;
   const response = await Client({ token }).query(TimerQuery, {
     timerId: +timer,
   });
-  if (response.error != undefined)
-    return redirect(process.env.LOGIN_URI || '/auth/login');
   return json({
     timer: response?.data?.timer || {},
   });

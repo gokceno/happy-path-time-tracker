@@ -20,8 +20,8 @@ export const meta = () => ([
 ]);
 
 export const loader = async ({ request, params }) => {
-  const { token } = await authCookie.parse(request.headers.get('cookie')) || {};
-  if(token == undefined) return redirect(process.env.LOGIN_URI || '/auth/login');
+  const token = await authCookie.parse(request.headers.get('cookie'));
+  if (token == undefined) return redirect('/login');
   const { day: onDate } = params;
   const response = await Client({ token }).query(StatsQuery, { onDate });
   return json({ 
@@ -38,7 +38,7 @@ export const shouldRevalidate = ({ currentParams, nextParams, defaultShouldReval
 
 export default function DashboardDailyRoute() {
   const { day: onDate } = useParams();
-  const { stats, timezone, culture } = useLoaderData();
+  const { stats, culture } = useLoaderData();
   return (
     <div className="w-[671px] flex flex-col pt-0 px-0 pb-8 box-border items-center justify-start gap-[32px] min-w-[345px] max-w-[906px]">
       <div className="self-stretch flex flex-col items-start justify-start">

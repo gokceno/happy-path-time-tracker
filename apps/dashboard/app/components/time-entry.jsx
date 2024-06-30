@@ -53,7 +53,7 @@ const TimeEntry = ({
           </div>
         </div>
         <div className="w-full relative text-sm leading-[133%] mt-2 font-regular font-primary-small-body-h5-medium text-shades-of-cadet-gray-cadet-gray-400 text-left z-[1]">
-          {timeEntryDescription || 'Notes n/a. Click to edit'}
+          {timeEntryDescription || 'Notes n/a. Edit to add some notes.'}
         </div>
         {relations?.length > 0 && (
           <ul className="m-0 p-0 mt-2 list-none">
