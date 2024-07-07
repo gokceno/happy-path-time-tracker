@@ -1,6 +1,6 @@
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import * as Toast from '@radix-ui/react-toast';
-import { jwtVerify } from 'jose';
+// import { jwtVerify } from 'jose';
 
 import {
   Outlet,
@@ -12,19 +12,21 @@ import {
 import { json } from '@remix-run/node';
 
 import Header from '../components/header';
-import { auth as authCookie } from '~/utils/cookies.server';
+// import { auth as authCookie } from '~/utils/cookies.server';
 import { useState } from 'react';
 
 export const meta = () => [{ title: 'Dashboard - Happy Path' }];
 
 export const loader = async ({ request }) => {
+  /*
   const token = await authCookie.parse(request.headers.get('cookie'));
   const secret = new TextEncoder().encode(process.env.JWT_SECRET);
   const {
     payload: { email },
   } = await jwtVerify(token, secret);
+  */
   return json({
-    email,
+    email: "gokcen@brewww.com",
   });
 };
 

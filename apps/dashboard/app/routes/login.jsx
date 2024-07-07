@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from 'jose';
+import { jwtVerify } from 'jose';
 import { useFetcher } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
 import { Frontend as Client } from '@happy-path/graphql-client';
@@ -37,15 +37,9 @@ export const action = async ({ request }) => {
       directusJWTSecret
     );
     if (hasAppAccess === true) {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-      const token = await new SignJWT({ email })
-        .setProtectedHeader({ alg: 'HS256' })
-        .setIssuedAt()
-        .setExpirationTime(process.env.JWT_EXPIRES || '1h')
-        .sign(secret);
       return redirect('/dashboard', {
         headers: {
-          'Set-Cookie': await authCookie.serialize(token),
+          'Set-Cookie': await authCookie.serialize(response.data.auth_login.access_token),
         },
       });
     } else {
