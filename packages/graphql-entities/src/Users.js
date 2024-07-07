@@ -57,6 +57,8 @@ const Users = ({ client }) => {
       throw new Error(response.error);
     }
   }
+  const me = async () => {
+  }
   const findUserId = async (params) => {
     // TODO: Simplfy the if-blocks
     const { externalUserId, email, did, userId } = params;
@@ -146,6 +148,7 @@ const Users = ({ client }) => {
     }
   }
   const findUsersByTimerDate = async(params) => {
+    // TODO: Can this function be removed?
     const { startsAt, endsAt } = params;
     if(startsAt == undefined && endsAt == undefined) throw new Error('Missing arguments');
     const UserTimersQuery = `
@@ -166,10 +169,9 @@ const Users = ({ client }) => {
       startsAt,
       endsAt,
     });
-    console.log(response);
     return response?.data?.users || [];
   }
-  return { syncByExternalUserId, syncByEmail, findUserId, findUsersByTimerDate }
+  return { syncByExternalUserId, syncByEmail, findUserId, findUsersByTimerDate, me }
 }
 
 export { Users }
