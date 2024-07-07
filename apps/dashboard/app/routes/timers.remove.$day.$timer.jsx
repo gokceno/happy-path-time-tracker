@@ -1,5 +1,4 @@
-import { useParams } from "@remix-run/react";
-import { json, redirect } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { Frontend as Client } from '@happy-path/graphql-client';
 import { auth as authCookie } from '~/utils/cookies.server';
 
