@@ -1,29 +1,58 @@
 import { Link, useLoaderData, useParams } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
-
-import { Frontend as Client } from '@happy-path/graphql-client';
+import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
+import { Projects, Tasks, Metadata } from '@happy-path/graphql-entities';
+import { metadata as parseMetadata } from '@happy-path/calculator';
 import ModalSelectItem from '~/components/modal-select-item';
 import { auth as authCookie } from '~/utils/cookies.server';
 import { useState } from 'react';
 
-const TasksQuery = `
-  query Tasks($projectId: Int!) {
-    tasks(projectId: $projectId) {
-      id
-      taskName
-    }
-  }
-`;
-
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
   if (token == undefined) return redirect('/login');
-  const { project } = params;
-  const response = await Client({ token }).query(TasksQuery, {
-    projectId: +project,
+  const { project: projectId } = params;
+  const client = GraphQLClient({
+    token,
+    url: process.env.API_DIRECTUS_URL + '/graphql/',
   });
+  const tasks = await Tasks({
+    client,
+    queryParams: { projectId },
+  }).list();
+  const project = await Projects({ client }).findProjectById({
+    projectId,
+  });
+  const metadata = await Metadata({ client }).get();
+  const { groups, task_modifiers: taskModifiers } = parseMetadata([
+    metadata,
+    project.metadata,
+  ]);
+  let tasksToFilter = [];
+  if (taskModifiers?.deny_list !== undefined) {
+    const { deny_list: denyList } = taskModifiers;
+    denyList
+      .filter(
+        (deny) =>
+          deny.groups.filter((deniedGroup) => {
+            const filteredGroups = groups.filter((group) => {
+              return (
+                (group[deniedGroup]?.members || []).indexOf(
+                  'gokcen@brewww.com'
+                ) !== -1
+              );
+            });
+            return (
+              filteredGroups.length > 0 &&
+              Object.keys(filteredGroups[0]).includes(deniedGroup)
+            );
+          }).length
+      )
+      .map((deny) => tasksToFilter.push(...deny.tasks));
+  }
   return json({
-    tasks: response?.data?.tasks || [],
+    tasks: tasks
+      .filter((item) => !tasksToFilter.includes(item.tasks_id.task_name))
+      .map((item) => ({ id: item.id, taskName: item.tasks_id.task_name })),
   });
 };
 

@@ -1,8 +1,123 @@
 import { Link, useFetcher, useParams } from '@remix-run/react';
 import { useEffect, useRef, useState } from 'react';
-
-import LinkSection from '../components/link-section';
 import { PatternFormat } from 'react-number-format';
+import { DateTime, Duration } from 'luxon';
+import {
+  auth as authCookie,
+  recentProjectTasks as recentProjectTasksCookie,
+} from '~/utils/cookies.server';
+import { json, redirect } from '@remix-run/node';
+import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
+import { Timers } from '@happy-path/graphql-entities';
+import LinkSection from '../components/link-section';
+
+export const action = async ({ request }) => {
+  const token = await authCookie.parse(request.headers.get('cookie'));
+  if (token == undefined) return redirect('/login');
+
+  const formData = await request.formData();
+  const projectTaskId = formData.get('projectTaskId');
+  const tempProject = formData.get('tempProject');
+  const tempTask = formData.get('tempTask');
+  const relations = JSON.parse(formData.get('relations'))?.map((i) => i) || [];
+  const notes = formData.get('notes');
+  const day = formData.get('day');
+  const [hours, minutes] = formData.get('duration').split(':');
+
+  const duration =
+    hours && minutes
+      ? Duration.fromObject({ hours, minutes }).as('minutes')
+      : 0;
+
+  let flash = [];
+
+  const client = GraphQLClient({
+    token,
+    url: process.env.API_DIRECTUS_URL + '/graphql/',
+  });
+
+  try {
+    if (
+      DateTime.local({ timezone: process.env.TIMEZONE || 'UTC' }).toISODate() ==
+      day
+    ) {
+      await Timers({
+        client,
+        timezone: process.env.TIMEZONE || 'UTC',
+      }).start({
+        projectTaskId,
+        email: 'gokcen@brewww.com',
+        duration,
+        relations,
+        notes,
+      });
+      flash = [
+        {
+          message:
+            "You started a timer. Don't forget to stop once you're done with it.",
+        },
+      ];
+    } else {
+      await Timers({
+        client,
+        timezone: process.env.TIMEZONE || 'UTC',
+      }).log({
+        projectTaskId,
+        email: 'gokcen@brewww.com',
+        duration,
+        relations,
+        notes,
+        startsAt: DateTime.fromISO(day, {
+          zone: process.env.TIMEZONE || 'UTC',
+        }).toISO(),
+        endsAt: DateTime.fromISO(day, {
+          zone: process.env.TIMEZONE || 'UTC',
+        }).toISO(),
+      });
+      flash = [{ message: 'You logged your time. Thank you.' }];
+    }
+  } catch (error) {
+    return json({ ok: false, error });
+  }
+
+  const updateArray = (arr, newObject) => {
+    const existingObject = arr.find((obj) => obj.taskId === newObject.taskId);
+    if (existingObject) {
+      existingObject.count++;
+    } else {
+      arr.push({
+        ...newObject,
+        count: 1,
+      });
+    }
+    return arr;
+  };
+  const currentRecentProjects =
+    (await recentProjectTasksCookie.parse(request.headers.get('cookie'))) || [];
+
+  const newRecentProject = {
+    projectId: JSON.parse(tempProject).id,
+    projectName: JSON.parse(tempProject).title,
+    taskId: JSON.parse(tempTask).id,
+    taskName: JSON.parse(tempTask).title,
+  };
+
+  const updatedRecentProjectsArray = updateArray(
+    currentRecentProjects,
+    newRecentProject
+  );
+
+  return redirect(
+    `/dashboard/daily/${day}?flash=${btoa(JSON.stringify(flash))}`,
+    {
+      headers: {
+        'Set-Cookie': await recentProjectTasksCookie.serialize(
+          updatedRecentProjectsArray
+        ),
+      },
+    }
+  );
+};
 
 export default function TimerStartRoute() {
   const { day, project, task } = useParams();
@@ -29,7 +144,6 @@ export default function TimerStartRoute() {
   return (
     <fetcher.Form
       method="post"
-      action="/timers/start"
       className="self-stretch flex flex-col px-6 py-2 items-center justify-start z-[2] text-shades-of-cadet-gray-cadet-gray-600"
     >
       <input
