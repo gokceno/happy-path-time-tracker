@@ -82,14 +82,9 @@ export const action = async ({ request }) => {
 
   const updateArray = (arr, newObject) => {
     const existingObject = arr.find((obj) => obj.taskId === newObject.taskId);
-    if (existingObject) {
-      existingObject.count++;
-    } else {
-      arr.push({
-        ...newObject,
-        count: 1,
-      });
-    }
+    existingObject
+      ? existingObject.count++
+      : arr.push({ ...newObject, count: 1 });
     return arr;
   };
   const currentRecentProjects =
