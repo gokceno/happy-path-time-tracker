@@ -37,44 +37,37 @@ export const action = async ({ request }) => {
   });
 
   try {
-    if (
-      DateTime.local({ timezone: process.env.TIMEZONE || 'UTC' }).toISODate() ==
-      day
-    ) {
+    const timerConfig = {
+      projectTaskId,
+      email: 'gokcen@brewww.com',
+      duration,
+      relations,
+      notes,
+    };
+    const timezone = process.env.TIMEZONE || 'UTC';
+    if (DateTime.local({ timezone }).toISODate() == day) {
       await Timers({
         client,
-        timezone: process.env.TIMEZONE || 'UTC',
-      }).start({
-        projectTaskId,
-        email: 'gokcen@brewww.com',
-        duration,
-        relations,
-        notes,
+        timezone,
+      }).start(timerConfig);
+      flash.push({
+        message:
+          "You started a timer. Don't forget to stop once you're done with it.",
       });
-      flash = [
-        {
-          message:
-            "You started a timer. Don't forget to stop once you're done with it.",
-        },
-      ];
     } else {
       await Timers({
         client,
-        timezone: process.env.TIMEZONE || 'UTC',
+        timezone,
       }).log({
-        projectTaskId,
-        email: 'gokcen@brewww.com',
-        duration,
-        relations,
-        notes,
         startsAt: DateTime.fromISO(day, {
-          zone: process.env.TIMEZONE || 'UTC',
+          zone: timezone,
         }).toISO(),
         endsAt: DateTime.fromISO(day, {
-          zone: process.env.TIMEZONE || 'UTC',
+          zone: timezone,
         }).toISO(),
+        ...timerConfig,
       });
-      flash = [{ message: 'You logged your time. Thank you.' }];
+      flash.push({ message: 'You logged your time. Thank you.' });
     }
   } catch (error) {
     return json({ ok: false, error });
