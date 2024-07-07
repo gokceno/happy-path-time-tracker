@@ -115,11 +115,7 @@ export default function TimerStartRoute() {
   const [links, setLinks] = useState([]);
   const [isNewInputVisible, setIsNewInputVisible] = useState(true);
 
-  const onAddLink = (value) => {
-    if (value) {
-      setLinks([...links, value]);
-    }
-  };
+  const onAddLink = value => value && setLinks([...links, value]);
 
   useEffect(() => {
     setTempProject(window.localStorage.getItem('project'));
