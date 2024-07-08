@@ -224,6 +224,7 @@ const Timers = ({ client, timezone = "UTC" }) => {
   };
   const update = async (params) => {
     // TODO: Check user when updating timer entry
+    // TODO: data prop incompatible with remaining methods
     const { timerId, data } = params;
     if (timerId == undefined) throw new Error("Required parameters not set.");
     const EditTimerMutation = `

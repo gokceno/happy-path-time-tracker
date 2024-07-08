@@ -1,5 +1,5 @@
 import { DateTime, Interval, Duration } from 'luxon';
-import { Outlet, useLoaderData, useParams, useMatches } from '@remix-run/react';
+import { Outlet, useLoaderData, useParams } from '@remix-run/react';
 import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import { Timers } from '@happy-path/graphql-entities';
 import { json, redirect } from '@remix-run/node';
