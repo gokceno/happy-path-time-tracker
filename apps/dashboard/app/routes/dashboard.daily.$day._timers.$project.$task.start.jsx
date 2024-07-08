@@ -42,7 +42,7 @@ export const action = async ({ request }) => {
       email: 'gokcen@brewww.com',
       duration,
       relations,
-      notes,
+      taskComment: notes,
     };
     const timezone = process.env.TIMEZONE || 'UTC';
     if (DateTime.local({ timezone }).toISODate() == day) {
@@ -69,8 +69,8 @@ export const action = async ({ request }) => {
       });
       flash.push({ message: 'You logged your time. Thank you.' });
     }
-  } catch (error) {
-    return json({ ok: false, error });
+  } catch (e) {
+    flash.push({ message: e.message });
   }
 
   const updateArray = (arr, newObject) => {
