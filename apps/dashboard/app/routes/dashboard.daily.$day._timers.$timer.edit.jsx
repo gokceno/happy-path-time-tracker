@@ -1,36 +1,99 @@
 import { Link, useFetcher, useLoaderData, useParams } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
 import { useRef, useState } from 'react';
-
-import { Frontend as Client } from '@happy-path/graphql-client';
+import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
+import { Timers } from '@happy-path/graphql-entities';
 import { Duration } from 'luxon';
 import LinkSection from '../components/link-section';
 import { PatternFormat } from 'react-number-format';
 import { auth as authCookie } from '~/utils/cookies.server';
-
-const TimerQuery = `
-  query Timer($timerId: Int!) {
-    timer(id: $timerId) {
-      id
-      duration
-      notes
-      relations
-      startsAt
-      endsAt
-    }
-  }
-`;
+import { calculateDuration } from '@happy-path/calculator';
 
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
   if (token == undefined) return redirect('/login');
-  const { day, timer } = params;
-  const response = await Client({ token }).query(TimerQuery, {
-    timerId: +timer,
+  const { timer: timerId } = params;
+
+  const client = GraphQLClient({
+    token,
+    url: process.env.API_DIRECTUS_URL + '/graphql/',
   });
+
+  const timer = await Timers({
+    client,
+    timezone: process.env.TIMEZONE || 'UTC',
+  }).get({
+    timerId,
+  });
+
   return json({
-    timer: response?.data?.timer || {},
+    timer: {
+      id: timer.data.id,
+      relations: timer.data.relations,
+      startsAt: timer.data.starts_at,
+      endsAt: timer.data.ends_at,
+      notes: timer.data.notes,
+      duration: timer.data.duration,
+    },
   });
+};
+
+export const action = async ({ request }) => {
+  const token = await authCookie.parse(request.headers.get('cookie'));
+  if (token == undefined) return redirect('/login');
+
+  const formData = await request.formData();
+
+  const timerId = formData.get('timerId');
+  const durationInput = formData.get('duration');
+  const startsAt = formData.get('startsAt') || null;
+  const endsAt = formData.get('endsAt') || null;
+  const notesInput = formData.get('notes');
+  const relations = JSON.parse(formData.get('relations'))?.map((i) => i) || [];
+  const day = formData.get('day');
+  const [hours, minutes] = durationInput.split(':');
+  const duration =
+    hours && minutes
+      ? Duration.fromObject({ hours, minutes }).as('minutes')
+      : 0;
+
+  let flash = [];
+
+  const timezone = process.env.TIMEZONE || 'UTC';
+  const client = GraphQLClient({
+    token,
+    url: process.env.API_DIRECTUS_URL + '/graphql/',
+  });
+
+  const { totalDuration, totalDurationInHours } = calculateDuration({
+    startsAt,
+    endsAt,
+    duration,
+  });
+
+  try {
+    await Timers({
+      client,
+      timezone,
+    }).update({
+      timerId,
+      data: {
+        startsAt,
+        endsAt,
+        duration,
+        totalDuration,
+        totalDurationInHours,
+        relations,
+        taskComment: notesInput || null,
+      },
+    });
+    flash.push({ message: 'Time entry updated. Good job!' });
+  } catch (e) {
+    flash.push({ message: e.message });
+  }
+  return redirect(
+    `/dashboard/daily/${day}?flash=${btoa(JSON.stringify(flash))}`
+  );
 };
 
 export default function TimerStartRoute() {
@@ -41,18 +104,14 @@ export default function TimerStartRoute() {
   const [links, setLinks] = useState(timer.relations);
   const [isNewInputVisible, setIsNewInputVisible] = useState(true);
 
-  const onAddLink = (value) => {
-    if (value) {
-      setLinks([...links, value]);
-    }
-  };
+  const onAddLink = (value) =>
+    value && setLinks((prevLinks) => [...prevLinks, value]);
 
   const childRef = useRef();
 
   return (
     <fetcher.Form
       method="post"
-      action="/timers/edit"
       className="self-stretch flex flex-col px-6 py-2 items-center justify-start z-[2] text-shades-of-cadet-gray-cadet-gray-600"
     >
       <input
