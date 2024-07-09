@@ -2,7 +2,7 @@ import { jwtVerify } from 'jose';
 import { useFetcher } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
 import { Frontend as Client } from '@happy-path/graphql-client';
-import { auth as authCookie } from '~/utils/cookies.server';
+import { auth as authCookie, email as emailCookie } from '~/utils/cookies.server';
 
 const LoginMutation = `
   mutation Login($email: String!, $password: String!) {
@@ -38,9 +38,10 @@ export const action = async ({ request }) => {
     );
     if (hasAppAccess === true) {
       return redirect('/dashboard', {
-        headers: {
-          'Set-Cookie': await authCookie.serialize(response.data.auth_login.access_token),
-        },
+        headers: [
+          ['Set-Cookie', await authCookie.serialize(response.data.auth_login.access_token)],
+          ['Set-Cookie', await emailCookie.serialize('gokcen@brewww.com')],
+        ],
       });
     } else {
       return json({ ok: false });

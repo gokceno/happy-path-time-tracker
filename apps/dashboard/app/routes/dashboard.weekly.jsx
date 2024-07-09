@@ -3,13 +3,14 @@ import { Outlet, useParams, useLoaderData } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
 import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import { Timers } from '@happy-path/graphql-entities';
-import { auth as authCookie } from '~/utils/cookies.server';
+import { auth as authCookie, email as emailCookie } from '~/utils/cookies.server';
 import WeekPicker from '../components/week-picker';
 
 export const meta = () => [{ title: 'Weekly Dashboard - Happy Path' }];
 
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
+  const email = await emailCookie.parse(request.headers.get('cookie'));
   if (token == undefined) return redirect('/login');
   const { week: date } = params;
 
@@ -30,7 +31,7 @@ export const loader = async ({ request, params }) => {
       .endOf('month')
       .plus({ week: 1 })
       .toUTC(),
-    email: 'gokcen@brewww.com', // FIXME: Replace with logged in users email
+    email,
   });
   const monthlyInterval = Interval.fromDateTimes(
     DateTime.fromISO(date).startOf('month'),

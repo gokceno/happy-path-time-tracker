@@ -7,11 +7,12 @@ import { DateTime } from 'luxon';
 import DayHeader from '../components/day-header';
 import NoTimeEntry from '../components/no-time-entry';
 import SectionHeader from '../components/section-header';
-import { auth as authCookie } from '~/utils/cookies.server';
+import { auth as authCookie, email as emailCookie } from '~/utils/cookies.server';
 import { useEffect } from 'react';
 
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
+  const email = await emailCookie.parse(request.headers.get('cookie'));
   if (token == undefined) return redirect('/login');
   const { week: onDate } = params;
 
@@ -34,7 +35,7 @@ export const loader = async ({ request, params }) => {
         .endOf('day')
         .toUTC()
         .toISO(),
-      email: 'gokcen@brewww.com', // FIXME: Replace with logged in users email
+      email,
     })
   ).map((item) => ({
     id: item.id,

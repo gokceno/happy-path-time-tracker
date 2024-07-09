@@ -4,11 +4,15 @@ import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import { Projects, Tasks, Metadata } from '@happy-path/graphql-entities';
 import { metadata as parseMetadata } from '@happy-path/calculator';
 import ModalSelectItem from '~/components/modal-select-item';
-import { auth as authCookie } from '~/utils/cookies.server';
+import {
+  auth as authCookie,
+  email as emailCookie,
+} from '~/utils/cookies.server';
 import { useState } from 'react';
 
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
+  const email = await emailCookie.parse(request.headers.get('cookie'));
   if (token == undefined) return redirect('/login');
   const { project: projectId } = params;
   const client = GraphQLClient({
@@ -35,11 +39,7 @@ export const loader = async ({ request, params }) => {
         (deny) =>
           deny.groups.filter((deniedGroup) => {
             const filteredGroups = groups.filter((group) => {
-              return (
-                (group[deniedGroup]?.members || []).indexOf(
-                  'gokcen@brewww.com'
-                ) !== -1
-              );
+              return (group[deniedGroup]?.members || []).indexOf(email) !== -1;
             });
             return (
               filteredGroups.length > 0 &&

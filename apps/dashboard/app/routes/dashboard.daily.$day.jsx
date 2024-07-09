@@ -8,6 +8,7 @@ import {
 } from '@remix-run/react';
 import {
   auth as authCookie,
+  email as emailCookie,
   recentProjectTasks as recentProjectTasksCookie,
 } from '~/utils/cookies.server';
 import { json, redirect } from '@remix-run/node';
@@ -20,7 +21,7 @@ import StartNewTimerButton from '~/components/start-new-timer-button.jsx';
 
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
-  // TODO: An expired token could still be defined.
+  const email = await emailCookie.parse(request.headers.get('cookie'));
   if (token == undefined) return redirect('/login');
   const { day: onDate } = params;
   const recentProjectTasks =
@@ -43,7 +44,7 @@ export const loader = async ({ request, params }) => {
         .endOf('day')
         .toUTC()
         .toISO(),
-      email: 'gokcen@brewww.com', // FIXME: Replace with logged in users email
+      email,
     })
   ).map((item) => ({
     id: item.id,

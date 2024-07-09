@@ -3,13 +3,18 @@ import { Outlet, useLoaderData, useParams } from '@remix-run/react';
 import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import { Timers } from '@happy-path/graphql-entities';
 import { json, redirect } from '@remix-run/node';
-import { auth as authCookie } from '~/utils/cookies.server';
+import {
+  auth as authCookie,
+  email as emailCookie,
+} from '~/utils/cookies.server';
 import DayPicker from '../components/day-picker';
 
 export const meta = () => [{ title: 'Daily Dashboard - Happy Path' }];
 
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
+  const email = await emailCookie.parse(request.headers.get('cookie'));
+  
   if (token == undefined) return redirect('/login');
   const { day: date } = params;
   const client = GraphQLClient({
@@ -28,9 +33,8 @@ export const loader = async ({ request, params }) => {
       .endOf('month')
       .plus({ week: 1 })
       .toUTC(),
-    email: 'gokcen@brewww.com', // FIXME: Replace with logged in users email
+    email,
   });
-  if (timers.length == 0) return {};
   const monthlyInterval = Interval.fromDateTimes(
     DateTime.fromISO(date).startOf('month'),
     DateTime.fromISO(date).endOf('month')

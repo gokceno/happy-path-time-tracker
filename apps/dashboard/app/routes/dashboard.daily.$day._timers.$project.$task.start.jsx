@@ -4,15 +4,17 @@ import { PatternFormat } from 'react-number-format';
 import { DateTime, Duration } from 'luxon';
 import {
   auth as authCookie,
+  email as emailCookie,
   recentProjectTasks as recentProjectTasksCookie,
 } from '~/utils/cookies.server';
-import { json, redirect } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import { Timers } from '@happy-path/graphql-entities';
 import LinkSection from '../components/link-section';
 
 export const action = async ({ request }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
+  const email = await emailCookie.parse(request.headers.get('cookie'));
   if (token == undefined) return redirect('/login');
 
   const formData = await request.formData();
@@ -39,7 +41,7 @@ export const action = async ({ request }) => {
   try {
     const timerConfig = {
       projectTaskId,
-      email: 'gokcen@brewww.com',
+      email,
       duration,
       relations,
       taskComment: notes,
