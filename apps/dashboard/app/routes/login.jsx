@@ -2,13 +2,24 @@ import { jwtVerify } from 'jose';
 import { useFetcher } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
 import { Frontend as Client } from '@happy-path/graphql-client';
-import { auth as authCookie, email as emailCookie } from '~/utils/cookies.server';
+import {
+  auth as authCookie,
+  email as emailCookie,
+} from '~/utils/cookies.server';
 
 const LoginMutation = `
   mutation Login($email: String!, $password: String!) {
     auth_login(email: $email, password: $password) {
       access_token
       refresh_token
+    }
+  }
+`;
+
+const MeQuery = `
+  query {
+    users_me {
+      email
     }
   }
 `;
@@ -37,12 +48,23 @@ export const action = async ({ request }) => {
       directusJWTSecret
     );
     if (hasAppAccess === true) {
-      return redirect('/dashboard', {
-        headers: [
-          ['Set-Cookie', await authCookie.serialize(response.data.auth_login.access_token)],
-          ['Set-Cookie', await emailCookie.serialize('gokcen@brewww.com')],
-        ],
-      });
+      try {
+        const user = await Client({
+          token: response.data.auth_login.access_token,
+          url: (process.env.API_DIRECTUS_URL || '') + '/graphql/system',
+        }).query(MeQuery);
+        return redirect('/dashboard', {
+          headers: [
+            [
+              'Set-Cookie',
+              await authCookie.serialize(response.data.auth_login.access_token),
+            ],
+            ['Set-Cookie', await emailCookie.serialize(user.data.users_me.email)],
+          ],
+        });
+      } catch (e) {
+        return json({ ok: false, error: e.message });
+      }
     } else {
       return json({ ok: false });
     }
