@@ -10,7 +10,7 @@ const Timers = ({ client, timezone = "UTC" }) => {
       did == undefined &&
       userId == undefined
     )
-      throw new Error("A user identifier must be set");
+      throw new Error("An user identifier must be set");
 
     const actualUserId = await Users({ client }).findUserId({
       externalUserId,
