@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
 import pino from "pino";
@@ -56,13 +56,17 @@ const authenticateAPI = async (req, res, next) => {
 
 const authenticateUserByJWT = async (req, res, next) => {
   const [type, token] = (req.headers["authorization"] || "").split(" ");
-  const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-  const {
-    payload: { email },
-  } = await jwtVerify(token, secret);
-  if (email == undefined) return res.sendStatus(403);
-  else {
-    next();
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const {
+      payload: { email },
+    } = await jwtVerify(token, secret);
+    if (email == undefined) return res.sendStatus(403);
+    else {
+      next();
+    }
+  } catch (e) {
+    return res.sendStatus(403);
   }
 };
 

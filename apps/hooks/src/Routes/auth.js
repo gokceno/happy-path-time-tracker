@@ -20,15 +20,19 @@ export const auth = async (req, res) => {
     password: req.body.password,
   });
   if (response.data?.auth_login != null) {
-    const directusJWTSecret = new TextEncoder().encode(
-      process.env.DIRECTUS_JWT_SECRET,
-    );
-    const {
-      payload: { app_access: hasAppAccess },
-    } = await jwtVerify(
-      response.data.auth_login.access_token,
-      directusJWTSecret,
-    );
+    try {
+      const directusJWTSecret = new TextEncoder().encode(
+        process.env.DIRECTUS_JWT_SECRET,
+      );
+      const {
+        payload: { app_access: hasAppAccess },
+      } = await jwtVerify(
+        response.data.auth_login.access_token,
+        directusJWTSecret,
+      );
+    } catch (e) {
+      return res.sendStatus(403);    
+    }
     if (hasAppAccess === true) {
       const secret = new TextEncoder().encode(process.env.JWT_SECRET);
       const token = await new SignJWT({ email: req.body.email })
@@ -40,4 +44,4 @@ export const auth = async (req, res) => {
     }
   }
   return res.sendStatus(403);
-}
+};
