@@ -23,5 +23,5 @@
       "after:bump": "npx auto-changelog -p"
     }
   },
-  "version": "2.6.3"
+  "version": "2.6.4"
 }
