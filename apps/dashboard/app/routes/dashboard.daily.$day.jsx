@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import { DateTime } from 'luxon';
+import { jwtVerify } from 'jose';
 import {
   Outlet,
   useLoaderData,
@@ -6,61 +9,71 @@ import {
 } from '@remix-run/react';
 import {
   auth as authCookie,
+  email as emailCookie,
   recentProjectTasks as recentProjectTasksCookie,
 } from '~/utils/cookies.server';
 import { json, redirect } from '@remix-run/node';
-
-import { Frontend as Client } from '@happy-path/graphql-client';
+import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
+import { Timers } from '@happy-path/graphql-entities';
 import ClientContainer from '~/components/client-container';
-import { DateTime } from 'luxon';
 import NoTimeEntry from '~/components/no-time-entry';
 import SectionHeader from '~/components/section-header';
 import StartNewTimerButton from '~/components/start-new-timer-button.jsx';
-import { useEffect } from 'react';
-
-const TimersQuery = `
-  query Timers($startsAt: String!, $endsAt: String!) {
-    timers(startsAt: $startsAt, endsAt: $endsAt) {
-      id
-      startsAt
-      endsAt
-      duration
-      totalDuration
-      relations
-      notes
-      task {
-        name
-        id
-      }
-      project {
-        id
-        name
-      }
-    }
-  }
-`;
 
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
+  const email = await emailCookie.parse(request.headers.get('cookie'));
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch (e) {
+    return redirect('/logout');
+  }
+  const { day: onDate } = params;
   const recentProjectTasks =
     (await recentProjectTasksCookie.parse(request.headers.get('cookie'))) || {};
 
-  if (token == undefined) return redirect('/login');
-  const { day: onDate } = params;
-  const response = await Client({ token }).query(TimersQuery, {
-    startsAt: DateTime.fromISO(onDate, { zone: process.env.TIMEZONE || 'UTC' })
-      .startOf('day')
-      .toUTC()
-      .toISO(),
-    endsAt: DateTime.fromISO(onDate, { zone: process.env.TIMEZONE || 'UTC' })
-      .endOf('day')
-      .toUTC()
-      .toISO(),
+  const client = GraphQLClient({
+    token,
+    url: process.env.API_DIRECTUS_URL + '/graphql/',
   });
+
+  const timers = (
+    await Timers({ client }).findTimersByUserId({
+      startsAt: DateTime.fromISO(onDate, {
+        zone: process.env.TIMEZONE || 'UTC',
+      })
+        .startOf('day')
+        .toUTC()
+        .toISO(),
+      endsAt: DateTime.fromISO(onDate, { zone: process.env.TIMEZONE || 'UTC' })
+        .endOf('day')
+        .toUTC()
+        .toISO(),
+      email,
+    })
+  ).map((item) => ({
+    id: item.id,
+    startsAt: item.starts_at,
+    endsAt: item.ends_at,
+    duration: item.duration,
+    totalDuration: item.total_duration,
+    notes: item.notes,
+    relations: item.relations,
+    project: {
+      id: item.task.projects_id.id,
+      name: item.task.projects_id.project_name,
+    },
+    task: {
+      id: item.task.id,
+      name: item.task.tasks_id.task_name,
+    },
+  }));
+
   return json({
+    timers,
     recentProjectTasks: recentProjectTasks || [],
     url: process.env.API_GRAPHQL_URL,
-    timers: response?.data?.timers || [],
     culture: process.env.LOCALE_CULTURE || 'en-US',
     timezone: process.env.TIMEZONE || 'UTC',
     revalidateDateEvery: process.env.REVALIDATE_DATA_EVERY || 60,
@@ -88,17 +101,10 @@ export default function DashboardDailyDayRoute() {
       revalidate();
     }, revalidateDateEvery * 1000);
     return () => clearInterval(interval);
-  }, []);
+  });
 
-  const sortRecentProjectsByCount = (arr) => {
-    // Sorting: Objects with higher count come first
-    const sortedArray = arr.sort((a, b) => b.count - a.count);
-
-    // Take only the first 3 objects
-    const top3 = sortedArray.slice(0, 3);
-
-    return top3;
-  };
+  const sortRecentProjectsByCount = (arr) =>
+    arr.sort((a, b) => b.count - a.count).slice(0, 3);
 
   const isToday =
     DateTime.fromISO(day, { zone: timezone }).toISODate() ==

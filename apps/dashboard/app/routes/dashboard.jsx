@@ -1,31 +1,37 @@
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import * as Toast from '@radix-ui/react-toast';
 import { jwtVerify } from 'jose';
-
 import {
   Outlet,
   useLoaderData,
   useNavigate,
   useSearchParams,
 } from '@remix-run/react';
-
-import { json } from '@remix-run/node';
-
+import { json, redirect } from '@remix-run/node';
 import Header from '../components/header';
-import { auth as authCookie } from '~/utils/cookies.server';
+import {
+  auth as authCookie,
+  email as emailCookie,
+} from '~/utils/cookies.server';
 import { useState } from 'react';
 
 export const meta = () => [{ title: 'Dashboard - Happy Path' }];
 
 export const loader = async ({ request }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
-  const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-  const {
-    payload: { email },
-  } = await jwtVerify(token, secret);
-  return json({
-    email,
-  });
+  const email = await emailCookie.parse(request.headers.get('cookie'));
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    const {
+      payload: { id },
+    } = await jwtVerify(token, secret);
+    return json({
+      id,
+      email,
+    });
+  } catch (e) {
+    return redirect('/logout');
+  }
 };
 
 export default function Dashboard() {

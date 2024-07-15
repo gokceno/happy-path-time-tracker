@@ -1,26 +1,30 @@
 import { json, redirect } from '@remix-run/node';
 import { useLoaderData, useParams } from '@remix-run/react';
-
-import { Frontend as Client } from '@happy-path/graphql-client';
+import { jwtVerify } from 'jose';
+import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
+import { Projects } from '@happy-path/graphql-entities';
 import ModalSelectItem from '~/components/modal-select-item';
 import { auth as authCookie } from '~/utils/cookies.server';
 import { useState } from 'react';
 
-const ProjectsQuery = `
-  query Projects {
-    projects {
-      id
-      projectName
-    }
-  }
-`;
-
 export const loader = async ({ request }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
-  if (token == undefined) return redirect('/login');
-  const response = await Client({ token }).query(ProjectsQuery);
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch (e) {
+    return redirect('/logout');
+  }
+  const client = GraphQLClient({
+    token,
+    url: process.env.API_DIRECTUS_URL + '/graphql/',
+  });
+  const projects = Projects({ client });
   return json({
-    projects: response?.data?.projects || [],
+    projects: (await projects.list()).map((item) => ({
+      id: item.id,
+      projectName: item.project_name,
+    })),
   });
 };
 

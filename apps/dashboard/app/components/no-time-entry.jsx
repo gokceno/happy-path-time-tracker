@@ -10,7 +10,7 @@ const NoTimeEntry = () => {
         <div className="self-stretch flex flex-col items-start justify-start gap-[16px]">
           <h4 className="m-0 self-stretch relative text-[inherit] leading-[133%] font-medium font-inherit text-shades-of-cadet-gray-cadet-gray-600">
             You don't have any time entries for today. Use the button below to start a new timer.
-            <p>Or you can head back to Slack or <a className="text-shades-of-cadet-gray-cadet-gray-600" target="_blank" href="https://github.com/BrewInteractive/happy-path-macos-client/releases">download the MacOS app</a> to start a new timer. Your options are limitless 😀</p>
+            <p>Or you can head back to Slack or <a className="text-shades-of-cadet-gray-cadet-gray-600" href="https://github.com/BrewInteractive/happy-path-macos-client/releases">download the MacOS app</a> to start a new timer. Your options are limitless 😀</p>
           </h4>
         </div>
       </div>

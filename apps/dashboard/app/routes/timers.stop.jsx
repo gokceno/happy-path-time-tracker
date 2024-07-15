@@ -1,23 +1,34 @@
 import { json, redirect } from '@remix-run/node';
-import { Frontend as Client } from '@happy-path/graphql-client';
-import { auth as authCookie } from '~/utils/cookies.server';
-
-const TimersMutation = `
-  mutation Stop($timerId: Int!) {
-    stop(timerId: $timerId) {
-      id
-    }
-  }
-`;
+import { jwtVerify } from 'jose';
+import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
+import { Timers } from '@happy-path/graphql-entities';
+import { auth as authCookie, email as emailCookie } from '~/utils/cookies.server';
 
 export const action = async ({ request }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
-  if (token == undefined) return redirect('/login');
+  const email = await emailCookie.parse(request.headers.get('cookie'));
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch (e) {
+    return redirect('/logout');
+  }
   const formData = await request.formData();
   const timerId = formData.get('timerId');
-  const response = await Client({ token }).mutation(TimersMutation, { timerId: +timerId });
-  if(response.error != undefined) {
-    return json({ ok: false, error: response.error });
+  const client = GraphQLClient({
+    token,
+    url: process.env.API_DIRECTUS_URL + '/graphql/',
+  });
+  try {
+    await Timers({
+      client,
+      timezone: process.env.TIMEZONE || 'UTC',
+    }).stop({
+      timerId,
+      email,
+    });
+    return json({ ok: true });
+  } catch (error) {
+    return json({ ok: false, error });
   }
-  return json({ ok: true });
 };

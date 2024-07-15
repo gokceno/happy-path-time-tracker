@@ -48,12 +48,12 @@ const TimeEntry = ({
                 .toISODate()}/${timerId}/edit`}
               className="w-full no-underline bg-[transparent] mb-0 text-primary-dark-night hover:underline"
             >
-              Edit/Remove
+              Edit • Remove
             </Link>
           </div>
         </div>
         <div className="w-full relative text-sm leading-[133%] mt-2 font-regular font-primary-small-body-h5-medium text-shades-of-cadet-gray-cadet-gray-400 text-left z-[1]">
-          {timeEntryDescription || 'Notes n/a. Edit to add some notes.'}
+          {timeEntryDescription || 'Notes empty. Edit to add some.'}
         </div>
         {relations?.length > 0 && (
           <ul className="m-0 p-0 mt-2 list-none">

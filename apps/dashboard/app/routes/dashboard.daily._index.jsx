@@ -1,4 +1,4 @@
-import { redirect, LoaderFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { DateTime } from 'luxon';
 
 export const loader = async () => {

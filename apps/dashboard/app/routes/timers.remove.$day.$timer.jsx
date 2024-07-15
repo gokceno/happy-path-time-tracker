@@ -1,22 +1,36 @@
-import { useParams } from "@remix-run/react";
-import { json, redirect } from '@remix-run/node';
-import { Frontend as Client } from '@happy-path/graphql-client';
+import { redirect } from '@remix-run/node';
+import { jwtVerify } from 'jose';
+import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
+import { Timers } from '@happy-path/graphql-entities';
 import { auth as authCookie } from '~/utils/cookies.server';
-
-const TimersMutation = `
-  mutation Remove($timerId: Int!) {
-    remove(timerId: $timerId) {
-      id
-    }
-  }
-`;
 
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
-  if (token == undefined) return redirect('/login');
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch (e) {
+    return redirect('/logout');
+  }
   const { day, timer } = params;
   let flash = [];
-  const response = await Client({ token }).mutation(TimersMutation, { timerId: +timer });
-  response.error !== undefined ? flash.push({message: response.error}) : flash.push({message: 'You removed your time entry. Good job!'});
-  return redirect(`/dashboard/daily/${day}?flash=${btoa(JSON.stringify(flash))}`);
+  const client = GraphQLClient({
+    token,
+    url: process.env.API_DIRECTUS_URL + '/graphql/',
+  });
+  try {
+    const timezone = process.env.TIMEZONE || 'UTC';
+    await Timers({
+      client,
+      timezone,
+    }).remove({
+      timerId: +timer
+    });
+    flash.push({ message: 'You removed your time entry. Good job!' });
+  } catch (e) {
+    flash.push({ message: e.message });
+  }
+  return redirect(
+    `/dashboard/daily/${day}?flash=${btoa(JSON.stringify(flash))}`
+  );
 };
