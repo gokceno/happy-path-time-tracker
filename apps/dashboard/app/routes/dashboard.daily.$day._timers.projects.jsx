@@ -1,5 +1,6 @@
 import { json, redirect } from '@remix-run/node';
 import { useLoaderData, useParams } from '@remix-run/react';
+import { jwtVerify } from 'jose';
 import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import { Projects } from '@happy-path/graphql-entities';
 import ModalSelectItem from '~/components/modal-select-item';
@@ -8,7 +9,12 @@ import { useState } from 'react';
 
 export const loader = async ({ request }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
-  if (token == undefined) return redirect('/login');
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch (e) {
+    return redirect('/logout');
+  }
   const client = GraphQLClient({
     token,
     url: process.env.API_DIRECTUS_URL + '/graphql/',

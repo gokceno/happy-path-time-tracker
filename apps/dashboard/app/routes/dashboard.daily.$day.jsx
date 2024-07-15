@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { DateTime } from 'luxon';
+import { jwtVerify } from 'jose';
 import {
   Outlet,
   useLoaderData,
@@ -22,7 +23,12 @@ import StartNewTimerButton from '~/components/start-new-timer-button.jsx';
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
   const email = await emailCookie.parse(request.headers.get('cookie'));
-  if (token == undefined) return redirect('/login');
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch (e) {
+    return redirect('/logout');
+  }
   const { day: onDate } = params;
   const recentProjectTasks =
     (await recentProjectTasksCookie.parse(request.headers.get('cookie'))) || {};

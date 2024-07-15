@@ -1,11 +1,17 @@
 import { redirect } from '@remix-run/node';
+import { jwtVerify } from 'jose';
 import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import { Timers } from '@happy-path/graphql-entities';
 import { auth as authCookie } from '~/utils/cookies.server';
 
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
-  if (token == undefined) return redirect('/login');
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch (e) {
+    return redirect('/logout');
+  }
   const { day, timer } = params;
   let flash = [];
   const client = GraphQLClient({

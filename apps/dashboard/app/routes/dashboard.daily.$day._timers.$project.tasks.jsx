@@ -1,5 +1,6 @@
 import { Link, useLoaderData, useParams } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
+import { jwtVerify } from 'jose';
 import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import { Projects, Tasks, Metadata } from '@happy-path/graphql-entities';
 import { metadata as parseMetadata } from '@happy-path/calculator';
@@ -13,7 +14,12 @@ import { useState } from 'react';
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
   const email = await emailCookie.parse(request.headers.get('cookie'));
-  if (token == undefined) return redirect('/login');
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch (e) {
+    return redirect('/logout');
+  }
   const { project: projectId } = params;
   const client = GraphQLClient({
     token,

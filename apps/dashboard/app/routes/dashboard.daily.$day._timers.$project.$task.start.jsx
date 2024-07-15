@@ -2,6 +2,7 @@ import { Link, useFetcher, useParams } from '@remix-run/react';
 import { useEffect, useRef, useState } from 'react';
 import { PatternFormat } from 'react-number-format';
 import { DateTime, Duration } from 'luxon';
+import { jwtVerify } from 'jose';
 import {
   auth as authCookie,
   email as emailCookie,
@@ -15,8 +16,12 @@ import LinkSection from '../components/link-section';
 export const action = async ({ request }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
   const email = await emailCookie.parse(request.headers.get('cookie'));
-  if (token == undefined) return redirect('/login');
-
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch (e) {
+    return redirect('/logout');
+  }
   const formData = await request.formData();
   const projectTaskId = formData.get('projectTaskId');
   const tempProject = formData.get('tempProject');

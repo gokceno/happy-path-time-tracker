@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import { Timers } from '@happy-path/graphql-entities';
 import { Duration } from 'luxon';
+import { jwtVerify } from 'jose';
 import LinkSection from '../components/link-section';
 import { PatternFormat } from 'react-number-format';
 import { auth as authCookie } from '~/utils/cookies.server';
@@ -11,7 +12,12 @@ import { calculateDuration } from '@happy-path/calculator';
 
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
-  if (token == undefined) return redirect('/login');
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch (e) {
+    return redirect('/logout');
+  }
   const { timer: timerId } = params;
 
   const client = GraphQLClient({

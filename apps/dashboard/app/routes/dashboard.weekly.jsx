@@ -1,5 +1,6 @@
 import { DateTime, Interval, Duration } from 'luxon';
 import { Outlet, useParams, useLoaderData } from '@remix-run/react';
+import { jwtVerify } from 'jose';
 import { json, redirect } from '@remix-run/node';
 import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import { Timers } from '@happy-path/graphql-entities';
@@ -11,7 +12,12 @@ export const meta = () => [{ title: 'Weekly Dashboard - Happy Path' }];
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
   const email = await emailCookie.parse(request.headers.get('cookie'));
-  if (token == undefined) return redirect('/login');
+  try {
+    const secret = new TextEncoder().encode(process.env.DIRECTUS_JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch (e) {
+    return redirect('/logout');
+  }
   const { week: date } = params;
 
   const client = GraphQLClient({
