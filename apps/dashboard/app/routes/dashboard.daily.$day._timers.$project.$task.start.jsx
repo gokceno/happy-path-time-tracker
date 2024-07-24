@@ -12,6 +12,7 @@ import { redirect } from '@remix-run/node';
 import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import { Timers } from '@happy-path/graphql-entities';
 import LinkSection from '../components/link-section';
+import { resolve as resolveRelations } from '~/utils/relations/resolve.js';
 
 export const action = async ({ request }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
@@ -48,7 +49,7 @@ export const action = async ({ request }) => {
       projectTaskId,
       email,
       duration,
-      relations,
+      relations: await resolveRelations({ relations }),
       taskComment: notes,
     };
     const timezone = process.env.TIMEZONE || 'UTC';

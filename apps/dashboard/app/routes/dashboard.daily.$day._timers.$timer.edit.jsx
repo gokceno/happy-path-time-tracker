@@ -6,6 +6,7 @@ import { Timers } from '@happy-path/graphql-entities';
 import { Duration } from 'luxon';
 import { jwtVerify } from 'jose';
 import LinkSection from '../components/link-section';
+import { resolve as resolveRelations } from '~/utils/relations/resolve.js';
 import { PatternFormat } from 'react-number-format';
 import { auth as authCookie } from '~/utils/cookies.server';
 import { calculateDuration } from '@happy-path/calculator';
@@ -89,7 +90,7 @@ export const action = async ({ request }) => {
         duration,
         totalDuration,
         totalDurationInHours,
-        relations,
+        relations: await resolveRelations({ relations }),
         taskComment: notesInput || null,
       },
     });

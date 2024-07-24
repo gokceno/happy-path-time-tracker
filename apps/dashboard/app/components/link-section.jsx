@@ -46,7 +46,7 @@ const LinkSection = forwardRef(
             setNewLink(event.target.value);
           }}
           placeholder="https://"
-          value={value}
+          value={typeof value === 'string' ? value : value?.data?.title}
           onKeyDown={(e) => handleKeyPress(e)}
         />
         {invalidUrl && (

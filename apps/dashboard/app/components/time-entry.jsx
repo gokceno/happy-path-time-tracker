@@ -65,12 +65,12 @@ const TimeEntry = ({
                 &bull;{' '}
                 <a
                   onClick={(event) => event.stopPropagation()}
-                  href={link}
+                  href={typeof link === 'string' ? link : link?.url}
                   target="_blank"
                   rel="noreferrer"
                   className="text-shades-of-teal-teal-400 no-underline hover:underline"
                 >
-                  {link.ellipsis(36)}
+                  {(typeof link === 'string' ? link : link?.data?.title).ellipsis(64)}
                 </a>
               </li>
             ))}

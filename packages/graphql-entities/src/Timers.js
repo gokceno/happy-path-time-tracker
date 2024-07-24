@@ -303,6 +303,8 @@ const Timers = ({ client, timezone = "UTC" }) => {
           ends_at
           duration
           total_duration
+          total_duration_in_hours
+          total_cost
           notes
           relations
           task {
