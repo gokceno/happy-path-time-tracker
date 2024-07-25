@@ -1,8 +1,8 @@
 import * as adapters from './adapters/index.js';
 
 export const resolve = async ({ relations }) => {
-	const baseUrl = 'https://plane.brewww.net/api/v1';
-	const apiKey = 'plane_api_bdd40c7371164e808fc292e094bee1c0';
+	const baseUrl = process.env.PLANE_API_URL;
+	const apiKey = process.env.PLANE_API_KEY;
 	const alteredRelations = await relations.map(async (url) => {
 		if (typeof url === 'string') {
 			try {
