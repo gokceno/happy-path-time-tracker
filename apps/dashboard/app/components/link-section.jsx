@@ -1,6 +1,5 @@
 import { forwardRef, useImperativeHandle, useState } from 'react';
-
-import { isValidUrl } from '../utils/funcs';
+import { z } from 'zod';
 
 // eslint-disable-next-line react/display-name
 const LinkSection = forwardRef(
@@ -19,11 +18,12 @@ const LinkSection = forwardRef(
     };
 
     const handleAddLink = () => {
-      if (isValidUrl(newLink)) {
-        onAddLink(newLink);
+      try {
+        const link = z.string().url().parse(newLink);
+        onAddLink(link);
         setNewLink('');
         setIsNewInputVisible(true);
-      } else {
+      } catch (e) {
         setInvalidUrl(true);
       }
     };
