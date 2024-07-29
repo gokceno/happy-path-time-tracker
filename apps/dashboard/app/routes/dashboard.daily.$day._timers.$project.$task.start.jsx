@@ -1,17 +1,18 @@
-import { Link, useFetcher, useParams } from '@remix-run/react';
-import { useEffect, useRef, useState } from 'react';
-import { PatternFormat } from 'react-number-format';
 import { DateTime, Duration } from 'luxon';
-import { jwtVerify } from 'jose';
+import { Link, useFetcher, useParams } from '@remix-run/react';
 import {
   auth as authCookie,
   email as emailCookie,
   recentProjectTasks as recentProjectTasksCookie,
 } from '~/utils/cookies.server';
-import { redirect } from '@remix-run/node';
+import { useEffect, useRef, useState } from 'react';
+
 import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
-import { Timers } from '@happy-path/graphql-entities';
 import LinkSection from '../components/link-section';
+import { PatternFormat } from 'react-number-format';
+import { Timers } from '@happy-path/graphql-entities';
+import { jwtVerify } from 'jose';
+import { redirect } from '@remix-run/node';
 import { resolve as resolveRelations } from '~/utils/relations/resolve.js';
 
 export const action = async ({ request }) => {
@@ -123,7 +124,7 @@ export default function TimerStartRoute() {
   const [links, setLinks] = useState([]);
   const [isNewInputVisible, setIsNewInputVisible] = useState(true);
 
-  const onAddLink = value => value && setLinks([...links, value]);
+  const onAddLink = (value) => value && setLinks([...links, value]);
 
   useEffect(() => {
     setTempProject(window.localStorage.getItem('project'));
@@ -173,22 +174,24 @@ export default function TimerStartRoute() {
           />
         </div>
         <div className="self-stretch flex py-4 justify-start">
-          Related Links
+          Related Links {links?.length > 0 && `(${links.length})`}
         </div>
 
-        {links.map((value, index) => (
-          <LinkSection
-            key={index}
-            value={value}
-            onRemoveLink={() => {
-              const newLinks = [...links];
-              newLinks.splice(index, 1);
-              setLinks(newLinks);
-            }}
-            onAddLink={onAddLink}
-            setIsNewInputVisible={setIsNewInputVisible}
-          />
-        ))}
+        <div className="self-stretch max-h-32 overflow-y-auto flex flex-col">
+          {links.map((value, index) => (
+            <LinkSection
+              key={index}
+              value={value}
+              onRemoveLink={() => {
+                const newLinks = [...links];
+                newLinks.splice(index, 1);
+                setLinks(newLinks);
+              }}
+              onAddLink={onAddLink}
+              setIsNewInputVisible={setIsNewInputVisible}
+            />
+          ))}
+        </div>
 
         {isNewInputVisible && (
           <LinkSection
