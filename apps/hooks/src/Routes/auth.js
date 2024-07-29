@@ -30,17 +30,17 @@ export const auth = async (req, res) => {
         response.data.auth_login.access_token,
         directusJWTSecret,
       );
+      if (hasAppAccess === true) {
+        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+        const token = await new SignJWT({ email: req.body.email })
+          .setProtectedHeader({ alg: "HS256" })
+          .setIssuedAt()
+          .setExpirationTime(process.env.JWT_EXPIRES || "1h")
+          .sign(secret);
+        return res.json({ token });
+      }
     } catch (e) {
-      return res.sendStatus(403);    
-    }
-    if (hasAppAccess === true) {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-      const token = await new SignJWT({ email: req.body.email })
-        .setProtectedHeader({ alg: "HS256" })
-        .setIssuedAt()
-        .setExpirationTime(process.env.JWT_EXPIRES || "1h")
-        .sign(secret);
-      return res.json({ token });
+      return res.sendStatus(403);
     }
   }
   return res.sendStatus(403);
