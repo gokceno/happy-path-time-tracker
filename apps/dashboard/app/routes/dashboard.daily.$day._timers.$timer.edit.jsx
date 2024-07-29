@@ -1,15 +1,16 @@
 import { Link, useFetcher, useLoaderData, useParams } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
 import { useRef, useState } from 'react';
-import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
-import { Timers } from '@happy-path/graphql-entities';
+
 import { Duration } from 'luxon';
-import { jwtVerify } from 'jose';
+import { Frontend as GraphQLClient } from '@happy-path/graphql-client';
 import LinkSection from '../components/link-section';
-import { resolve as resolveRelations } from '~/utils/relations/resolve.js';
 import { PatternFormat } from 'react-number-format';
+import { Timers } from '@happy-path/graphql-entities';
 import { auth as authCookie } from '~/utils/cookies.server';
 import { calculateDuration } from '@happy-path/calculator';
+import { jwtVerify } from 'jose';
+import { resolve as resolveRelations } from '~/utils/relations/resolve.js';
 
 export const loader = async ({ request, params }) => {
   const token = await authCookie.parse(request.headers.get('cookie'));
@@ -157,22 +158,24 @@ export default function TimerStartRoute() {
         </div>
 
         <div className="self-stretch flex py-4 justify-start">
-          Related Links
+          Related Links {links?.length > 0 && `(${links.length})`}
         </div>
 
-        {links?.map((value, index) => (
-          <LinkSection
-            key={index}
-            value={value}
-            onRemoveLink={() => {
-              const newLinks = [...links];
-              newLinks.splice(index, 1);
-              setLinks(newLinks);
-            }}
-            onAddLink={onAddLink}
-            setIsNewInputVisible={setIsNewInputVisible}
-          />
-        ))}
+        <div className="self-stretch max-h-32 overflow-y-auto flex flex-col">
+          {links?.map((value, index) => (
+            <LinkSection
+              key={index}
+              value={value}
+              onRemoveLink={() => {
+                const newLinks = [...links];
+                newLinks.splice(index, 1);
+                setLinks(newLinks);
+              }}
+              onAddLink={onAddLink}
+              setIsNewInputVisible={setIsNewInputVisible}
+            />
+          ))}
+        </div>
 
         {isNewInputVisible && (
           <LinkSection
