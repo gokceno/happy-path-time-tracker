@@ -70,7 +70,10 @@ const TimeEntry = ({
                   rel="noreferrer"
                   className="text-shades-of-teal-teal-400 no-underline hover:underline"
                 >
-                  {(typeof link === 'string' ? link : link?.data?.title).ellipsis(64)}
+                  {(typeof link === 'string'
+                    ? link
+                    : link?.data?.title
+                  ).ellipsis(64)}
                 </a>
               </li>
             ))}
